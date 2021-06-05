@@ -1,7 +1,8 @@
-package com.yyds.recipe.service;
+package com.yyds.recipe.service.impl;
 
 import com.yyds.recipe.mapper.UserMapper;
 import com.yyds.recipe.model.User;
+import com.yyds.recipe.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
