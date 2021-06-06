@@ -2,5 +2,7 @@
 
 [TOC]
 
+## Changelog
+
 [Changelog](./Changelog.md)
 
