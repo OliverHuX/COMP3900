@@ -36,20 +36,22 @@ All important changes to this project will be documented in here
 
 #### Fixed
 
-#### Security
-
 ## 2021-06-08
 
 #### Added
 
 - add user register by [@kylee-software](https://github.com/kylee-software)
 
+- add uuid generator and password encoder in utils by [@Vik1ang](https://github.com/Vik1ang)
+
 #### Changed
+
+- merge some method in one on UserServiceImpl.java by [@Vik1ang](https://github.com/Vik1ang)
 
 #### Deprecated
 
 #### Removed
 
-#### Fixed
+- remove useless Mybatis sqlSession util(MyBatisUtils.java) by [@Vik1ang](https://github.com/Vik1ang)
 
-#### Security
+#### Fixed
