@@ -1,6 +1,7 @@
-#COMP3900-W09A-YYDS
+# COMP3900-W09A-YYDS
 
-[TOC]
+<!--ts-->
+<!--te-->
 
 ## Changelog
 
