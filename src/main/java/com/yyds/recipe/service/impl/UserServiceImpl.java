@@ -1,17 +1,17 @@
 package com.yyds.recipe.service.impl;
 
 import com.yyds.recipe.mapper.UserMapper;
-import com.yyds.recipe.model.RegisterUser;
+import com.yyds.recipe.model.LoginUser;
+import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
 import com.yyds.recipe.utils.BcryptPasswordUtil;
 import com.yyds.recipe.utils.UUIDGenerator;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -21,24 +21,39 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(rollbackFor = {RuntimeException.class, Error.class, SQLException.class})
     @Override
-    public void saveUser(RegisterUser registerUser) {
+    public void saveUser(User user) {
 
         // if user not set nick name, let nickname = firstName + " " + lastName
-        if (registerUser.getNickName() == null) {
-            registerUser.setNickName(registerUser.getFirstName() + " " + registerUser.getLastName());
+        if (user.getNickName() == null) {
+            user.setNickName(user.getFirstName() + " " + user.getLastName());
         }
         // set userId
-        registerUser.setUserId(UUIDGenerator.createUserId());
+        user.setUserId(UUIDGenerator.createUserId());
 
         // encode password
-        registerUser.setPassword(BcryptPasswordUtil.encodePassword(registerUser.getPassword()));
+        user.setPassword(BcryptPasswordUtil.encodePassword(user.getPassword()));
 
         try {
-            userMapper.saveUser(registerUser);
+            userMapper.saveUser(user);
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
+
+    }
+
+    @SneakyThrows
+    @Override
+    public User loginUser(LoginUser loginUser) {
+
+        // match password
+        User user = userMapper.getUser(loginUser.getEmail());
+
+        // password
+        if (!BcryptPasswordUtil.passwordMatch(loginUser.getPassword(), user.getPassword())) {
+            throw new Exception();
+        }
+        return user;
 
     }
 
