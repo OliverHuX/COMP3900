@@ -9,16 +9,14 @@ All important changes to this project will be documented in here
          * [Deprecated](#deprecated)
          * [Removed](#removed)
          * [Fixed](#fixed)
-         * [Security](#security)
    * [2021-06-08](#2021-06-08)
          * [Added](#added-1)
          * [Changed](#changed-1)
          * [Deprecated](#deprecated-1)
          * [Removed](#removed-1)
          * [Fixed](#fixed-1)
-         * [Security](#security-1)
 
-<!-- Added by: runner, at: Tue Jun  8 00:23:20 UTC 2021 -->
+<!-- Added by: runner, at: Tue Jun  8 08:03:46 UTC 2021 -->
 
 <!--te-->
 
