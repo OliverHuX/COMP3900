@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import com.yyds.recipe.model.RegisterUser;
+import com.yyds.recipe.model.User;
 
 import java.util.Map;
 
@@ -20,10 +20,10 @@ public class RegisterController {
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> register(@RequestBody RegisterUser registerUser) {
+    public Map<String, Object> register(@RequestBody User user) {
         Map<String, Object> rsp = ResponseUtil.getResponse();
         try {
-            userService.saveUser(registerUser);
+            userService.saveUser(user);
         } catch (Exception e) {
             rsp.put("error message", e.toString());
             rsp.put("code", -1);

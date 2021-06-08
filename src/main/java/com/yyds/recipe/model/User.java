@@ -10,7 +10,7 @@ import javax.validation.constraints.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterUser {
+public class User {
     private String userId;
     @NotNull
     private String firstName;
