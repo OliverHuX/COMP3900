@@ -4,8 +4,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.yyds.recipe.mapper.UserMapper">
-    <insert id="saveUser" parameterType="com.yyds.recipe.model.User">
-        insert into recipe.user(userId, firstName, lastName, gender, email, nickName, password, birthDate)
+    <insert id="saveUser" parameterType="com.yyds.recipe.model.RegisterUser">
+        insert into recipe.registerUser(userId, firstName, lastName, gender, email, nickName, password, birthDate)
         values (#{userId}, #{firtName}, #{lastName}, #{gender}, #{email}, #{nickName}, #{password}, #{birthDate})
     </insert>
 </mapper>

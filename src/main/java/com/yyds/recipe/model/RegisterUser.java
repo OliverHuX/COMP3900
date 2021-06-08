@@ -5,21 +5,27 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.lang.NonNull;
 
+import javax.validation.constraints.*;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
-    private int userId;
-
-    @NonNull
+public class RegisterUser {
+    private String userId;
+    @NotNull
     private String firstName;
-    @NonNull
+    @NotNull
     private String lastName;
+    @NotNull
+    @Size(min = 0, max = 2)
     private int gender;
-    @NonNull
+    @NotNull
+    @Email
+    @NotEmpty
     private String email;
     private String nickName;
-    @NonNull
+    @NotNull
+    @NotEmpty
     private String password;
     private String birthDate;
 }

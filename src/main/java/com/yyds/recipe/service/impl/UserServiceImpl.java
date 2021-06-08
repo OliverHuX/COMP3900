@@ -1,13 +1,15 @@
 package com.yyds.recipe.service.impl;
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.yyds.recipe.mapper.UserMapper;
-import com.yyds.recipe.model.User;
+import com.yyds.recipe.model.RegisterUser;
 import com.yyds.recipe.service.UserService;
+import com.yyds.recipe.utils.BcryptPasswordUtil;
+import com.yyds.recipe.utils.UUIDGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.UUID;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,51 +19,61 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
-    private int idCounter = 1;
-
-//    @Override
-//    public void login(User user, HttpSession httpSession) {
-//        userMapper.RegisterUser(user);
-//    }
-
-
+    @Transactional(rollbackFor = {RuntimeException.class, Error.class, SQLException.class})
     @Override
-    public void saveUser(User user) {
-        userMapper.saveUser(user);
-    }
+    public void saveUser(RegisterUser registerUser) {
 
-    @Override
-    public boolean validEmail(String email) {
-        Pattern regex = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = regex.matcher(email);
-        return matcher.find();
-    }
+        // if user not set nick name, let nickname = firstName + " " + lastName
+        if (registerUser.getNickName() == null) {
+            registerUser.setNickName(registerUser.getFirstName() + " " + registerUser.getLastName());
+        }
+        // set userId
+        registerUser.setUserId(UUIDGenerator.createUserId());
 
-    @Override
-    public int register(User user) {
-        if (!validEmail(user.getEmail())) {
-            // do something;
-            //throw new InvalidEmailException("Invalid Email Address");
-            return 0;
+        // encode password
+        registerUser.setPassword(BcryptPasswordUtil.encodePassword(registerUser.getPassword()));
+
+        try {
+            userMapper.saveUser(registerUser);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
 
-        // requirements for firstName, lastName
-        // encode password;
-        //user.setPassword("encode password");
-
-        if (user.getNickName() == null) {
-            user.setNickName(user.getFirstName() + " " + user.getLastName());
-        }
-
-        //String uniqueId = UUID.randomUUID().toString();
-
-        user.setUserId(idCounter++);
-
-        // save the user to the database
-        saveUser(user);
-
-        return idCounter;
-
     }
+
+    // @Override
+    // public boolean validEmail(String email) {
+    //     Pattern regex = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+    //     Matcher matcher = regex.matcher(email);
+    //     return matcher.find();
+    // }
+
+    // @Override
+    // public int register(RegisterUser registerUser) {
+    //     if (!validEmail(registerUser.getEmail())) {
+    //         // do something;
+    //         //throw new InvalidEmailException("Invalid Email Address");
+    //         return 0;
+    //     }
+    //
+    //     // requirements for firstName, lastName
+    //     // encode password;
+    //     //user.setPassword("encode password");
+    //
+    //     if (registerUser.getNickName() == null) {
+    //         registerUser.setNickName(registerUser.getFirstName() + " " + registerUser.getLastName());
+    //     }
+    //
+    //     //String uniqueId = UUID.randomUUID().toString();
+    //
+    //     registerUser.setUserId(idCounter++);
+    //
+    //     // save the user to the database
+    //     saveUser(registerUser);
+    //
+    //     return idCounter;
+    //
+    // }
 
 }

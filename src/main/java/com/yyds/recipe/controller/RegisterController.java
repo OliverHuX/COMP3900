@@ -1,15 +1,17 @@
 package com.yyds.recipe.controller;
 
 import com.yyds.recipe.service.UserService;
+import com.yyds.recipe.utils.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import com.yyds.recipe.model.User;
+import com.yyds.recipe.model.RegisterUser;
 
-import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 @Controller
+@Validated
 public class RegisterController {
 
     @Autowired
@@ -18,8 +20,15 @@ public class RegisterController {
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     @ResponseBody
-    public int register(@RequestBody @Validated User user) {
-        return userService.register(user);
+    public Map<String, Object> register(@RequestBody RegisterUser registerUser) {
+        Map<String, Object> rsp = ResponseUtil.getResponse();
+        try {
+            userService.saveUser(registerUser);
+        } catch (Exception e) {
+            rsp.put("error message", e.toString());
+            rsp.put("code", -1);
+        }
+        return rsp;
     }
 
 }
