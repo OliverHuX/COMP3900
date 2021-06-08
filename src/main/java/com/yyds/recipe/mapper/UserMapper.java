@@ -6,5 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserMapper {
-    int RegisterUser(User user);
+
+    void saveUser (User user);
+
 }
