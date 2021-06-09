@@ -27,6 +27,7 @@ public class RegisterController {
         } catch (Exception e) {
             rsp.put("error message", e.toString());
             rsp.put("code", -1);
+            return rsp;
         }
         return rsp;
     }

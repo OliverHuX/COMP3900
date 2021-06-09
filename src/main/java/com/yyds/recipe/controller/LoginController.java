@@ -30,6 +30,7 @@ public class LoginController {
             e.printStackTrace();
             rsp.put("code", -1);
             rsp.put("error message", e.toString());
+            return rsp;
         }
         rsp.put("userId", user.getUserId());
         return rsp;
