@@ -7,18 +7,29 @@ import com.yyds.recipe.utils.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@Controller
+@RestController
 @Validated
-public class LoginController {
+public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    public Map<String, Object> register(@RequestBody User user) {
+        Map<String, Object> rsp = ResponseUtil.getResponse();
+        try {
+            userService.saveUser(user);
+        } catch (Exception e) {
+            rsp.put("error message", e.toString());
+            rsp.put("code", -1);
+            return rsp;
+        }
+        return rsp;
+    }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public Map<String, Object> login(@RequestBody LoginUser loginUser) {
@@ -33,6 +44,12 @@ public class LoginController {
             return rsp;
         }
         rsp.put("userId", user.getUserId());
+        return rsp;
+    }
+
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    public Map<String, Object> logout(@RequestParam(value = "userId") String userId) {
+        Map<String, Object> rsp = ResponseUtil.getResponse();
         return rsp;
     }
 }
