@@ -57,6 +57,13 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    @Transactional(rollbackFor = {RuntimeException.class, Error.class, SQLException.class})
+    public void editUser(User user){
+        userMapper.editUser(user);
+    }
+
+
     // @Override
     // public boolean validEmail(String email) {
     //     Pattern regex = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);

@@ -52,4 +52,10 @@ public class UserController {
         Map<String, Object> rsp = ResponseUtil.getResponse();
         return rsp;
     }
+
+    @RequestMapping(value = "/editProfile", method = RequestMethod.POST)
+    public Map<String, Object> editProfile(@RequestBody User user){
+        Map<String, Object> rsp = ResponseUtil.getResponse();
+        return rsp;
+    }
 }

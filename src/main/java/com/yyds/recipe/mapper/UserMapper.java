@@ -12,4 +12,6 @@ public interface UserMapper {
 
     @Select("select * from user where email = #{email}")
     User getUser(@Param(value = "email") String email);
+
+    void editUser(User user);
 }

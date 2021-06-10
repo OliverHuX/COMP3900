@@ -9,4 +9,5 @@ public interface UserService {
 
     User loginUser(LoginUser loginUser);
 
+    void editUser(User user);
 }
