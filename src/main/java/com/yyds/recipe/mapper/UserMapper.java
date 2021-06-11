@@ -14,4 +14,7 @@ public interface UserMapper {
     User getUser(@Param(value = "email") String email);
 
     void editUser(User user);
+
+    @Select("select * from user where userId = #{userId}")
+    User getUserbyId(@Param(value = "userId") String userId);
 }

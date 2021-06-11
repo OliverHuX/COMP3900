@@ -8,6 +8,7 @@ import com.yyds.recipe.utils.BcryptPasswordUtil;
 import com.yyds.recipe.utils.UUIDGenerator;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,5 +98,33 @@ public class UserServiceImpl implements UserService {
     //     return idCounter;
     //
     // }
+
+    @SneakyThrows
+    @Override
+    public void editPassword(String oldPassword, String newPassword, String userId) {
+
+        // Get the user info from the database by id
+        User user = userMapper.getUserbyId(userId);
+
+        // Throw an exception when the old password the user entered does not match the password in the database
+        if (!BcryptPasswordUtil.passwordMatch(oldPassword, user.getPassword())) {
+            throw new Exception();
+        }
+
+        // Validate the new password entered by the user
+        if (newPassword.length() < 6 || ! newPassword.matches("^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]+$")) {
+            throw new Exception();
+        }
+
+        // Encode the new password and replace the old password with the new one
+        user.setPassword(BcryptPasswordUtil.encodePassword(newPassword));
+
+        try {
+            userMapper.saveUser(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
 
 }

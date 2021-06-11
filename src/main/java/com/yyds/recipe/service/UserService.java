@@ -10,4 +10,6 @@ public interface UserService {
     User loginUser(LoginUser loginUser);
 
     void editUser(User user);
+
+    void editPassword(String oldPassword, String newPassword, String userId);
 }

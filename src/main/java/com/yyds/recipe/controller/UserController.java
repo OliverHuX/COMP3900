@@ -58,4 +58,17 @@ public class UserController {
         Map<String, Object> rsp = ResponseUtil.getResponse();
         return rsp;
     }
+
+    @RequestMapping(value = "/editPassword", method = RequestMethod.POST)
+    public Map<String, Object> editPassword(@RequestParam(value = "oldPassword") String oldPassword, @RequestParam(value = "newPassword") String newPassword, @RequestParam(value = "userId") String userId) {
+        Map<String, Object> rsp = ResponseUtil.getResponse();
+        try {
+            userService.editPassword(oldPassword, newPassword, userId);
+        } catch (Exception e) {
+            rsp.put("error message", e.toString());
+            rsp.put("code", -1);
+            return rsp;
+        }
+        return rsp;
+    }
 }
