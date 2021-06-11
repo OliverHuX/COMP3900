@@ -98,4 +98,28 @@ public class UserServiceImpl implements UserService {
     //
     // }
 
+    @SneakyThrows
+    @Override
+    public void editPassword(String oldPassword, String newPassword, String userId) {
+
+        User user = userMapper.getUserbyId(userId);
+
+        if (newPassword.length() < 6 || ! newPassword.matches("^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]+$")) {
+            throw new Exception();
+        }
+
+        if (!BcryptPasswordUtil.passwordMatch(oldPassword, user.getPassword())) {
+            throw new Exception();
+        }
+
+        user.setPassword(BcryptPasswordUtil.encodePassword(newPassword));
+
+        try {
+            userMapper.saveUser(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
 }
