@@ -1,1 +1,7 @@
-
+week1
+Decide with the team on the project we will do, and discuss with the team the software tools and libraries that we can use for the project.
+week2
+Meet with the team to discuss details about our project proposal.
+design the database E-R diagram.
+complete edit profile controller.
+complete edit user service.
