@@ -1,5 +1,6 @@
 package com.yyds.recipe.mapper;
 
+import com.yyds.recipe.model.LoginUser;
 import com.yyds.recipe.model.User;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -10,8 +11,9 @@ public interface UserMapper {
 
     void saveUser (User user);
 
-    @Select("select * from user where email = #{email}")
-    User getUser(@Param(value = "email") String email);
+    void saveUserAccount(User user);
+
+    User getUser(String email);
 
     void editUser(User user);
 
