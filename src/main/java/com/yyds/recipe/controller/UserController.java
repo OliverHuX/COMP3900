@@ -56,6 +56,13 @@ public class UserController {
     @RequestMapping(value = "/editProfile", method = RequestMethod.POST)
     public Map<String, Object> editProfile(@RequestBody User user){
         Map<String, Object> rsp = ResponseUtil.getResponse();
+        try {
+            userService.editUser(user);
+        } catch (Exception e) {
+            rsp.put("code", -1);
+            rsp.put("error message", e.toString());
+            return rsp;
+        }
         return rsp;
     }
 
