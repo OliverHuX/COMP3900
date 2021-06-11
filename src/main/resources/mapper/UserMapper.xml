@@ -4,10 +4,28 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.yyds.recipe.mapper.UserMapper">
+    
+    <resultMap id="UserResultMap" type="com.yyds.recipe.model.User">
+        <result column="user_id" property="userId" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="first_name" property="firstName" jdbcType="VARCHAR"/>
+        <result column="last_name" property="lastName" jdbcType="VARCHAR"/>
+        <result column="nick_name" property="nickName" jdbcType="VARCHAR"/>
+        <result column="birthdate" property="birthdate" jdbcType="VARCHAR"/>
+        <result column="gender" property="gender" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="VARCHAR"/>
+        <result column="profile_photo" property="profilePhoto" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="UserAccountResultMap" type="com.yyds.recipe.model.LoginUser">
+        <result column="user_id" property="userId" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+    </resultMap>
+    
     <insert id="saveUser" parameterType="com.yyds.recipe.model.User">
         insert into recipe.user(user_id, email, first_name, last_name, nick_name, birthdate, gender,
                                 create_time)
-        values (#{userId}, #{email}, #{firstName}, #{lastName}, #{nickName}, #{birthDate}, #{gender}, #{createTime});
+        values (#{userId}, #{email}, #{firstName}, #{lastName}, #{nickName}, #{birthdate}, #{gender}, #{createTime});
     </insert>
 
     <insert id="saveUserAccount" parameterType="com.yyds.recipe.model.User">
@@ -42,7 +60,7 @@
         </where>
     </update>
 
-    <select id="getLoginUserInfo" resultType="com.yyds.recipe.model.LoginUser" parameterType="java.lang.String">
+    <select id="getLoginUserInfo" resultMap="UserAccountResultMap" parameterType="java.lang.String">
         select ua.user_id, ua.password, u.email
         from recipe.user_account ua
                  inner join recipe.user u

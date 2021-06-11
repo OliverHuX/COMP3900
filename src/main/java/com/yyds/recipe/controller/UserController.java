@@ -54,7 +54,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/editProfile", method = RequestMethod.POST)
-    public Map<String, Object> editProfile(@RequestBody User user){
+    public Map<String, Object> editProfile(@RequestBody User user) {
         Map<String, Object> rsp = ResponseUtil.getResponse();
         try {
             userService.editUser(user);
@@ -76,6 +76,13 @@ public class UserController {
             rsp.put("code", -1);
             return rsp;
         }
+        return rsp;
+    }
+
+    @RequestMapping(value = "/index", method = RequestMethod.GET)
+    public Map<String, Object> testIndex() {
+        Map<String, Object> rsp = ResponseUtil.getResponse();
+        rsp.put("text", "test message");
         return rsp;
     }
 }

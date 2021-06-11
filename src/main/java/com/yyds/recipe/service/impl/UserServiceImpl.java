@@ -30,6 +30,8 @@ public class UserServiceImpl implements UserService {
         // set userId
         user.setUserId(UUIDGenerator.createUserId());
 
+        user.setCreateTime(String.valueOf(System.currentTimeMillis()));
+
         // encode password
         user.setPassword(BcryptPasswordUtil.encodePassword(user.getPassword()));
 
@@ -60,7 +62,7 @@ public class UserServiceImpl implements UserService {
         if (!BcryptPasswordUtil.passwordMatch(loginUser.getPassword(), loginUserInfo.getPassword())) {
             throw new Exception();
         }
-        return loginUser;
+        return loginUserInfo;
 
     }
 

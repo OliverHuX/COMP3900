@@ -27,5 +27,7 @@ public class User {
     @NotNull
     @NotEmpty
     private String password;
-    private String birthDate;
+    private String birthdate;
+    private String createTime;
+    private String profilePhoto;
 }
