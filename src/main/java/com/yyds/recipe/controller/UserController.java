@@ -4,6 +4,8 @@ import com.yyds.recipe.model.LoginUser;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
 import com.yyds.recipe.utils.ResponseUtil;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -67,8 +69,18 @@ public class UserController {
     }
 
     @RequestMapping(value = "/editPassword", method = RequestMethod.POST)
-    public Map<String, Object> editPassword(@RequestParam(value = "oldPassword") String oldPassword, @RequestParam(value = "newPassword") String newPassword, @RequestParam(value = "userId") String userId) {
+//    public Map<String, Object> editPassword(@RequestBody Map<String, String> jsonBody) {
+    public Map<String, Object> editPassword(@RequestBody editPassword jsonBody) {
         Map<String, Object> rsp = ResponseUtil.getResponse();
+
+//        String oldPassword = jsonBody.get("oldPassword");
+//        String newPassword = jsonBody.get("newPassword");
+//        String userId = jsonBody.get("userId");
+
+        String oldPassword = jsonBody.getOldPassword();
+        String newPassword = jsonBody.getNewPassword();
+        String userId = jsonBody.getUserId();
+
         try {
             userService.editPassword(oldPassword, newPassword, userId);
         } catch (Exception e) {
@@ -86,3 +98,4 @@ public class UserController {
         return rsp;
     }
 }
+
