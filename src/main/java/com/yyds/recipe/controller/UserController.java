@@ -34,7 +34,7 @@ public class UserController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public Map<String, Object> login(@RequestBody LoginUser loginUser) {
         Map<String, Object> rsp = ResponseUtil.getResponse();
-        User user = null;
+        LoginUser user = null;
         try {
             user = userService.loginUser(loginUser);
         } catch (Exception e) {

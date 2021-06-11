@@ -14,5 +14,6 @@ public class LoginUser {
     private String email;
     @NotNull
     private String password;
+    private String userId;
     private String captcha;
 }

@@ -40,20 +40,27 @@ public class UserServiceImpl implements UserService {
             throw e;
         }
 
+        try {
+            userMapper.saveUserAccount(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+
     }
 
     @SneakyThrows
     @Override
-    public User loginUser(LoginUser loginUser) {
+    public LoginUser loginUser(LoginUser loginUser) {
 
         // match password
-        User user = userMapper.getUser(loginUser.getEmail());
-
+        // User user = userMapper.getUser(loginUser.getEmail());
+        LoginUser loginUserInfo = userMapper.getLoginUserInfo(loginUser.getEmail());
         // password
-        if (!BcryptPasswordUtil.passwordMatch(loginUser.getPassword(), user.getPassword())) {
+        if (!BcryptPasswordUtil.passwordMatch(loginUser.getPassword(), loginUserInfo.getPassword())) {
             throw new Exception();
         }
-        return user;
+        return loginUser;
 
     }
 

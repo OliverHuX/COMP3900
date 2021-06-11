@@ -42,4 +42,11 @@
         </where>
     </update>
 
+    <select id="getLoginUserInfo" resultType="com.yyds.recipe.model.LoginUser" parameterType="java.lang.String">
+        select ua.user_id, ua.password, u.email
+        from recipe.user_account ua
+                 inner join recipe.user u
+        on ua.user_id = u.user_id where u.email = #{email}
+    </select>
+
 </mapper>

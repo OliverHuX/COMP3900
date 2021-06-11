@@ -13,10 +13,10 @@ public interface UserMapper {
 
     void saveUserAccount(User user);
 
-    User getUser(String email);
-
     void editUser(User user);
 
     @Select("select * from user where userId = #{userId}")
     User getUserbyId(@Param(value = "userId") String userId);
+
+    LoginUser getLoginUserInfo(String email);
 }
