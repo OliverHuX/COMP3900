@@ -60,7 +60,24 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = {RuntimeException.class, Error.class, SQLException.class})
     public void editUser(User user){
-        userMapper.editUser(user);
+
+        // if user not set nick name, let nickname = firstName + " " + lastName
+        if (user.getNickName() == null) {
+            user.setNickName(user.getFirstName() + " " + user.getLastName());
+        }
+
+        // if user not set gender, let gender = other
+        if (user.getGender() < 0 || user.getGender() > 2) {
+            user.setGender(2);
+        }
+
+        try {
+            userMapper.editUser(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+
     }
 
 
