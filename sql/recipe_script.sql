@@ -18,6 +18,28 @@ create table picture
     file_path  varchar(255) not null
 );
 
+create table user
+(
+    user_id       varchar(255) not null,
+    email         varchar(255) not null,
+    first_name    varchar(255) not null,
+    last_name     varchar(255) not null,
+    nick_name     varchar(255) not null,
+    birthdate     varchar(255) not null,
+    gender        int          not null,
+    contact       varchar(255) null,
+    address       varchar(255) null,
+    create_time   varchar(255) not null,
+    profile_photo varchar(255) null,
+    constraint user_email_uindex
+        unique (email),
+    constraint user_user_id_uindex
+        unique (user_id)
+);
+
+alter table user
+    add primary key (user_id);
+
 create table user_account
 (
     user_id  varchar(255) not null,
@@ -42,32 +64,6 @@ create table user_admin
     constraint admin_user_id_uindex_2
         unique (user_id)
 );
-
-create table user
-(
-    user_id       varchar(255) not null,
-    email         varchar(255) not null,
-    first_name    varchar(255) not null,
-    last_name     varchar(255) not null,
-    nick_name     varchar(255) not null,
-    birthdate     varchar(255) not null,
-    gender        int          not null,
-    contact       varchar(255) null,
-    address       varchar(255) null,
-    create_time   varchar(255) not null,
-    profile_photo varchar(255) null,
-    constraint user_email_uindex
-        unique (email),
-    constraint user_user_id_uindex
-        unique (user_id),
-    constraint user_user_account_user_id_fk
-        foreign key (user_id) references user_account (user_id),
-    constraint user_user_admin_user_id_fk
-        foreign key (user_id) references user_admin (user_id)
-);
-
-alter table user
-    add primary key (user_id);
 
 create table user_recipe
 (
