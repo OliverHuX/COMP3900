@@ -37,26 +37,26 @@
         update recipe.user
         <set>
             <if test="firstName != null">
-                firstName=#{firstName},
+                first_name=#{firstName},
             </if>
             <if test="lastName != null">
-                lastName=#{lastName},
+                last_name=#{lastName},
             </if>
             <if test="nickName != null">
-                nickName=#{nickName},
+                nick_name=#{nickName},
             </if>
             <if test="birthdate != null">
-                birthDate=#{birthDate},
+                birthdate=#{birthdate},
             </if>
             <if test="gender">
                 gender=#{gender},
             </if>
             <if test="profilePhoto != null">
-                profilePhoto=#{profilePhoto}
+                profile_photo=#{profilePhoto}
             </if>
         </set>
         <where>
-            userId=#{userId}
+            user_id=#{userId}
         </where>
     </update>
 

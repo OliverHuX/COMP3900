@@ -68,18 +68,13 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @SneakyThrows
     @Override
     @Transactional(rollbackFor = {RuntimeException.class, Error.class, SQLException.class})
     public void editUser(User user){
 
-        // if user not set nick name, let nickname = firstName + " " + lastName
-        if (user.getNickName() == null) {
-            user.setNickName(user.getFirstName() + " " + user.getLastName());
-        }
-
-        // if user not set gender, let gender = other
-        if (user.getGender() < 0 || user.getGender() > 2) {
-            user.setGender(2);
+        if (user.getUserId() == null) {
+            throw new Exception("less userId");
         }
 
         try {
