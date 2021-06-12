@@ -19,7 +19,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
-    private static final String PASSWORD_REGEX_PATTERN = "^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]+$";
+    private static final String PASSWORD_REGEX_PATTERN = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,30}$";
     private static final int PASSWORD_LENGTH = 6;
 
     @Transactional(rollbackFor = {RuntimeException.class, Error.class, SQLException.class})
@@ -96,13 +96,13 @@ public class UserServiceImpl implements UserService {
     public void editPassword(String oldPassword, String newPassword, String userId) {
 
         if (newPassword.length() < PASSWORD_LENGTH || ! newPassword.matches(PASSWORD_REGEX_PATTERN)) {
-            throw new Exception();
+            throw new Exception("password's length is less than 6 or password must have digit and word");
         }
 
         String userPassword = userMapper.getPasswordByUserid(userId);
 
         if (!BcryptPasswordUtil.passwordMatch(oldPassword, userPassword)) {
-            throw new Exception();
+            throw new Exception("old password does not match");
         }
 
         String encodeNewPassword = BcryptPasswordUtil.encodePassword(newPassword);
