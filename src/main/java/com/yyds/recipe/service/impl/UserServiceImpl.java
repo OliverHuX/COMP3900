@@ -22,9 +22,16 @@ public class UserServiceImpl implements UserService {
     private static final String PASSWORD_REGEX_PATTERN = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,30}$";
     private static final int PASSWORD_LENGTH = 6;
 
+    @SneakyThrows
     @Transactional(rollbackFor = {RuntimeException.class, Error.class, SQLException.class})
     @Override
     public void saveUser(User user) {
+
+        // TODO: should check why annotation does not work
+        if (user.getFirstName() == null || user.getLastName() == null || user.getGender() == null
+                || user.getEmail() == null || user.getPassword() == null || user.getBirthdate() == null) {
+            throw new Exception("parameter is wrong");
+        }
 
         // if user not set nick name, let nickname = firstName + " " + lastName
         if (user.getNickName() == null) {
@@ -71,7 +78,7 @@ public class UserServiceImpl implements UserService {
     @SneakyThrows
     @Override
     @Transactional(rollbackFor = {RuntimeException.class, Error.class, SQLException.class})
-    public void editUser(User user){
+    public void editUser(User user) {
 
         if (user.getUserId() == null) {
             throw new Exception("less userId");
@@ -90,7 +97,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void editPassword(String oldPassword, String newPassword, String userId) {
 
-        if (newPassword.length() < PASSWORD_LENGTH || ! newPassword.matches(PASSWORD_REGEX_PATTERN)) {
+        if (newPassword.length() < PASSWORD_LENGTH || !newPassword.matches(PASSWORD_REGEX_PATTERN)) {
             throw new Exception("password's length is less than 6 or password must have digit and word");
         }
 

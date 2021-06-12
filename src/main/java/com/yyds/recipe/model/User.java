@@ -18,7 +18,7 @@ public class User {
     private String lastName;
     @NotNull
     @Size(min = 0, max = 2)
-    private int gender;
+    private Integer gender;
     @NotNull
     @Email
     @NotEmpty
