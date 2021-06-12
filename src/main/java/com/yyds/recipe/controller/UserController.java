@@ -1,16 +1,19 @@
 package com.yyds.recipe.controller;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yyds.recipe.model.LoginUser;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
 import com.yyds.recipe.utils.ResponseUtil;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.Map;
 
 @RestController
@@ -68,18 +71,24 @@ public class UserController {
         return rsp;
     }
 
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    public static class editPasswordReq {
+        @NotNull
+        private String oldPassword;
+        @NotNull
+        private String newPassword;
+        @NotNull
+        private String userId;
+    }
     @RequestMapping(value = "/editPassword", method = RequestMethod.POST)
-//    public Map<String, Object> editPassword(@RequestBody Map<String, String> jsonBody) {
-    public Map<String, Object> editPassword(@RequestBody editPassword jsonBody) {
+    public Map<String, Object> editPassword(@RequestBody editPasswordReq req) {
         Map<String, Object> rsp = ResponseUtil.getResponse();
 
-//        String oldPassword = jsonBody.get("oldPassword");
-//        String newPassword = jsonBody.get("newPassword");
-//        String userId = jsonBody.get("userId");
-
-        String oldPassword = jsonBody.getOldPassword();
-        String newPassword = jsonBody.getNewPassword();
-        String userId = jsonBody.getUserId();
+        String oldPassword = req.getOldPassword();
+        String newPassword = req.getNewPassword();
+        String userId = req.getUserId();
 
         try {
             userService.editPassword(oldPassword, newPassword, userId);

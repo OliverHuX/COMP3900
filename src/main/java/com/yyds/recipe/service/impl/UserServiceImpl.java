@@ -19,6 +19,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
+    private static final String PASSWORD_REGEX_PATTERN = "^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]+$";
+    private static final int PASSWORD_LENGTH = 6;
+
     @Transactional(rollbackFor = {RuntimeException.class, Error.class, SQLException.class})
     @Override
     public void saveUser(User user) {
@@ -56,7 +59,6 @@ public class UserServiceImpl implements UserService {
     public LoginUser loginUser(LoginUser loginUser) {
 
         // match password
-        // User user = userMapper.getUser(loginUser.getEmail());
         LoginUser loginUserInfo = userMapper.getLoginUserInfo(loginUser.getEmail());
         // password
         if (!BcryptPasswordUtil.passwordMatch(loginUser.getPassword(), loginUserInfo.getPassword())) {
@@ -89,59 +91,24 @@ public class UserServiceImpl implements UserService {
 
     }
 
-
-    // @Override
-    // public boolean validEmail(String email) {
-    //     Pattern regex = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
-    //     Matcher matcher = regex.matcher(email);
-    //     return matcher.find();
-    // }
-
-    // @Override
-    // public int register(RegisterUser registerUser) {
-    //     if (!validEmail(registerUser.getEmail())) {
-    //         // do something;
-    //         //throw new InvalidEmailException("Invalid Email Address");
-    //         return 0;
-    //     }
-    //
-    //     // requirements for firstName, lastName
-    //     // encode password;
-    //     //user.setPassword("encode password");
-    //
-    //     if (registerUser.getNickName() == null) {
-    //         registerUser.setNickName(registerUser.getFirstName() + " " + registerUser.getLastName());
-    //     }
-    //
-    //     //String uniqueId = UUID.randomUUID().toString();
-    //
-    //     registerUser.setUserId(idCounter++);
-    //
-    //     // save the user to the database
-    //     saveUser(registerUser);
-    //
-    //     return idCounter;
-    //
-    // }
-
     @SneakyThrows
     @Override
     public void editPassword(String oldPassword, String newPassword, String userId) {
 
-        User user = userMapper.getUserbyId(userId);
-
-        if (newPassword.length() < 6 || ! newPassword.matches("^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]+$")) {
+        if (newPassword.length() < PASSWORD_LENGTH || ! newPassword.matches(PASSWORD_REGEX_PATTERN)) {
             throw new Exception();
         }
 
-        if (!BcryptPasswordUtil.passwordMatch(oldPassword, user.getPassword())) {
+        String userPassword = userMapper.getPasswordByUserid(userId);
+
+        if (!BcryptPasswordUtil.passwordMatch(oldPassword, userPassword)) {
             throw new Exception();
         }
 
-        user.setPassword(BcryptPasswordUtil.encodePassword(newPassword));
+        String encodeNewPassword = BcryptPasswordUtil.encodePassword(newPassword);
 
         try {
-            userMapper.saveUser(user);
+            userMapper.changePassword(userId, encodeNewPassword);
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
