@@ -1,0 +1,3 @@
+Week1: We creat a team and have a talk with each other, decide which farmerwork are we gona use, and also  generally assign tasks.
+
+Week2: I was wrok on react and coding about 5 conponments, like navigation, search, footer and so on, but it is the innitial version. 
