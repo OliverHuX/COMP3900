@@ -5,7 +5,7 @@ import com.yyds.recipe.model.User;
 
 public interface UserService {
 
-    void saveUser(User user);
+    String saveUser(User user);
 
     LoginUser loginUser(LoginUser loginUser);
 
