@@ -1,12 +1,14 @@
 import React, { Component } from 'react'
-
+import { Link,Route } from 'react-router-dom'
+import Login from '../../pages/login'
 
 export default class Navigation extends Component {
     render() {
         return (
             <nav className="navbar navbar-light navbar-expand-md navigation-clean-search" id="navigation "style={{backgroundImage: 'url('+"https://cdn.bootstrapstudio.io/placeholders/1400x800.png"+')'}} > 
                 <div className="container">
-                    <a className="navbar-brand" href="#">YYDS&nbsp;<strong>Recipes</strong><br /></a>
+                    {/* <a className="navbar-brand" href="#">YYDS&nbsp;<strong>Recipes</strong><br /></a> */}
+                    <Link className = "navbar-brand" to = "/">YYDS&nbsp;<strong>Recipes</strong><br /></Link>
                     <button data-bs-toggle="collapse" className="navbar-toggler" data-bs-target="#navcol-1"><span className="visually-hidden">Toggle navigation</span><span className="navbar-toggler-icon"></span></button> 
                     <div className="collapse navbar-collapse" id="navcol-1"> 
                         <ul className="navbar-nav"> 
@@ -20,7 +22,14 @@ export default class Navigation extends Component {
                             </div> 
                         </form>
                         <a href="#" style={{height: '24px', fontSize: '14px',marginTop: '16px',marginBottom: '0px'}} >join now</a>    
-                        <a className="btn btn-light action-button" role="button" href="login.html">Login</a> 
+                        {/* <a className="btn btn-light action-button" role="button" href="login.html">Login</a>  */}
+                        {/*  编写路由器 */}
+                        <Link className = "btn btn-light action-button" to ="/login">Login</Link>
+                        {/*  注册路由器 */}
+                        
+
+                        
+
                     </div> 
                 </div> 
             </nav>

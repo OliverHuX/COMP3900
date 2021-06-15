@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
-import Navigation from './components/navigation'
-import Home_search from './components/home_search'
-import Popular_bar from './components/popular_bar'
-import Footer from './components/footer'
+import {Switch, Route} from "react-router-dom"
 
+import Navigation from './components/navigation'
+import Home from './pages/Home'
+import Footer from './components/footer'
+import Login from './pages/login'
 
 export default class App extends Component {
     render() {
@@ -11,9 +12,17 @@ export default class App extends Component {
         <div>
             {/*compinent in home pages*/}
             <Navigation/>   
-            <Home_search/>
-            <Popular_bar/>
+
+            <Switch>
+            <Route path = "/"  exact component = {Home}/> 
+            
+            <Route path = "/login"  component = {Login}/>
+
+            </Switch>
+        
+             
             <Footer/>
+           
         </div>                       
         )
     }
