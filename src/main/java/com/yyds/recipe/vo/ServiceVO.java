@@ -10,7 +10,7 @@ public class ServiceVO<T> implements Serializable {
 
     private Integer code;
     private String message;
-    private T info;
+    private T data;
 
     public ServiceVO(Integer code, String message) {
         this.code = code;
@@ -20,6 +20,6 @@ public class ServiceVO<T> implements Serializable {
     public ServiceVO(Integer code, String message, T info) {
         this.code = code;
         this.message = message;
-        this.info = info;
+        this.data = info;
     }
 }
