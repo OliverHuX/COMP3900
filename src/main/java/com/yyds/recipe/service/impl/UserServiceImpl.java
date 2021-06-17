@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
     @SneakyThrows
     @Transactional(rollbackFor = {RuntimeException.class, Error.class, SQLException.class})
     @Override
-    public void saveUser(User user) {
+    public String saveUser(User user) {
 
         // TODO: should check why annotation does not work
         if (user.getFirstName() == null || user.getLastName() == null || user.getGender() == null
@@ -58,6 +58,8 @@ public class UserServiceImpl implements UserService {
             e.printStackTrace();
             throw e;
         }
+
+        return user.getUserId();
 
     }
 
