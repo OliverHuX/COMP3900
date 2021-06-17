@@ -12,13 +12,17 @@ import Login from './pages/Login';
 export default function App () {
   return <>
     <Router>
-      <div>
+      <div className='container'>
         <Switch>
           <Route path="/" exact>
-            <Login />
+            <div className='back-Img'>
+              <Login />
+            </div>
           </Route>
           <Route path="/register" exact>
-            <Register />
+            <div className='back-Img'>
+              <Register />
+            </div>
           </Route>
         </Switch>
       </div>

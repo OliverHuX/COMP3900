@@ -18,6 +18,17 @@ const myStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  size: {
+    height: '100%',
+    width: '100%',
+    backgroundImage: `url(${'https://i.pinimg.com/originals/d3/6d/46/d36d462db827833805497d9ea78a1343.jpg'})`,
+    backgroundPosition: 'center',
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+  },
+  backg: {
+    background: 'rgba(255, 255, 255, 0.8)',
+  }
 }));
 
 export { myStyles };

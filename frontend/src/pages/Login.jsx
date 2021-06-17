@@ -28,11 +28,13 @@ export default function SignIn () {
   const [error, setError] = React.useState(false);
   // const history = useHistory();
   return (
+    // <div className={classes.size}>
     <React.Fragment>
       <CssBaseline />
       <StyledHeader/>
       <main>
-        <Container component="main" maxWidth="xs">
+        <Container component="main" maxWidth="xs" className={classes.backg}>
+          {/* <img src='https://coolwallpapers.me/th700/3056229-cooking_delicious-food_dining_eat_food_fusion-cuisine_morning-bread_platter_restaurant.jpg'/> */}
           <div className={classes.paper}>
             <Avatar className={classes.avatar}>
               <LockOutlinedIcon />
@@ -96,5 +98,6 @@ export default function SignIn () {
         </Container>
       </main>
     </React.Fragment>
+    // </div>
   );
 }
