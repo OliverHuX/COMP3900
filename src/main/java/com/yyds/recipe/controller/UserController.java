@@ -5,6 +5,8 @@ import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
 import com.yyds.recipe.utils.ResponseUtil;
 import com.yyds.recipe.utils.UserSession;
+import com.yyds.recipe.vo.ServiceVO;
+import com.yyds.recipe.vo.SuccessCode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -131,10 +133,11 @@ public class UserController {
 
     // TODO: just for test! Delete me!
     @RequestMapping(value = "/index", method = RequestMethod.GET)
-    public Map<String, Object> testIndex() {
-        Map<String, Object> rsp = ResponseUtil.getResponse();
-        rsp.put("text", "test message");
-        return rsp;
+    public ServiceVO<?> testIndex() {
+        ServiceVO<Object> serviceVO = new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
+        String userId = "5f08f1d2-8c35-417b-9016-17c413be6a4f";
+        serviceVO.setInfo(userId);
+        return serviceVO;
     }
 }
 
