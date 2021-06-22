@@ -1,7 +1,8 @@
 Week 1
-
 Group formed. Decided with the team the project we will be doing and dicussed with the team the software tools and libraries we can use for the project.
 
 Week 2
-
 Had a meeting with the team to discuss the details about our project proposal. I wrote a draft backend code for the user registration. Additionlly, I implemented a method for users to change their password.
+
+Week 3
+Had a team meeting and distrubuted workload for the proposal. I wrote some of the the acceptance criteria for the user stories in the proposal.
