@@ -136,7 +136,7 @@ public class UserController {
     public ServiceVO<?> testIndex() {
         ServiceVO<Object> serviceVO = new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
         String userId = "5f08f1d2-8c35-417b-9016-17c413be6a4f";
-        serviceVO.setInfo(userId);
+        serviceVO.setData(userId);
         return serviceVO;
     }
 }
