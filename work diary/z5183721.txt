@@ -5,3 +5,5 @@ Meet with the team to discuss details about our project proposal.
 design the database E-R diagram.
 complete edit profile controller.
 complete edit user service.
+week4
+A team meeting was held and proposal's workload was allocated. I completed part of the user stories and novel functionalit in the proposal.
