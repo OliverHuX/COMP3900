@@ -63,46 +63,47 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    @SneakyThrows
-    @Transactional(rollbackFor = {RuntimeException.class, Error.class, SQLException.class})
-    @Override
-    public String saveUser(User user) {
-
-        // TODO: should check why annotation does not work
-        if (user.getFirstName() == null || user.getLastName() == null || user.getGender() == null
-                || user.getEmail() == null || user.getPassword() == null || user.getBirthdate() == null) {
-            throw new Exception("parameter is wrong");
-        }
-
-        // if user not set nick name, let nickname = firstName + " " + lastName
-        if (user.getNickName() == null) {
-            user.setNickName(user.getFirstName() + " " + user.getLastName());
-        }
-        // set userId
-        user.setUserId(UUIDGenerator.createUserId());
-
-        user.setCreateTime(String.valueOf(System.currentTimeMillis()));
-
-        // encode password
-        user.setPassword(BcryptPasswordUtil.encodePassword(user.getPassword()));
-
-        try {
-            userMapper.saveUser(user);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-
-        try {
-            userMapper.saveUserAccount(user);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-
-        return user.getUserId();
-
-    }
+    //
+    // @SneakyThrows
+    // @Transactional(rollbackFor = {RuntimeException.class, Error.class, SQLException.class})
+    // @Override
+    // public String saveUser(User user) {
+    //
+    //     // TODO: should check why annotation does not work
+    //     if (user.getFirstName() == null || user.getLastName() == null || user.getGender() == null
+    //             || user.getEmail() == null || user.getPassword() == null || user.getBirthdate() == null) {
+    //         throw new Exception("parameter is wrong");
+    //     }
+    //
+    //     // if user not set nick name, let nickname = firstName + " " + lastName
+    //     if (user.getNickName() == null) {
+    //         user.setNickName(user.getFirstName() + " " + user.getLastName());
+    //     }
+    //     // set userId
+    //     user.setUserId(UUIDGenerator.createUserId());
+    //
+    //     user.setCreateTime(String.valueOf(System.currentTimeMillis()));
+    //
+    //     // encode password
+    //     user.setPassword(BcryptPasswordUtil.encodePassword(user.getPassword()));
+    //
+    //     try {
+    //         userMapper.saveUser(user);
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //         throw e;
+    //     }
+    //
+    //     try {
+    //         userMapper.saveUserAccount(user);
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //         throw e;
+    //     }
+    //
+    //     return user.getUserId();
+    //
+    // }
 
     @SneakyThrows
     @Override
