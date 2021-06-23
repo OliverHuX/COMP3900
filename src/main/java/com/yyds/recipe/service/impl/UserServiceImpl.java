@@ -6,11 +6,17 @@ import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
 import com.yyds.recipe.utils.BcryptPasswordUtil;
 import com.yyds.recipe.utils.UUIDGenerator;
+import com.yyds.recipe.vo.ErrorCode;
+import com.yyds.recipe.vo.ServiceVO;
+import com.yyds.recipe.vo.SuccessCode;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.sql.SQLException;
 
 @Service
@@ -21,6 +27,41 @@ public class UserServiceImpl implements UserService {
 
     private static final String PASSWORD_REGEX_PATTERN = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,30}$";
     private static final int PASSWORD_LENGTH = 6;
+
+    @Transactional(rollbackFor = {RuntimeException.class, Error.class, SQLException.class})
+    @Override
+    public ServiceVO<?> register(User user, HttpSession httpSession, HttpServletRequest request, HttpServletResponse response) {
+        // TODO: should check why annotation does not work
+        if (user.getFirstName() == null || user.getLastName() == null || user.getGender() == null
+                || user.getEmail() == null || user.getPassword() == null || user.getBirthdate() == null) {
+            return new ServiceVO<>(ErrorCode.BUSINESS_PARAMETER_ERROR, ErrorCode.BUSINESS_PARAMETER_ERROR_MESSAGE);
+        }
+
+        if (user.getNickName() == null) {
+            user.setNickName(user.getFirstName() + " " + user.getLastName());
+        }
+
+        String userId = UUIDGenerator.createUserId();
+        user.setUserId(userId);
+        user.setCreateTime(String.valueOf(System.currentTimeMillis()));
+
+        user.setPassword(BcryptPasswordUtil.encodePassword(user.getPassword()));
+
+        try {
+            userMapper.saveUser(user);
+        } catch (Exception e) {
+            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+        }
+
+        try {
+            userMapper.saveUserAccount(user);
+        } catch (Exception e) {
+            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+        }
+
+        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, userId);
+
+    }
 
     @SneakyThrows
     @Transactional(rollbackFor = {RuntimeException.class, Error.class, SQLException.class})

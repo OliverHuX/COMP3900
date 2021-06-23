@@ -29,27 +29,8 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public Map<String, Object> register(@RequestBody User userReq, HttpSession httpSession, HttpServletRequest request, HttpServletResponse response) {
-        Map<String, Object> rsp = ResponseUtil.getResponse();
-        try {
-            String userId = userService.saveUser(userReq);
-
-            // set session
-            UserSession userSession = new UserSession(userId);
-            httpSession.setAttribute(UserSession.ATTRIBUTE_ID, userSession);
-
-            // set cookie
-            Cookie userCookie = new Cookie("user-login-cookie", userId);
-            // set cookie expiry time to 2 hours
-            userCookie.setMaxAge(2 * 60 * 60);
-            userCookie.setPath(request.getContextPath());
-            response.addCookie(userCookie);
-        } catch (Exception e) {
-            rsp.put("error message", e.toString());
-            rsp.put("code", -1);
-            return rsp;
-        }
-        return rsp;
+    public ServiceVO<?> register(@RequestBody User userReq, HttpSession httpSession, HttpServletRequest request, HttpServletResponse response) {
+        return userService.register(userReq, httpSession, request, response);
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
