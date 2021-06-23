@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     private static final String PASSWORD_REGEX_PATTERN = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,30}$";
     private static final int PASSWORD_LENGTH = 6;
 
-    @Transactional(rollbackFor = {RuntimeException.class, Error.class, SQLException.class})
+    @Transactional
     @Override
     public ServiceVO<?> register(User user, HttpSession httpSession, HttpServletRequest request, HttpServletResponse response) {
         // TODO: should check why annotation does not work
