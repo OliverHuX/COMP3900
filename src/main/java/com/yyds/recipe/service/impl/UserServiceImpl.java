@@ -9,6 +9,9 @@ import com.yyds.recipe.utils.UUIDGenerator;
 import com.yyds.recipe.vo.ErrorCode;
 import com.yyds.recipe.vo.ServiceVO;
 import com.yyds.recipe.vo.SuccessCode;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +30,10 @@ public class UserServiceImpl implements UserService {
 
     private static final String PASSWORD_REGEX_PATTERN = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,30}$";
     private static final int PASSWORD_LENGTH = 6;
+    private static final String EMAIL_REGEX_PATTEN = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
+    private static final String NAME_REGEX_PATTEN = "^[A-Za-z]+$";
+    private static final int NAME_LENGTH = 15;
+    private static final String BIRTHDAY_REGEX_PATTEN = "^\\d{4}-\\d{1,2}-\\d{1,2}";
 
     @Transactional
     @Override
@@ -140,13 +147,19 @@ public class UserServiceImpl implements UserService {
 
     @SneakyThrows
     @Override
-    public void editPassword(String oldPassword, String newPassword, String userId) {
+    public void editPassword(String newPassword, String userId) {
 
         if (newPassword.length() < PASSWORD_LENGTH || !newPassword.matches(PASSWORD_REGEX_PATTERN)) {
             throw new Exception("password's length is less than 6 or password must have digit and word");
         }
 
-        String userPassword = userMapper.getPasswordByUserid(userId);
+        String oldPassword = userMapper.getPasswordByUserid(userId);
+
+        if (oldPassword.equals(newPassword)) {
+            throw new Exception("the password should not be same as before");
+        }
+
+        userMapper.changePassword(userId, newPassword);
 
         // if (!BcryptPasswordUtil.passwordMatch(oldPassword, userPassword)) {
         //     throw new Exception("old password does not match");
