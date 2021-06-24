@@ -136,6 +136,11 @@ public class UserServiceImpl implements UserService {
             throw new Exception("less userId");
         }
 
+        EditUserException eue = new EditUserException();
+        if (!eue.isUserValid(user)) {
+            throw new Exception(eue.getExceptionMsg());
+        }
+
         try {
             userMapper.editUser(user);
         } catch (Exception e) {
@@ -143,6 +148,29 @@ public class UserServiceImpl implements UserService {
             throw e;
         }
 
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class EditUserException {
+        private String exceptionMsg;
+
+        public boolean isUserValid(User user) {
+            if (!isNameValid(user.getFirstName())
+                    || !isNameValid(user.getLastName())
+                    || user.getGender() < 0 || user.getGender() > 2
+                    || !user.getEmail().matches(EMAIL_REGEX_PATTEN)
+                    || !isNameValid(user.getNickName())
+                    || !user.getPassword().matches(PASSWORD_REGEX_PATTERN)
+                    || !user.getBirthdate().matches(BIRTHDAY_REGEX_PATTEN))
+                return false;
+            return true;
+        }
+
+        private boolean isNameValid(String name) {
+            return name.matches(NAME_REGEX_PATTEN) && name.length() > NAME_LENGTH;
+        }
     }
 
     @SneakyThrows
