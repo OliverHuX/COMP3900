@@ -45,7 +45,8 @@ public class UserServiceImpl implements UserService {
         user.setUserId(userId);
         user.setCreateTime(String.valueOf(System.currentTimeMillis()));
 
-        user.setPassword(BcryptPasswordUtil.encodePassword(user.getPassword()));
+        // encode password
+        // user.setPassword(BcryptPasswordUtil.encodePassword(user.getPassword()));
 
         try {
             userMapper.saveUser(user);
@@ -112,9 +113,9 @@ public class UserServiceImpl implements UserService {
         // match password
         LoginUser loginUserInfo = userMapper.getLoginUserInfo(loginUser.getEmail());
         // password
-        if (!BcryptPasswordUtil.passwordMatch(loginUser.getPassword(), loginUserInfo.getPassword())) {
-            throw new Exception();
-        }
+        // if (!BcryptPasswordUtil.passwordMatch(loginUser.getPassword(), loginUserInfo.getPassword())) {
+        //     throw new Exception();
+        // }
         return loginUserInfo;
 
     }
@@ -147,18 +148,18 @@ public class UserServiceImpl implements UserService {
 
         String userPassword = userMapper.getPasswordByUserid(userId);
 
-        if (!BcryptPasswordUtil.passwordMatch(oldPassword, userPassword)) {
-            throw new Exception("old password does not match");
-        }
-
-        String encodeNewPassword = BcryptPasswordUtil.encodePassword(newPassword);
-
-        try {
-            userMapper.changePassword(userId, encodeNewPassword);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
+        // if (!BcryptPasswordUtil.passwordMatch(oldPassword, userPassword)) {
+        //     throw new Exception("old password does not match");
+        // }
+        //
+        // String encodeNewPassword = BcryptPasswordUtil.encodePassword(newPassword);
+        //
+        // try {
+        //     userMapper.changePassword(userId, encodeNewPassword);
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        //     throw e;
+        // }
     }
 
 }
