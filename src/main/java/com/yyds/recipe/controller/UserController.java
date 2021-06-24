@@ -98,12 +98,11 @@ public class UserController {
     public Map<String, Object> editPassword(@RequestBody editPasswordReq req) {
         Map<String, Object> rsp = ResponseUtil.getResponse();
 
-        String oldPassword = req.getOldPassword();
         String newPassword = req.getNewPassword();
         String userId = req.getUserId();
 
         try {
-            userService.editPassword(oldPassword, newPassword, userId);
+            userService.editPassword(newPassword, userId);
         } catch (Exception e) {
             rsp.put("error message", e.toString());
             rsp.put("code", -1);
