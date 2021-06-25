@@ -33,6 +33,10 @@ public class UserServiceImpl implements UserService {
 
     private static final String PASSWORD_REGEX_PATTERN = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,30}$";
     private static final int PASSWORD_LENGTH = 6;
+    private static final String EMAIL_REGEX_PATTEN = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
+    private static final String NAME_REGEX_PATTEN = "^[A-Za-z]+$";
+    private static final int NAME_LENGTH = 15;
+    private static final String BIRTHDAY_REGEX_PATTEN = "^\\d{4}-\\d{1,2}-\\d{1,2}";
 
     @Transactional
     @Override
@@ -113,7 +117,15 @@ public class UserServiceImpl implements UserService {
 
     @SneakyThrows
     @Override
-    public LoginUser loginUser(LoginUser loginUser) {
+    public ServiceVO<?> loginUser(LoginUser loginUser, HttpSession httpSession, HttpServletRequest request, HttpServletResponse response) {
+
+//        // match password
+//        LoginUser loginUserInfo = userMapper.getLoginUserInfo(loginUser.getEmail());
+//        // password
+//        // if (!BcryptPasswordUtil.passwordMatch(loginUser.getPassword(), loginUserInfo.getPassword())) {
+//        //     throw new Exception();
+//        // }
+//        return loginUserInfo;
 
         Subject subject = SecurityUtils.getSubject();
 
@@ -148,6 +160,11 @@ public class UserServiceImpl implements UserService {
             throw new Exception("less userId");
         }
 
+        EditUserException eue = new EditUserException();
+        if (!eue.isUserValid(user)) {
+            throw new Exception(eue.getExceptionMsg());
+        }
+
         try {
             userMapper.editUser(user);
         } catch (Exception e) {
@@ -157,21 +174,49 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class EditUserException {
+        private String exceptionMsg;
+
+        public boolean isUserValid(User user) {
+            if (!isNameValid(user.getFirstName())
+                    || !isNameValid(user.getLastName())
+                    || user.getGender() < 0 || user.getGender() > 2
+                    || !user.getEmail().matches(EMAIL_REGEX_PATTEN)
+                    || !isNameValid(user.getNickName())
+                    || !user.getPassword().matches(PASSWORD_REGEX_PATTERN)
+                    || !user.getBirthdate().matches(BIRTHDAY_REGEX_PATTEN))
+                return false;
+            return true;
+        }
+
+        private boolean isNameValid(String name) {
+            return name.matches(NAME_REGEX_PATTEN) && name.length() > NAME_LENGTH;
+        }
+    }
+
     @SneakyThrows
     @Override
-    public void editPassword(String oldPassword, String newPassword, String userId) {
+    public void editPassword(String newPassword, String userId) {
 
         if (newPassword.length() < PASSWORD_LENGTH || !newPassword.matches(PASSWORD_REGEX_PATTERN)) {
             throw new Exception("password's length is less than 6 or password must have digit and word");
         }
 
-        String userPassword = userMapper.getPasswordByUserid(userId);
+        String oldPassword = userMapper.getPasswordByUserid(userId);
 
         // if (!BcryptPasswordUtil.passwordMatch(oldPassword, userPassword)) {
         //     throw new Exception("old password does not match");
         // }
         //
         // String encodeNewPassword = BcryptPasswordUtil.encodePassword(newPassword);
+        if (oldPassword.equals(newPassword)) {
+            throw new Exception("the password should not be same as before");
+        }
+
+        userMapper.changePassword(userId, newPassword);
 
         try {
             // userMapper.changePassword(userId, encodeNewPassword);
@@ -179,6 +224,18 @@ public class UserServiceImpl implements UserService {
             e.printStackTrace();
             throw e;
         }
+        // if (!BcryptPasswordUtil.passwordMatch(oldPassword, userPassword)) {
+        //     throw new Exception("old password does not match");
+        // }
+        //
+        // String encodeNewPassword = BcryptPasswordUtil.encodePassword(newPassword);
+        //
+        // try {
+        //     userMapper.changePassword(userId, encodeNewPassword);
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        //     throw e;
+        // }
     }
 
     @Override
