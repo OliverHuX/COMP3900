@@ -4,7 +4,7 @@ import com.yyds.recipe.mapper.UserMapper;
 import com.yyds.recipe.model.LoginUser;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
-import com.yyds.recipe.utils.BcryptPasswordUtil;
+import com.yyds.recipe.utils.SaltGenerator;
 import com.yyds.recipe.utils.UUIDGenerator;
 import com.yyds.recipe.vo.ErrorCode;
 import com.yyds.recipe.vo.ServiceVO;
@@ -13,17 +13,22 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authc.pam.UnsupportedTokenException;
+import org.apache.shiro.crypto.hash.Md5Hash;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.sql.SQLException;
-
-import com.yyds.recipe.utils.UserSession;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -41,10 +46,26 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public ServiceVO<?> register(User user, HttpSession httpSession, HttpServletRequest request, HttpServletResponse response) {
+
+        // check email if exist
+        if (userMapper.getUserByEmail(user.getEmail()) != null) {
+            return new ServiceVO<>(ErrorCode.EMAIL_ALREADY_EXISTS_ERROR, ErrorCode.EMAIL_ALREADY_EXISTS_ERROR_MESSAGE);
+        }
+
         // TODO: should check why annotation does not work
         if (user.getFirstName() == null || user.getLastName() == null || user.getGender() == null
                 || user.getEmail() == null || user.getPassword() == null || user.getBirthdate() == null) {
             return new ServiceVO<>(ErrorCode.BUSINESS_PARAMETER_ERROR, ErrorCode.BUSINESS_PARAMETER_ERROR_MESSAGE);
+        }
+
+        // check email
+        if (!user.getEmail().matches(EMAIL_REGEX_PATTEN)) {
+            return new ServiceVO<>(ErrorCode.EMAIL_REGEX_ERROR, ErrorCode.EMAIL_REGEX_ERROR_MESSAGE);
+        }
+
+        // check password
+        if (!user.getPassword().matches(PASSWORD_REGEX_PATTERN)) {
+            return new ServiceVO<>(ErrorCode.PASSWORD_REGEX_ERROR, ErrorCode.PASSWORD_REGEX_ERROR_MESSAGE);
         }
 
         if (user.getNickName() == null) {
@@ -55,8 +76,12 @@ public class UserServiceImpl implements UserService {
         user.setUserId(userId);
         user.setCreateTime(String.valueOf(System.currentTimeMillis()));
 
-        // encode password
-        // user.setPassword(BcryptPasswordUtil.encodePassword(user.getPassword()));
+        // TODO: new feature
+        String salt = SaltGenerator.getSalt();
+        user.setSalt(salt);
+        Md5Hash md5Hash = new Md5Hash(user.getPassword(), salt, 1024);
+        user.setPassword(md5Hash.toHex());
+
 
         try {
             userMapper.saveUser(user);
@@ -74,94 +99,32 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    //
-    // @SneakyThrows
-    // @Transactional(rollbackFor = {RuntimeException.class, Error.class, SQLException.class})
-    // @Override
-    // public String saveUser(User user) {
-    //
-    //     // TODO: should check why annotation does not work
-    //     if (user.getFirstName() == null || user.getLastName() == null || user.getGender() == null
-    //             || user.getEmail() == null || user.getPassword() == null || user.getBirthdate() == null) {
-    //         throw new Exception("parameter is wrong");
-    //     }
-    //
-    //     // if user not set nick name, let nickname = firstName + " " + lastName
-    //     if (user.getNickName() == null) {
-    //         user.setNickName(user.getFirstName() + " " + user.getLastName());
-    //     }
-    //     // set userId
-    //     user.setUserId(UUIDGenerator.createUserId());
-    //
-    //     user.setCreateTime(String.valueOf(System.currentTimeMillis()));
-    //
-    //     // encode password
-    //     user.setPassword(BcryptPasswordUtil.encodePassword(user.getPassword()));
-    //
-    //     try {
-    //         userMapper.saveUser(user);
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //         throw e;
-    //     }
-    //
-    //     try {
-    //         userMapper.saveUserAccount(user);
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //         throw e;
-    //     }
-    //
-    //     return user.getUserId();
-    //
-    // }
-
     @SneakyThrows
     @Override
     public ServiceVO<?> loginUser(LoginUser loginUser, HttpSession httpSession, HttpServletRequest request, HttpServletResponse response) {
 
-//        // match password
-//        LoginUser loginUserInfo = userMapper.getLoginUserInfo(loginUser.getEmail());
-//        // password
-//        // if (!BcryptPasswordUtil.passwordMatch(loginUser.getPassword(), loginUserInfo.getPassword())) {
-//        //     throw new Exception();
-//        // }
-//        return loginUserInfo;
+        Subject subject = SecurityUtils.getSubject();
 
-        // see if the email entered exists
         try {
-            userMapper.getLoginUserInfo(loginUser.getEmail());
-        } catch (Exception e) {
-            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+            subject.login(new UsernamePasswordToken(loginUser.getEmail(), loginUser.getPassword()));
+        } catch (UnknownAccountException e) {
+            System.out.println("email error or not exist");
+            return new ServiceVO<>(ErrorCode.EMAIL_NOT_EXISTS_ERROR, ErrorCode.EMAIL_NOT_EXISTS_ERROR_MESSAGE);
+        } catch (IncorrectCredentialsException e) {
+            System.out.println("password error");
+            return new ServiceVO<>(ErrorCode.PASSWORD_INCORRECT_ERROR, ErrorCode.PASSWORD_INCORRECT_ERROR_MESSAGE);
         }
-
-        LoginUser loginUserInfo = userMapper.getLoginUserInfo(loginUser.getEmail());
-
-        if (!loginUser.getPassword().equals(loginUserInfo.getPassword())) {
-            return new ServiceVO<>(ErrorCode.BUSINESS_PARAMETER_ERROR, ErrorCode.BUSINESS_PARAMETER_ERROR_MESSAGE);
-        }
-
-        UserSession userSession = new UserSession(loginUser.getUserId());
-        httpSession.setAttribute(UserSession.ATTRIBUTE_ID, userSession);
-        Cookie userCookie = new Cookie("user-login-cookie", loginUser.getUserId());
-        userCookie.setMaxAge(2 * 60 * 60);
-        userCookie.setPath(request.getContextPath());
-        response.addCookie(userCookie);
-
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, loginUserInfo.getUserId());
-
-    }
-
-    @SneakyThrows
-    @Override
-    public ServiceVO<?> logoutUser(String userId, HttpSession httpSession, HttpServletResponse response) {
-        httpSession.removeAttribute(UserSession.ATTRIBUTE_ID);
-        Cookie cookie = new Cookie("user-login-cookie", null);
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
 
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
 
+    }
+
+    @Override
+    public ServiceVO<?> logoutUser(String userId, HttpSession httpSession, HttpServletResponse response) {
+        Subject subject = SecurityUtils.getSubject();
+        subject.logout();
+        // TODO: have not deal session and cookie
+        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
     }
 
     @SneakyThrows
@@ -186,6 +149,7 @@ public class UserServiceImpl implements UserService {
         }
 
     }
+
 
     @Data
     @NoArgsConstructor
@@ -220,12 +184,23 @@ public class UserServiceImpl implements UserService {
 
         String oldPassword = userMapper.getPasswordByUserid(userId);
 
+        // if (!BcryptPasswordUtil.passwordMatch(oldPassword, userPassword)) {
+        //     throw new Exception("old password does not match");
+        // }
+        //
+        // String encodeNewPassword = BcryptPasswordUtil.encodePassword(newPassword);
         if (oldPassword.equals(newPassword)) {
             throw new Exception("the password should not be same as before");
         }
 
         userMapper.changePassword(userId, newPassword);
 
+        try {
+            // userMapper.changePassword(userId, encodeNewPassword);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
         // if (!BcryptPasswordUtil.passwordMatch(oldPassword, userPassword)) {
         //     throw new Exception("old password does not match");
         // }
@@ -238,6 +213,11 @@ public class UserServiceImpl implements UserService {
         //     e.printStackTrace();
         //     throw e;
         // }
+    }
+
+    @Override
+    public User getUserByEmail() {
+        return null;
     }
 
 }
