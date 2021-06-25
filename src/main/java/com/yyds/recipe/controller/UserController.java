@@ -36,27 +36,6 @@ public class UserController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ServiceVO<?> login(@RequestBody LoginUser loginUser, HttpSession httpSession, HttpServletRequest request, HttpServletResponse response) {
         return userService.loginUser(loginUser, httpSession, request, response);
-//        Map<String, Object> rsp = ResponseUtil.getResponse();
-//        LoginUser user = null;
-//        try {
-//            user = userService.loginUser(loginUser);
-//
-//            UserSession userSession = new UserSession(user.getUserId());
-//            httpSession.setAttribute(UserSession.ATTRIBUTE_ID, userSession);
-//
-//            Cookie userCookie = new Cookie("user-login-cookie", user.getUserId());
-//            userCookie.setMaxAge(2 * 60 * 60);
-//            userCookie.setPath(request.getContextPath());
-//            response.addCookie(userCookie);
-//            rsp.put("userId", user.getUserId());
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            rsp.put("code", -1);
-//            rsp.put("error message", e.toString());
-//            return rsp;
-//        }
-//        return rsp;
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
