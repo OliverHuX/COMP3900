@@ -18,7 +18,7 @@ public interface UserService {
 
     ServiceVO<?> logoutUser(String userId, HttpSession httpSession, HttpServletResponse response);
 
-    void editUser(User user);
+    ServiceVO<?> editUser(User user);
 
-    void editPassword(String newPassword, String userId);
+    ServiceVO<?> editPassword(String newPassword, String userId);
 }

@@ -167,7 +167,7 @@ public class UserServiceImpl implements UserService {
     @SneakyThrows
     @Override
     @Transactional(rollbackFor = {RuntimeException.class, Error.class, SQLException.class})
-    public void editUser(User user) {
+    public ServiceVO<?> editUser(User user) {
 
         if (user.getUserId() == null) {
             throw new Exception("less userId");
@@ -185,6 +185,7 @@ public class UserServiceImpl implements UserService {
             throw e;
         }
 
+        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
     }
 
     @Data
@@ -212,7 +213,7 @@ public class UserServiceImpl implements UserService {
 
     @SneakyThrows
     @Override
-    public void editPassword(String newPassword, String userId) {
+    public ServiceVO<?> editPassword(String newPassword, String userId) {
 
         if (newPassword.length() < PASSWORD_LENGTH || !newPassword.matches(PASSWORD_REGEX_PATTERN)) {
             throw new Exception("password's length is less than 6 or password must have digit and word");
@@ -224,8 +225,15 @@ public class UserServiceImpl implements UserService {
             throw new Exception("the password should not be same as before");
         }
 
-        userMapper.changePassword(userId, newPassword);
+        try {
+            userMapper.changePassword(userId, newPassword);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
 
+        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
         // if (!BcryptPasswordUtil.passwordMatch(oldPassword, userPassword)) {
         //     throw new Exception("old password does not match");
         // }
