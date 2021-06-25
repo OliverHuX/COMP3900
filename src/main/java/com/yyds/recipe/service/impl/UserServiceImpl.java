@@ -18,9 +18,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.sql.SQLException;
+
+import com.yyds.recipe.utils.UserSession;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -115,15 +118,49 @@ public class UserServiceImpl implements UserService {
 
     @SneakyThrows
     @Override
-    public LoginUser loginUser(LoginUser loginUser) {
+    public ServiceVO<?> loginUser(LoginUser loginUser, HttpSession httpSession, HttpServletRequest request, HttpServletResponse response) {
 
-        // match password
+//        // match password
+//        LoginUser loginUserInfo = userMapper.getLoginUserInfo(loginUser.getEmail());
+//        // password
+//        // if (!BcryptPasswordUtil.passwordMatch(loginUser.getPassword(), loginUserInfo.getPassword())) {
+//        //     throw new Exception();
+//        // }
+//        return loginUserInfo;
+
+        // see if the email entered exists
+        try {
+            userMapper.getLoginUserInfo(loginUser.getEmail());
+        } catch (Exception e) {
+            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+        }
+
         LoginUser loginUserInfo = userMapper.getLoginUserInfo(loginUser.getEmail());
-        // password
-        // if (!BcryptPasswordUtil.passwordMatch(loginUser.getPassword(), loginUserInfo.getPassword())) {
-        //     throw new Exception();
-        // }
-        return loginUserInfo;
+
+        if (!loginUser.getPassword().equals(loginUserInfo.getPassword())) {
+            return new ServiceVO<>(ErrorCode.BUSINESS_PARAMETER_ERROR, ErrorCode.BUSINESS_PARAMETER_ERROR_MESSAGE);
+        }
+
+        UserSession userSession = new UserSession(loginUser.getUserId());
+        httpSession.setAttribute(UserSession.ATTRIBUTE_ID, userSession);
+        Cookie userCookie = new Cookie("user-login-cookie", loginUser.getUserId());
+        userCookie.setMaxAge(2 * 60 * 60);
+        userCookie.setPath(request.getContextPath());
+        response.addCookie(userCookie);
+
+        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, loginUserInfo.getUserId());
+
+    }
+
+    @SneakyThrows
+    @Override
+    public ServiceVO<?> logoutUser(String userId, HttpSession httpSession, HttpServletResponse response) {
+        httpSession.removeAttribute(UserSession.ATTRIBUTE_ID);
+        Cookie cookie = new Cookie("user-login-cookie", null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
+        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
 
     }
 
