@@ -4,12 +4,18 @@ import com.yyds.recipe.mapper.UserMapper;
 import com.yyds.recipe.model.LoginUser;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
-import com.yyds.recipe.utils.BcryptPasswordUtil;
 import com.yyds.recipe.utils.UUIDGenerator;
 import com.yyds.recipe.vo.ErrorCode;
 import com.yyds.recipe.vo.ServiceVO;
 import com.yyds.recipe.vo.SuccessCode;
 import lombok.SneakyThrows;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authc.pam.UnsupportedTokenException;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +51,7 @@ public class UserServiceImpl implements UserService {
         user.setUserId(userId);
         user.setCreateTime(String.valueOf(System.currentTimeMillis()));
 
-        user.setPassword(BcryptPasswordUtil.encodePassword(user.getPassword()));
+        // user.setPassword(BcryptPasswordUtil.encodePassword(user.getPassword()));
 
         try {
             userMapper.saveUser(user);
@@ -109,12 +115,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public LoginUser loginUser(LoginUser loginUser) {
 
+        Subject subject = SecurityUtils.getSubject();
+
+        try {
+            subject.login(new UsernamePasswordToken(loginUser.getEmail(), loginUser.getPassword()));
+            // TODO: after merge delete it
+            return null;
+        } catch (UnknownAccountException e) {
+            e.printStackTrace();
+            System.out.println("email error or not exist");
+        } catch (IncorrectCredentialsException e) {
+            e.printStackTrace();
+            System.out.println("password error");
+        }
+
         // match password
         LoginUser loginUserInfo = userMapper.getLoginUserInfo(loginUser.getEmail());
         // password
-        if (!BcryptPasswordUtil.passwordMatch(loginUser.getPassword(), loginUserInfo.getPassword())) {
-            throw new Exception();
-        }
+        // if (!BcryptPasswordUtil.passwordMatch(loginUser.getPassword(), loginUserInfo.getPassword())) {
+        //     throw new Exception();
+        // }
         return loginUserInfo;
 
     }
@@ -147,18 +167,23 @@ public class UserServiceImpl implements UserService {
 
         String userPassword = userMapper.getPasswordByUserid(userId);
 
-        if (!BcryptPasswordUtil.passwordMatch(oldPassword, userPassword)) {
-            throw new Exception("old password does not match");
-        }
-
-        String encodeNewPassword = BcryptPasswordUtil.encodePassword(newPassword);
+        // if (!BcryptPasswordUtil.passwordMatch(oldPassword, userPassword)) {
+        //     throw new Exception("old password does not match");
+        // }
+        //
+        // String encodeNewPassword = BcryptPasswordUtil.encodePassword(newPassword);
 
         try {
-            userMapper.changePassword(userId, encodeNewPassword);
+            // userMapper.changePassword(userId, encodeNewPassword);
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
+    }
+
+    @Override
+    public User getUserByEmail() {
+        return null;
     }
 
 }

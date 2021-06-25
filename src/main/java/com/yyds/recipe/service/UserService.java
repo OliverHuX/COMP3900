@@ -19,4 +19,6 @@ public interface UserService {
     void editUser(User user);
 
     void editPassword(String oldPassword, String newPassword, String userId);
+
+    User getUserByEmail();
 }
