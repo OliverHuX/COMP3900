@@ -18,7 +18,7 @@ public interface UserMapper {
     void editUser(User user);
 
     @Select("select * from user where userId = #{userId}")
-    User getUserbyId(@Param(value = "userId") String userId);
+    User getUserById(@Param(value = "userId") String userId);
 
     LoginUser getLoginUserInfo(String email);
 
@@ -27,4 +27,6 @@ public interface UserMapper {
 
     @Update("update user_account set password = #{password} where user_id = #{userId}")
     void changePassword(@Param(value = "userId") String userId, @Param(value = "password") String newPassword);
+
+    User getUserByEmail(String email);
 }
