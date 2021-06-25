@@ -14,9 +14,11 @@ public interface UserService {
 
     // String saveUser(User user);
 
-    LoginUser loginUser(LoginUser loginUser);
+    ServiceVO<?> loginUser(LoginUser loginUser, HttpSession httpSession, HttpServletRequest request, HttpServletResponse response);
+
+    ServiceVO<?> logoutUser(String userId, HttpSession httpSession, HttpServletResponse response);
 
     void editUser(User user);
 
-    void editPassword(String oldPassword, String newPassword, String userId);
+    void editPassword(String newPassword, String userId);
 }
