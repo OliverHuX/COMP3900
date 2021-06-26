@@ -159,6 +159,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ServiceVO<?> editPassword(String oldPassword, String newPassword, String userId) {
+
+        if (userMapper.getUserByUserId(userId) == null) {
+            return new ServiceVO<>(ErrorCode.USERID_NOT_FOUND_ERROR, ErrorCode.USERID_NOT_FOUND_ERROR_MESSAGE);
+        }
+
         if (newPassword.length() < PASSWORD_LENGTH || !newPassword.matches(PASSWORD_REGEX_PATTERN)) {
             return new ServiceVO<>(ErrorCode.PASSWORD_REGEX_ERROR, ErrorCode.PASSWORD_REGEX_ERROR_MESSAGE);
         }
