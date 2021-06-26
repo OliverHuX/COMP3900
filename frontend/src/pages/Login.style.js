@@ -28,6 +28,9 @@ const myStyles = makeStyles((theme) => ({
   },
   backg: {
     background: 'rgba(255, 255, 255, 0.8)',
+  },
+  marginBtm: {
+    marginBottom: theme.spacing(2),
   }
 }));
 

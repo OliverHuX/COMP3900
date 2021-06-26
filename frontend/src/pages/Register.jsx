@@ -191,7 +191,7 @@ export default function Register () {
                 handleOnClick={() => setError(false)}
               />
               <Grid container justify="flex-end">
-                <Grid item>
+                <Grid item className={classes.marginBtm}>
                   <Link href="/" variant="body2">
                     Already have an account? Sign in
                   </Link>

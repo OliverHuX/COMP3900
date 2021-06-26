@@ -103,7 +103,7 @@ export default function SignIn () {
                 handleOnClick={() => setError(false)}
               />
               <Grid container>
-                <Grid item>
+                <Grid item className={classes.marginBtm}>
                   <Link href="/register" variant="body2">
                     {"Don't have an account? Sign Up"}
                   </Link>
