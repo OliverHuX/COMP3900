@@ -10,6 +10,8 @@ spring:
     password: seulgi
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
+    initial-size: 10
+    max-active: 150
 
 # mybatis
 mybatis:
