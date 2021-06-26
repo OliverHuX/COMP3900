@@ -12,13 +12,13 @@ public interface UserService {
 
     ServiceVO<?> register(User user, HttpSession httpSession, HttpServletRequest request, HttpServletResponse response);
 
+    // String saveUser(User user);
+
     ServiceVO<?> loginUser(LoginUser loginUser, HttpSession httpSession, HttpServletRequest request, HttpServletResponse response);
 
     ServiceVO<?> logoutUser(String userId, HttpSession httpSession, HttpServletResponse response);
 
-    void editUser(User user);
+    ServiceVO<?> editUser(User user);
 
-    void editPassword(String newPassword, String userId);
-
-    User getUserByEmail();
+    ServiceVO<?> editPassword(String newPassword, String userId);
 }
