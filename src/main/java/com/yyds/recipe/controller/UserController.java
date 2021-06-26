@@ -22,7 +22,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Map;
 
 @RestController
-@Validated
+// @Validated
 public class UserController {
 
     @Autowired
@@ -46,15 +46,6 @@ public class UserController {
     @RequestMapping(value = "/editProfile", method = RequestMethod.POST)
     public ServiceVO<?> editProfile(@RequestBody User user) {
         return userService.editUser(user);
-//        Map<String, Object> rsp = ResponseUtil.getResponse();
-//        try {
-//            userService.editUser(user);
-//        } catch (Exception e) {
-//            rsp.put("code", -1);
-//            rsp.put("error message", e.toString());
-//            return rsp;
-//        }
-//        return rsp;
     }
 
     @AllArgsConstructor
@@ -71,19 +62,7 @@ public class UserController {
 
     @RequestMapping(value = "/editPassword", method = RequestMethod.POST)
     public ServiceVO<?> editPassword(@RequestBody editPasswordReq req) {
-        return userService.editPassword(req.getNewPassword(), req.userId);
-//        Map<String, Object> rsp = ResponseUtil.getResponse();
-//        String newPassword = req.getNewPassword();
-//        String userId = req.getUserId();
-//
-//        try {
-//            userService.editPassword(newPassword, userId);
-//        } catch (Exception e) {
-//            rsp.put("error message", e.toString());
-//            rsp.put("code", -1);
-//            return rsp;
-//        }
-//        return rsp;
+        return userService.editPassword(req.getOldPassword(), req.getNewPassword(), req.userId);
     }
 
     // TODO: just for test! Delete me!
