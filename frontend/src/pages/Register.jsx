@@ -10,23 +10,49 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import { myStyles } from './Register.style';
-// import FetchFunc from '../components/fetchFunc';
+import FetchFunc from '../components/fetchFunc';
 import { StyledHeader } from '../components/StyledHeader';
 import { TextPopup } from '../components/TextPopup';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
 
-function signup (email, password) {
-  console.log('incomplete' + email + password);
+function signup (firstName, lastName, gender, nickName, birthDate, email, password) {
+  // console.log('incomplete' + email + password);
+  const payload = JSON.stringify({
+    firstName: firstName,
+    lastName: lastName,
+    gender: gender,
+    nickName: nickName,
+    birthDate: birthDate,
+    email: email,
+    password: password
+  });
+  console.log(payload)
+  const result = FetchFunc('register', 'POST', null, payload);
+  result.then(data => {
+    console.log(data);
+  })
 }
 
 export default function Register () {
   const [firstName, setFirstNameInputs] = React.useState('');
   const [lastName, setLastNameInputs] = React.useState('');
+  const [nickName, setNickNameInputs] = React.useState('');
+  const [gender, setGender] = React.useState('');
+  const [birthDate, setBOD] = React.useState('');
   const [emailInputs, setEmailInputs] = React.useState('');
   const [passWord, setPasswordInputs] = React.useState('');
   const [errorMsg, setErrorMsg] = React.useState('');
   const [error, setError] = React.useState(false);
   const history = useHistory();
   const classes = myStyles();
+
+  // const handleChange = (event) => {
+  //   setGender(event.target.value);
+  // };
+
   // console.log(emailInputs)
   // const firstname = document.getElementById('firstName');
   // const lastname = document.getElementById('lastName');
@@ -38,7 +64,7 @@ export default function Register () {
       <CssBaseline />
       <StyledHeader/>
       <main>
-        <Container component="main" maxWidth="xs">
+        <Container component="main" maxWidth="xs" className={classes.backg}>
           <CssBaseline />
           <div className={classes.paper}>
             <Avatar className={classes.avatar}>
@@ -99,6 +125,47 @@ export default function Register () {
                     onChange={(e) => setPasswordInputs(e.target.value)}
                   />
                 </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    id="date"
+                    label="Birthday"
+                    type="date"
+                    defaultValue="2000-01-01"
+                    className={classes.textField}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    onChange={(e) => setBOD(e.target.value)}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    autoComplete="nname"
+                    name="nickName"
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="nickName"
+                    label="Nick Name"
+                    autoFocus
+                    onChange={(e) => setNickNameInputs(e.target.value)}
+                  />
+                </Grid>
+                <FormControl fullWidth={true} variant='outlined' className={classes.formControl}>
+                  <InputLabel>Gender</InputLabel>
+                  <Select
+                    label="Gender"
+                    value={gender}
+                    onChange={(e) => setGender(e.target.value)}
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    <MenuItem value="male">Male</MenuItem>
+                    <MenuItem value="female">Female</MenuItem>
+                  </Select>
+                </FormControl>
+                {/* </Grid> */}
                 {/* <Grid item xs={12}>
                   <FormControlLabel
                     control={<Checkbox value="allowExtraEmails" color="primary" />}
@@ -113,7 +180,7 @@ export default function Register () {
                 variant="contained"
                 color="primary"
                 className={classes.submit}
-                onClick={() => signup(emailInputs, passWord)}
+                onClick={() => signup(firstName, lastName, gender, nickName, birthDate, emailInputs, passWord)}
               >
                 Sign Up
               </Button>

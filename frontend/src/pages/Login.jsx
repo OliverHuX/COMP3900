@@ -12,12 +12,28 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import { myStyles } from './Login.style';
-// import FetchFunc from '../components/fetchFunc';
+import FetchFunc from '../components/fetchFunc';
 import { StyledHeader } from '../components/StyledHeader';
 import { TextPopup } from '../components/TextPopup';
 
 function signin (email, password) {
-  console.log('incomplete' + email + password);
+  // console.log('incomplete' + email + password);
+  // const path = 'login'
+  const payload = JSON.stringify({
+    email: email,
+    password: password
+  });
+  const result = FetchFunc('login', 'POST', null, payload);
+  result.then(data => {
+    if (data.code === 0) {
+      data.json().then(res => {
+        console.log(res)
+        console.log(res.data)
+        // console.log(res.err)
+      })
+    }
+  })
+
 }
 
 export default function SignIn () {

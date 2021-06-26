@@ -18,6 +18,13 @@ const myStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  backg: {
+    background: 'rgba(255, 255, 255, 0.8)',
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
 }));
 
 export { myStyles };
