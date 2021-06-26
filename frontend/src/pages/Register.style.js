@@ -25,6 +25,9 @@ const myStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     minWidth: 120,
   },
+  marginBtm: {
+    marginBottom: theme.spacing(2),
+  },
 }));
 
 export { myStyles };
