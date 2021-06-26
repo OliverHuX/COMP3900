@@ -85,7 +85,27 @@
                u.create_time,
                u.profile_photo
         from recipe.user u
-                 left join recipe.user_account ua on u.user_id = ua.user_id;
+                 left join recipe.user_account ua on u.user_id = ua.user_id
+        where u.email = #{email};
+    </select>
+
+    <select id="getUserByUserId" parameterType="java.lang.String" resultMap="UserResultMap">
+        select u.user_id,
+               u.email,
+               u.first_name,
+               u.last_name,
+               u.nick_name,
+               ua.password,
+               ua.salt,
+               u.birthdate,
+               u.gender,
+               u.contact,
+               u.address,
+               u.create_time,
+               u.profile_photo
+        from recipe.user u
+                 left join recipe.user_account ua on u.user_id = ua.user_id
+        where u.user_id = #{userId}
     </select>
 
 </mapper>

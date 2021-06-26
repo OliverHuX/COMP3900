@@ -23,6 +23,9 @@ public interface ErrorCode {
     int PASSWORD_INCORRECT_ERROR = 605;
     String PASSWORD_INCORRECT_ERROR_MESSAGE = "password incorrect or email incorrect";
 
+    int USERID_NOT_FOUND_ERROR = 606;
+    String USERID_NOT_FOUND_ERROR_MESSAGE = "user id not found";
+
     // 701 - 800 service logic error
     int BUSINESS_PARAMETER_ERROR = 701;
     String BUSINESS_PARAMETER_ERROR_MESSAGE = "business parameter error";

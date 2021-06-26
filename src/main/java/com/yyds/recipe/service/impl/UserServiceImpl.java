@@ -23,14 +23,17 @@ import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 @Service
+@EnableTransactionManagement
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -43,6 +46,7 @@ public class UserServiceImpl implements UserService {
     private static final int NAME_LENGTH = 15;
     private static final String BIRTHDAY_REGEX_PATTEN = "^\\d{4}-\\d{1,2}-\\d{1,2}";
 
+    // TODO: transactional does not work
     @Transactional
     @Override
     public ServiceVO<?> register(User user, HttpSession httpSession, HttpServletRequest request, HttpServletResponse response) {
@@ -52,7 +56,6 @@ public class UserServiceImpl implements UserService {
             return new ServiceVO<>(ErrorCode.EMAIL_ALREADY_EXISTS_ERROR, ErrorCode.EMAIL_ALREADY_EXISTS_ERROR_MESSAGE);
         }
 
-        // TODO: should check why annotation does not work
         if (user.getFirstName() == null || user.getLastName() == null || user.getGender() == null
                 || user.getEmail() == null || user.getPassword() == null || user.getBirthdate() == null) {
             return new ServiceVO<>(ErrorCode.BUSINESS_PARAMETER_ERROR, ErrorCode.BUSINESS_PARAMETER_ERROR_MESSAGE);
@@ -76,7 +79,6 @@ public class UserServiceImpl implements UserService {
         user.setUserId(userId);
         user.setCreateTime(String.valueOf(System.currentTimeMillis()));
 
-        // TODO: new feature
         String salt = SaltGenerator.getSalt();
         user.setSalt(salt);
         Md5Hash md5Hash = new Md5Hash(user.getPassword(), salt, 1024);
@@ -95,11 +97,12 @@ public class UserServiceImpl implements UserService {
             return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
         }
 
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, userId);
+        HashMap<String, Object> resultMap = new HashMap<>();
+        resultMap.put("userId", userId);
+        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, resultMap);
 
     }
 
-    @SneakyThrows
     @Override
     public ServiceVO<?> loginUser(LoginUser loginUser, HttpSession httpSession, HttpServletRequest request, HttpServletResponse response) {
 
@@ -115,7 +118,12 @@ public class UserServiceImpl implements UserService {
             return new ServiceVO<>(ErrorCode.PASSWORD_INCORRECT_ERROR, ErrorCode.PASSWORD_INCORRECT_ERROR_MESSAGE);
         }
 
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
+        String email = loginUser.getEmail();
+        String userId = userMapper.getUserIdByEmail(email);
+        HashMap<String, Object> resultMap = new HashMap<>();
+        resultMap.put("userId", userId);
+
+        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, resultMap);
 
     }
 
@@ -127,95 +135,55 @@ public class UserServiceImpl implements UserService {
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
     }
 
-    @SneakyThrows
     @Override
-    @Transactional(rollbackFor = {RuntimeException.class, Error.class, SQLException.class})
+    @Transactional
     public ServiceVO<?> editUser(User user) {
 
-        if (user.getUserId() == null) {
-            throw new Exception("less userId");
+        if (userMapper.getUserByUserId(user.getUserId()) == null) {
+            return new ServiceVO<>(ErrorCode.USERID_NOT_FOUND_ERROR, ErrorCode.USERID_NOT_FOUND_ERROR_MESSAGE);
         }
 
-        EditUserException eue = new EditUserException();
-        if (!eue.isUserValid(user)) {
-            throw new Exception(eue.getExceptionMsg());
+        if (user.getUserId() == null || (user.getGender() != null && (user.getGender() > 2 || user.getGender() < 0))) {
+            return new ServiceVO<>(ErrorCode.BUSINESS_PARAMETER_ERROR, ErrorCode.BUSINESS_PARAMETER_ERROR_MESSAGE);
         }
 
         try {
             userMapper.editUser(user);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
         }
 
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
     }
 
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    class EditUserException {
-        private String exceptionMsg;
-
-        public boolean isUserValid(User user) {
-            if (!isNameValid(user.getFirstName())
-                    || !isNameValid(user.getLastName())
-                    || user.getGender() < 0 || user.getGender() > 2
-                    || !user.getEmail().matches(EMAIL_REGEX_PATTEN)
-                    || !isNameValid(user.getNickName())
-                    || !user.getPassword().matches(PASSWORD_REGEX_PATTERN)
-                    || !user.getBirthdate().matches(BIRTHDAY_REGEX_PATTEN))
-                return false;
-            return true;
-        }
-
-        private boolean isNameValid(String name) {
-            return name.matches(NAME_REGEX_PATTEN) && name.length() > NAME_LENGTH;
-        }
-    }
-
-    @SneakyThrows
     @Override
-    public ServiceVO<?> editPassword(String newPassword, String userId) {
+    public ServiceVO<?> editPassword(String oldPassword, String newPassword, String userId) {
+
+        if (userMapper.getUserByUserId(userId) == null) {
+            return new ServiceVO<>(ErrorCode.USERID_NOT_FOUND_ERROR, ErrorCode.USERID_NOT_FOUND_ERROR_MESSAGE);
+        }
 
         if (newPassword.length() < PASSWORD_LENGTH || !newPassword.matches(PASSWORD_REGEX_PATTERN)) {
-            throw new Exception("password's length is less than 6 or password must have digit and word");
+            return new ServiceVO<>(ErrorCode.PASSWORD_REGEX_ERROR, ErrorCode.PASSWORD_REGEX_ERROR_MESSAGE);
         }
 
-        String oldPassword = userMapper.getPasswordByUserid(userId);
-
-        // if (!BcryptPasswordUtil.passwordMatch(oldPassword, userPassword)) {
-        //     throw new Exception("old password does not match");
-        // }
-        //
-        // String encodeNewPassword = BcryptPasswordUtil.encodePassword(newPassword);
-        if (oldPassword.equals(newPassword)) {
-            throw new Exception("the password should not be same as before");
+        User user = userMapper.getUserByUserId(userId);
+        Md5Hash md5Hash = new Md5Hash(oldPassword, user.getSalt(), 1024);
+        if (!md5Hash.toHex().equals(user.getPassword())) {
+            return new ServiceVO<>(ErrorCode.PASSWORD_INCORRECT_ERROR, ErrorCode.PASSWORD_INCORRECT_ERROR_MESSAGE);
         }
 
+        String salt = SaltGenerator.getSalt();
+        md5Hash = new Md5Hash(newPassword, salt, 1024);
+        user.setPassword(md5Hash.toHex());
         try {
-            userMapper.changePassword(userId, newPassword);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+            userMapper.changePassword(userId, user.getPassword(), salt);
+        } catch (Exception e) {
+            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
         }
 
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
-        // if (!BcryptPasswordUtil.passwordMatch(oldPassword, userPassword)) {
-        //     throw new Exception("old password does not match");
-        // }
-        //
-        // String encodeNewPassword = BcryptPasswordUtil.encodePassword(newPassword);
-        //
-        // try {
-        //     userMapper.changePassword(userId, encodeNewPassword);
-        // } catch (Exception e) {
-        //     e.printStackTrace();
-        //     throw e;
-        // }
     }
-
 
 }
