@@ -12,9 +12,9 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import { myStyles } from './Login.style';
-import FetchFunc from '../components/fetchFunc';
-import { StyledHeader } from '../components/StyledHeader';
-import { TextPopup } from '../components/TextPopup';
+import FetchFunc from '../../components/fetchFunc';
+import { StyledHeader } from '../../components/StyledHeader';
+import { TextPopup } from '../../components/TextPopup';
 
 function signin (email, password) {
   // console.log('incomplete' + email + password);

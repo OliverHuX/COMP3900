@@ -6,8 +6,8 @@ import {
   Switch,
   Route,
 } from 'react-router-dom';
-import Register from './pages/Register';
-import Login from './pages/Login';
+import Register from './pages/Register/Register';
+import Login from './pages/Login/Login'
 
 export default function App () {
   return <>
