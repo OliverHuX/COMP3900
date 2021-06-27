@@ -40,7 +40,7 @@ export default function Register () {
   const [firstName, setFirstNameInputs] = React.useState('');
   const [lastName, setLastNameInputs] = React.useState('');
   const [nickName, setNickNameInputs] = React.useState('');
-  const [gender, setGender] = React.useState('');
+  const [gender, setGender] = React.useState(Number(-1));
   const [birthDate, setBOD] = React.useState('');
   const [emailInputs, setEmailInputs] = React.useState('');
   const [passWord, setPasswordInputs] = React.useState('');
@@ -158,11 +158,11 @@ export default function Register () {
                     value={gender}
                     onChange={(e) => setGender(e.target.value)}
                   >
-                    <MenuItem value="">
+                    <MenuItem value={Number(-1)}>
                       <em>None</em>
                     </MenuItem>
-                    <MenuItem value="male">Male</MenuItem>
-                    <MenuItem value="female">Female</MenuItem>
+                    <MenuItem value={Number(1)}>Male</MenuItem>
+                    <MenuItem value={Number(0)}>Female</MenuItem>
                   </Select>
                 </FormControl>
                 {/* </Grid> */}
