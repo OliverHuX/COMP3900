@@ -19,14 +19,19 @@ mybatis:
   configuration:
     log-impl: org.apache.ibatis.logging.log4j2.Log4j2Impl
 
-## actuator
+# actuator
 management:
-  server:
-    port: 8015
   endpoints:
     web:
+      base-path: /actuator
       exposure:
-        include: "*"
+        include: '*'
+
+    jmx:
+      domain: org.springframework.boot
+      exposure:
+        include: '*'
+
   endpoint:
     health:
       show-details: always
