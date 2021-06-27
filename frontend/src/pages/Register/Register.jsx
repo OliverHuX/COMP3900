@@ -161,8 +161,8 @@ export default function Register () {
                     <MenuItem value={Number(-1)}>
                       <em>None</em>
                     </MenuItem>
-                    <MenuItem value={Number(1)}>Male</MenuItem>
-                    <MenuItem value={Number(0)}>Female</MenuItem>
+                    <MenuItem value={Number(0)}>Male</MenuItem>
+                    <MenuItem value={Number(1)}>Female</MenuItem>
                   </Select>
                 </FormControl>
                 {/* </Grid> */}
