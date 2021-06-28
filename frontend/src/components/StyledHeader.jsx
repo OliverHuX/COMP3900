@@ -8,6 +8,7 @@ import FastfoodIcon from '@material-ui/icons/Fastfood';
 import { makeStyles } from '@material-ui/core/styles';
 import logout from './logout';
 import PropTypes from 'prop-types';
+import Link from '@material-ui/core/Link';
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -60,9 +61,10 @@ export function StyledHeader ({ handleOnClick }) {
     <AppBar position="relative">
       <Toolbar>
         <RestaurantMenuIcon className={classes.icon} />
-        <Typography variant="h6" color="inherit" noWrap>
-          MyRecipes
-        </Typography>
+        <Link href="/home" variant="h6" color="inherit" noWrap>
+                    {"MyRecipes"}
+        </Link>
+
         <div className={classes.logout} color="inherit">
           <IconButton handleOnClick={handleOnClick} icon={'join'} />
           {token && (<IconButton handleOnClick={handleOnClick} icon={'logout'} />)}
