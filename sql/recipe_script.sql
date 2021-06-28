@@ -44,6 +44,7 @@ create table user_account
 (
     user_id  varchar(255) not null,
     password varchar(255) not null,
+    salt     varchar(255) not null,
     status   int          null,
     constraint user_account_userId_uindex
         unique (user_id)
