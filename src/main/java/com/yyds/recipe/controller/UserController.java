@@ -66,7 +66,7 @@ public class UserController {
     }
 
     // TODO: just for test! Delete me!
-    @RequestMapping(value = "/index", method = RequestMethod.GET)
+    @RequestMapping(value = "/TestIndex", method = RequestMethod.GET)
     public ServiceVO<?> testIndex() {
         ServiceVO<Object> serviceVO = new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
         String userId = "5f08f1d2-8c35-417b-9016-17c413be6a4f";
