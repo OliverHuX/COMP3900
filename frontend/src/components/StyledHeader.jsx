@@ -58,7 +58,7 @@ export function StyledHeader ({ handleOnClick }) {
   const classes = useStyles();
   const token = localStorage.getItem('token');
   return (
-    <AppBar position="fixed">
+    <AppBar position="relative">
       <Toolbar>
         <RestaurantMenuIcon className={classes.icon} />
         <Link href="/home" variant="h6" color="inherit" noWrap>
