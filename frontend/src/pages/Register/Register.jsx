@@ -25,7 +25,7 @@ function signup (firstName, lastName, gender, nickName, birthDate, email, passwo
     lastName: lastName,
     gender: gender,
     nickName: nickName,
-    birthDate: birthDate,
+    birthdate: birthDate,
     email: email,
     password: password
   });
