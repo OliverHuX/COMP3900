@@ -1,3 +1,7 @@
 Week1: We creat a team and have a talk with each other, decide which farmerwork are we gona use, and also  generally assign tasks.
 
 Week2: I was wrok on react and coding about 5 conponments, like navigation, search, footer and so on, but it is the innitial version. 
+
+Week3: I have createt Login, and Home pages, also meeting to talk abot proposal， Assign tasks， My job is to hand graph the story board.
+
+Week4: We finished the proposal, also I integrated my code and XIAO HU's code, optimized the style, improved part of the login and registration functions, and carried out front-end docking.
