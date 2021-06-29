@@ -16,7 +16,7 @@ import FetchFunc from '../../components/fetchFunc';
 import { StyledHeader } from '../../components/StyledHeader';
 import { TextPopup } from '../../components/TextPopup';
 
-function signin (email, password) {
+function signin (email, password, history) {
   // console.log('incomplete' + email + password);
   // const path = 'login'
   const payload = JSON.stringify({
@@ -25,12 +25,14 @@ function signin (email, password) {
   });
   const result = FetchFunc('login', 'POST', null, payload);
   result.then(data => {
-    if (data.code === 0) {
+    if (data.code === 200) {
       data.json().then(res => {
         console.log(res)
         console.log(res.data)
         // console.log(res.err)
-        
+        if (res.code === 0) {
+          history.push('./home')
+        }
       })
     }
   })
@@ -43,7 +45,7 @@ export default function SignIn () {
   const [passWord, setPasswordInputs] = React.useState('');
   const [errorMsg, setErrorMsg] = React.useState('');
   const [error, setError] = React.useState(false);
-  // const history = useHistory();
+  const history = useHistory();
   return (
     // <div className={classes.size}>
     <React.Fragment>
@@ -93,7 +95,7 @@ export default function SignIn () {
                 variant="contained"
                 color="primary"
                 className={classes.submit}
-                onClick={() => signin(email, passWord)}
+                onClick={() => signin(email, passWord, history)}
               >
                 Sign In
               </Button>
