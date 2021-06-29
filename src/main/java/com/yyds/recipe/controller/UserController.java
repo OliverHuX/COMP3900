@@ -39,7 +39,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public ServiceVO<?> logout(@RequestParam(value = "userId") String userId, HttpSession httpSession, HttpServletResponse response ) {
+    public ServiceVO<?> logout(@RequestParam(value = "userId") String userId, HttpSession httpSession, HttpServletResponse response) {
         return userService.logoutUser(userId, httpSession, response);
     }
 
@@ -72,6 +72,11 @@ public class UserController {
         String userId = "5f08f1d2-8c35-417b-9016-17c413be6a4f";
         serviceVO.setData(userId);
         return serviceVO;
+    }
+
+    @RequestMapping(value = "/TestMySql", method = RequestMethod.GET)
+    public ServiceVO<?> testSql() {
+        return userService.testSqlOnly();
     }
 }
 

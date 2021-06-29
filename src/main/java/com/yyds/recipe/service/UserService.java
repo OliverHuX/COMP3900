@@ -19,4 +19,6 @@ public interface UserService {
     ServiceVO<?> editUser(User user);
 
     ServiceVO<?> editPassword(String oldPassword, String newPassword, String userId);
+
+    ServiceVO<?> testSqlOnly();
 }

@@ -186,4 +186,9 @@ public class UserServiceImpl implements UserService {
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
     }
 
+    @Override
+    public ServiceVO<?> testSqlOnly() {
+        int count = userMapper.testSql();
+        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, count);
+    }
 }

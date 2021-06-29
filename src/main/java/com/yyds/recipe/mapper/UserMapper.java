@@ -34,4 +34,7 @@ public interface UserMapper {
     String getUserIdByEmail(@Param(value = "email") String email);
 
     User getUserByUserId(String userId);
+
+    @Select("select count(1) from recipe.user")
+    int testSql();
 }
