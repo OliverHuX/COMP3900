@@ -84,6 +84,11 @@ public class UserServiceImpl implements UserService {
         Md5Hash md5Hash = new Md5Hash(user.getPassword(), salt, 1024);
         user.setPassword(md5Hash.toHex());
 
+        // Isaac TODO: JWT
+
+        // Kylee TODO: email sender
+
+        // Channing TODO: redis
 
         try {
             userMapper.saveUser(user);
@@ -191,4 +196,6 @@ public class UserServiceImpl implements UserService {
         int count = userMapper.testSql();
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, count);
     }
+
+    // TODO: verify email api
 }
