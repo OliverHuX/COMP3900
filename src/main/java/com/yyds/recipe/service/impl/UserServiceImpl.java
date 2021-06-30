@@ -4,8 +4,8 @@ import com.yyds.recipe.mapper.UserMapper;
 import com.yyds.recipe.model.LoginUser;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
-import com.yyds.recipe.utils.BcryptPasswordUtil;
 import com.yyds.recipe.utils.UUIDGenerator;
+import com.yyds.recipe.utils.UserSession;
 import com.yyds.recipe.vo.ErrorCode;
 import com.yyds.recipe.vo.ServiceVO;
 import com.yyds.recipe.vo.SuccessCode;
@@ -14,16 +14,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.sql.SQLException;
-
-import com.yyds.recipe.utils.UserSession;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -246,6 +247,57 @@ public class UserServiceImpl implements UserService {
         //     e.printStackTrace();
         //     throw e;
         // }
+    }
+
+
+    @Autowired
+    private JavaMailSender mailSender;
+
+
+    @SneakyThrows
+    @Override
+    public ServiceVO<?> sendEmail(String userId) {
+        User user = null;
+
+//        try {
+//            user = userMapper.getUserbyId(userId);
+//        } catch (Exception e) {
+//            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+//        }
+
+        String emailFrom = "YYDS.W09A@gmail.com";
+
+        // Need to change these later
+        String emailTo = "YYDS.W09A@gmail.com";
+        String token = "abcd123";
+
+        //String emailTo = user.getEmail();
+        //String token = userService.createToken();
+
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message);
+
+            helper.setSubject("[YYDS] Please Verify Your Email!");
+            helper.setFrom(emailFrom);
+            helper.setTo(emailTo);
+
+
+    //        helper.setText("<b>Dear <code>user.getFirstName()</code></b>,<br><p>Welcome to </p><b>YYDS</b>! Please verify" +
+    //                       " your account within <b>10 minutes</b> following this link: http://yyds" +
+    //                       ".com/<code>token</code></p>", true);
+
+            helper.setText("<b>Dear <code>emailTo</code></b>,<br><p>Welcome to </p><b>YYDS</b>! Please verify" +
+                           " your account within <b>10 minutes</b> following this link: http://yyds" +
+                           ".com/<code>token</code></p>", true);
+
+            mailSender.send(message);
+
+        } catch (Exception e) {
+            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+        }
+
+        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, token);
     }
 
 }

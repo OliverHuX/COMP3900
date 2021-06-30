@@ -3,8 +3,6 @@ package com.yyds.recipe.controller;
 import com.yyds.recipe.model.LoginUser;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
-import com.yyds.recipe.utils.ResponseUtil;
-import com.yyds.recipe.utils.UserSession;
 import com.yyds.recipe.vo.ServiceVO;
 import com.yyds.recipe.vo.SuccessCode;
 import lombok.AllArgsConstructor;
@@ -14,12 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotNull;
-import java.util.Map;
 
 @RestController
 @Validated
@@ -121,6 +117,11 @@ public class UserController {
         String userId = "5f08f1d2-8c35-417b-9016-17c413be6a4f";
         serviceVO.setData(userId);
         return serviceVO;
+    }
+
+    @RequestMapping(value = "/sendEmail", method = RequestMethod.GET)
+    public ServiceVO<?> sendEmail(@RequestParam(value = "userId") String userId) {
+        return userService.sendEmail(userId);
     }
 }
 
