@@ -22,6 +22,7 @@ import org.apache.shiro.authc.pam.UnsupportedTokenException;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ import javax.servlet.http.HttpSession;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @EnableTransactionManagement
@@ -45,12 +47,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private RedisTemplate<String, Serializable> redisTemplate;
 
-    private static final String PASSWORD_REGEX_PATTERN = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,30}$";
+    private static final String PASSWORD_REGEX_PATTERN = "^(?![0-9]+$)(?![a-z]+$)(?![A-Z]+$)(?!([^(0-9a-zA-Z)])+$).{6,20}$";
     private static final int PASSWORD_LENGTH = 6;
     private static final String EMAIL_REGEX_PATTEN = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
-    private static final String NAME_REGEX_PATTEN = "^[A-Za-z]+$";
-    private static final int NAME_LENGTH = 15;
-    private static final String BIRTHDAY_REGEX_PATTEN = "^\\d{4}-\\d{1,2}-\\d{1,2}";
 
     // TODO: transactional does not work
     @Transactional
@@ -95,6 +94,9 @@ public class UserServiceImpl implements UserService {
         // Kylee TODO: email sender
 
         // Channing TODO: redis
+        String userToken = "UserJwtToken";
+        ValueOperations<String, Serializable> opsForValue = redisTemplate.opsForValue();
+        opsForValue.set(userToken, user, 30, TimeUnit.MINUTES);
 
         try {
             userMapper.saveUser(user);
