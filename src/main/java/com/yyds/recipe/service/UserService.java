@@ -21,4 +21,6 @@ public interface UserService {
     ServiceVO<?> editPassword(String oldPassword, String newPassword, String userId);
 
     ServiceVO<?> testSqlOnly();
+
+    ServiceVO<?> testRedisOnly();
 }

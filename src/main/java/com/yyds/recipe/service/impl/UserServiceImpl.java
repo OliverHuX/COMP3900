@@ -22,6 +22,8 @@ import org.apache.shiro.authc.pam.UnsupportedTokenException;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.HashMap;
 
@@ -38,6 +41,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private RedisTemplate<String, Serializable> redisTemplate;
 
     private static final String PASSWORD_REGEX_PATTERN = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,30}$";
     private static final int PASSWORD_LENGTH = 6;
@@ -195,6 +201,18 @@ public class UserServiceImpl implements UserService {
     public ServiceVO<?> testSqlOnly() {
         int count = userMapper.testSql();
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, count);
+    }
+
+    @Override
+    public ServiceVO<?> testRedisOnly() {
+        ValueOperations<String, Serializable> opsForValue = redisTemplate.opsForValue();
+        opsForValue.set("test", "Minimal trader liver inter performances comprehensive boundaries, float gave bbs arguments donated pad certain, verde dad consolidated leg pierre. ");
+        Boolean isExist = redisTemplate.hasKey("test");
+        HashMap<String, Object> res = new HashMap<>();
+        String text = (String) redisTemplate.opsForValue().get("test");
+        res.put("isExist", isExist);
+        res.put("text", text);
+        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, res);
     }
 
     // TODO: verify email api

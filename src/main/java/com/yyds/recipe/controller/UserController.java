@@ -78,5 +78,11 @@ public class UserController {
     public ServiceVO<?> testSql() {
         return userService.testSqlOnly();
     }
+
+    @RequestMapping(value = "/TestRedis", method = RequestMethod.GET)
+    public ServiceVO<?> testRedis() {
+        return userService.testRedisOnly();
+    }
+
 }
 
