@@ -37,6 +37,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+import static com.yyds.recipe.vo.ErrorCode.EMAIL_VERIFY_ERROR_MESSAGE;
+
 @Service
 @EnableTransactionManagement
 public class UserServiceImpl implements UserService {
@@ -97,18 +99,6 @@ public class UserServiceImpl implements UserService {
         String userToken = "UserJwtToken";
         ValueOperations<String, Serializable> opsForValue = redisTemplate.opsForValue();
         opsForValue.set(userToken, user, 30, TimeUnit.MINUTES);
-
-        try {
-            userMapper.saveUser(user);
-        } catch (Exception e) {
-            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
-        }
-
-        try {
-            userMapper.saveUserAccount(user);
-        } catch (Exception e) {
-            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
-        }
 
         HashMap<String, Object> resultMap = new HashMap<>();
         resultMap.put("userId", userId);
@@ -200,6 +190,37 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public ServiceVO<?> emailVerify(String token) {
+        if (Boolean.FALSE.equals(redisTemplate.hasKey(token))) {
+            return new ServiceVO<>(ErrorCode.EMAIL_VERIFY_ERROR, EMAIL_VERIFY_ERROR_MESSAGE);
+        }
+
+        User user = null;
+        try {
+            user = (User) redisTemplate.opsForValue().get(token);
+        } catch (Exception e) {
+            return new ServiceVO<>(ErrorCode.REDIS_ERROR, ErrorCode.REDIS_ERROR_MESSAGE);
+        }
+
+        try {
+            userMapper.saveUser(user);
+        } catch (Exception e) {
+            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+        }
+
+        try {
+            userMapper.saveUserAccount(user);
+        } catch (Exception e) {
+            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+        }
+
+        HashMap<String, Object> res = new HashMap<>();
+        res.put("userId", user.getUserId());
+        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, res);
+
+    }
+
+    @Override
     public ServiceVO<?> testSqlOnly() {
         int count = userMapper.testSql();
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, count);
@@ -216,6 +237,4 @@ public class UserServiceImpl implements UserService {
         res.put("text", text);
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, res);
     }
-
-    // TODO: verify email api
 }

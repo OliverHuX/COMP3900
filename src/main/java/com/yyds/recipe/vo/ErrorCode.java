@@ -26,6 +26,9 @@ public interface ErrorCode {
     int USERID_NOT_FOUND_ERROR = 606;
     String USERID_NOT_FOUND_ERROR_MESSAGE = "user id not found";
 
+    int EMAIL_VERIFY_ERROR = 607;
+    String EMAIL_VERIFY_ERROR_MESSAGE = "email verify expired";
+
     // 701 - 800 service logic error
     int BUSINESS_PARAMETER_ERROR = 701;
     String BUSINESS_PARAMETER_ERROR_MESSAGE = "business parameter error";
@@ -33,6 +36,9 @@ public interface ErrorCode {
     // 801 - 900 middleware error
     int DATABASE_GENERAL_ERROR = 801;
     String DATABASE_GENERAL_ERROR_MESSAGE = "mysql general error";
+
+    int REDIS_ERROR = 802;
+    String REDIS_ERROR_MESSAGE = "redis general error";
 
     // 901 - 1000
 }

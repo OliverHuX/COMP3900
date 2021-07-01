@@ -65,6 +65,11 @@ public class UserController {
         return userService.editPassword(req.getOldPassword(), req.getNewPassword(), req.userId);
     }
 
+    @RequestMapping(value = "/emailVerify/{token}", method = RequestMethod.GET)
+    public ServiceVO<?> emailVerify(@PathVariable String token) {
+        return userService.emailVerify(token);
+    }
+
     // TODO: just for test! Delete me!
     @RequestMapping(value = "/TestIndex", method = RequestMethod.GET)
     public ServiceVO<?> testIndex() {
