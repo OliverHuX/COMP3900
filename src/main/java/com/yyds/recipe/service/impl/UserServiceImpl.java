@@ -9,31 +9,27 @@ import com.yyds.recipe.utils.UUIDGenerator;
 import com.yyds.recipe.vo.ErrorCode;
 import com.yyds.recipe.vo.ServiceVO;
 import com.yyds.recipe.vo.SuccessCode;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.authc.pam.UnsupportedTokenException;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.Serializable;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -94,6 +90,9 @@ public class UserServiceImpl implements UserService {
         // Isaac TODO: JWT
 
         // Kylee TODO: email sender
+        if (!isEmailSent(userId)) {
+            return new ServiceVO<>(ErrorCode.BUSINESS_PARAMETER_ERROR, ErrorCode.BUSINESS_PARAMETER_ERROR_MESSAGE);
+        }
 
         // Channing TODO: redis
         String userToken = "UserJwtToken";
@@ -236,5 +235,54 @@ public class UserServiceImpl implements UserService {
         res.put("isExist", isExist);
         res.put("text", text);
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, res);
+    }
+
+    @Autowired
+    private JavaMailSender mailSender;
+
+
+    @SneakyThrows
+    public boolean isEmailSent(String userId) {
+        User user = null;
+
+//        try {
+//            user = userMapper.getUserbyId(userId);
+//        } catch (Exception e) {
+//            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+//        }
+
+        String emailFrom = "YYDS.W09A@gmail.com";
+
+        // Need to change these later
+        String emailTo = "YYDS.W09A@gmail.com";
+        String token = "abcd123";
+
+        //String emailTo = user.getEmail();
+        //String token = userService.createToken();
+
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message);
+
+            helper.setSubject("[YYDS] Please Verify Your Email!");
+            helper.setFrom(emailFrom);
+            helper.setTo(emailTo);
+
+
+            //        helper.setText("<b>Dear <code>user.getFirstName()</code></b>,<br><p>Welcome to </p><b>YYDS</b>! Please verify" +
+            //                       " your account within <b>10 minutes</b> following this link: http://yyds" +
+            //                       ".com/<code>token</code></p>", true);
+
+            helper.setText("<b>Dear <code>emailTo</code></b>,<br><p>Welcome to </p><b>YYDS</b>! Please verify" +
+                           " your account within <b>10 minutes</b> following this link: http://yyds" +
+                           ".com/<code>token</code></p>", true);
+
+            mailSender.send(message);
+
+        } catch (Exception e) {
+            return false;
+        }
+
+        return true;
     }
 }
