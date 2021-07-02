@@ -21,6 +21,4 @@ public interface UserService {
     ServiceVO<?> editUser(User user);
 
     ServiceVO<?> editPassword(String newPassword, String userId);
-
-    ServiceVO<?> sendEmail(String userId);
 }

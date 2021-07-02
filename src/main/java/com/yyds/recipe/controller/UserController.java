@@ -118,10 +118,5 @@ public class UserController {
         serviceVO.setData(userId);
         return serviceVO;
     }
-
-    @RequestMapping(value = "/sendEmail", method = RequestMethod.GET)
-    public ServiceVO<?> sendEmail(@RequestParam(value = "userId") String userId) {
-        return userService.sendEmail(userId);
-    }
 }
 

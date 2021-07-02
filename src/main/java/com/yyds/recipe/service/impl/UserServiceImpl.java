@@ -71,6 +71,10 @@ public class UserServiceImpl implements UserService {
             return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
         }
 
+        if (!isEmailSent(userId)) {
+            return new ServiceVO<>(ErrorCode.BUSINESS_PARAMETER_ERROR, ErrorCode.BUSINESS_PARAMETER_ERROR_MESSAGE);
+        }
+
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, userId);
 
     }
@@ -255,8 +259,7 @@ public class UserServiceImpl implements UserService {
 
 
     @SneakyThrows
-    @Override
-    public ServiceVO<?> sendEmail(String userId) {
+    public boolean isEmailSent(String userId) {
         User user = null;
 
 //        try {
@@ -294,10 +297,10 @@ public class UserServiceImpl implements UserService {
             mailSender.send(message);
 
         } catch (Exception e) {
-            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+            return false;
         }
 
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, token);
+        return true;
     }
 
 }
