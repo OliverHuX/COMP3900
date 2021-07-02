@@ -23,6 +23,7 @@ spring:
         max-idle: 8
         max-active: 20
         max-wait: -1
+    password: ^P9eVPp737vGjpmgqo#R3#&F%s7i
 
 # mybatis
 mybatis:
