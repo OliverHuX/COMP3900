@@ -7,6 +7,7 @@ import com.yyds.recipe.service.UserService;
 import com.yyds.recipe.utils.JwtUtil;
 import com.yyds.recipe.utils.SaltGenerator;
 import com.yyds.recipe.utils.UUIDGenerator;
+import com.yyds.recipe.utils.UserSession;
 import com.yyds.recipe.vo.ErrorCode;
 import com.yyds.recipe.vo.ServiceVO;
 import com.yyds.recipe.vo.SuccessCode;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +38,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+
 
 import static com.yyds.recipe.vo.ErrorCode.EMAIL_VERIFY_ERROR_MESSAGE;
 
