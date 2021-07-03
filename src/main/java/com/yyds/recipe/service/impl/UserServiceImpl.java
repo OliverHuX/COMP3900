@@ -4,6 +4,7 @@ import com.yyds.recipe.mapper.UserMapper;
 import com.yyds.recipe.model.LoginUser;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
+import com.yyds.recipe.utils.JwtUtil;
 import com.yyds.recipe.utils.SaltGenerator;
 import com.yyds.recipe.utils.UUIDGenerator;
 import com.yyds.recipe.vo.ErrorCode;
@@ -17,6 +18,7 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -25,14 +27,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.Serializable;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -48,6 +48,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private RedisTemplate<String, Serializable> redisTemplate;
+
+    @Autowired
+    private JavaMailSender mailSender;
+
+    @Value("${spring.mail.username}")
+    private String mailSenderAddress;
 
     private static final String PASSWORD_REGEX_PATTERN = "^(?![0-9]+$)(?![a-z]+$)(?![A-Z]+$)(?!([^(0-9a-zA-Z)])+$).{6,20}$";
     private static final int PASSWORD_LENGTH = 6;
@@ -91,45 +97,35 @@ public class UserServiceImpl implements UserService {
         Md5Hash md5Hash = new Md5Hash(user.getPassword(), salt, 1024);
         user.setPassword(md5Hash.toHex());
 
-        // Isaac TODO: JWT
-        String header = "{";
-        header += "alg: HS256";
-        header += "typ: JWT}";
+        // JWT
+        HashMap<String, String> payload = new HashMap<>();
+        payload.put("userId", user.getUserId());
+        payload.put("email", user.getEmail());
+        String userToken = JwtUtil.createToken(payload);
 
-        String payload = "{";
-        payload += "sub: Register";
-        payload += "userId: " + userId;
-        payload += "user" + user.toString() + "}";
-
-        String base = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        Random random = new Random();
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 256; i++) {
-            int number = random.nextInt(base.length());
-            sb.append(base.charAt(number));
-        }
-        String secret = sb.toString();
-        String jwt;
-        try {
-            jwt = SaltGenerator.HMACSHA256(SaltGenerator.base64UrlEncode(header) + "." + SaltGenerator.base64UrlEncode(payload), secret);
-        } catch (Exception e) {
-            e.printStackTrace();
-            jwt = header + "." + payload + "." + secret;
-        }
-
-
-        // Kylee TODO: email sender
-        if (!isEmailSent(userId)) {
-            return new ServiceVO<>(ErrorCode.BUSINESS_PARAMETER_ERROR, ErrorCode.BUSINESS_PARAMETER_ERROR_MESSAGE);
-        }
-
-        // Channing TODO: redis
-        String userToken = "UserJwtToken";
+        // set in redis
         ValueOperations<String, Serializable> opsForValue = redisTemplate.opsForValue();
         opsForValue.set(userToken, user, 30, TimeUnit.MINUTES);
 
+        // send email
+        // TODO: test email and smtp
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+            mimeMessageHelper.setSubject("[YYDS] Please Verify Your Email!");
+            mimeMessageHelper.setFrom(mailSenderAddress);
+            mimeMessageHelper.setTo(user.getEmail());
+            mimeMessageHelper.setText("<b>Dear <code>emailTo</code></b>,<br><p>Welcome to </p><b>YYDS</b>! Please verify" +
+                    " your account within <b>10 minutes</b> following this link: localhost:8080/emailVerify/" +
+                    ".com/<code>" + userToken + "</code></p>", true);
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            redisTemplate.delete(userToken);
+            return new ServiceVO<>(ErrorCode.MAIL_SERVER_ERROR, ErrorCode.MAIL_SERVER_ERROR_MESSAGE);
+        }
+
         HashMap<String, Object> resultMap = new HashMap<>();
-        resultMap.put("userId", userId);
+        resultMap.put("token", userToken);
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, resultMap);
 
     }
@@ -266,9 +262,6 @@ public class UserServiceImpl implements UserService {
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, res);
     }
 
-    @Autowired
-    private JavaMailSender mailSender;
-
 
     @SneakyThrows
     public boolean isEmailSent(String userId) {
@@ -303,8 +296,8 @@ public class UserServiceImpl implements UserService {
             //                       ".com/<code>token</code></p>", true);
 
             helper.setText("<b>Dear <code>emailTo</code></b>,<br><p>Welcome to </p><b>YYDS</b>! Please verify" +
-                           " your account within <b>10 minutes</b> following this link: http://yyds" +
-                           ".com/<code>token</code></p>", true);
+                    " your account within <b>10 minutes</b> following this link: http://yyds" +
+                    ".com/<code>token</code></p>", true);
 
             mailSender.send(message);
 

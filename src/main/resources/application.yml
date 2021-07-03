@@ -25,6 +25,18 @@ spring:
         max-wait: -1
     password: ^P9eVPp737vGjpmgqo#R3#&F%s7i
 
+  # gmail
+  mail:
+    host: smtp.gmail.com
+    username: YYDS.W09A@gmail.com
+    password: yysd3600
+    port: 587
+    properties.mail.smtp.auth: true
+#    properties.mail.display.sendmail: COMP3900-YYDS
+#    properties.mail.smtp.starttls.enable: true
+    properties.mail.smtp.starttls.required: true
+    default-encoding: utf-8
+
 # mybatis
 mybatis:
   mapper-locations: classpath:/mapper/*.xml

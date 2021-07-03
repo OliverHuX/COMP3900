@@ -40,5 +40,8 @@ public interface ErrorCode {
     int REDIS_ERROR = 802;
     String REDIS_ERROR_MESSAGE = "redis general error";
 
+    int MAIL_SERVER_ERROR = 803;
+    String MAIL_SERVER_ERROR_MESSAGE = "mail server error";
+
     // 901 - 1000
 }
