@@ -119,7 +119,7 @@ public class UserServiceImpl implements UserService {
                     " your account within <b>30 minutes</b> following this link: localhost:8080/emailVerify/" +
                     userToken + "</code></p>", true);
             mailSender.send(mimeMessage);
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             redisTemplate.delete(userToken);
             return new ServiceVO<>(ErrorCode.MAIL_SERVER_ERROR, ErrorCode.MAIL_SERVER_ERROR_MESSAGE);
         }
@@ -260,51 +260,5 @@ public class UserServiceImpl implements UserService {
         res.put("isExist", isExist);
         res.put("text", text);
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, res);
-    }
-
-
-    @SneakyThrows
-    public boolean isEmailSent(String userId) {
-        User user = null;
-
-//        try {
-//            user = userMapper.getUserbyId(userId);
-//        } catch (Exception e) {
-//            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
-//        }
-
-        String emailFrom = "YYDS.W09A@gmail.com";
-
-        // Need to change these later
-        String emailTo = "YYDS.W09A@gmail.com";
-        String token = "abcd123";
-
-        //String emailTo = user.getEmail();
-        //String token = userService.createToken();
-
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message);
-
-            helper.setSubject("[YYDS] Please Verify Your Email!");
-            helper.setFrom(emailFrom);
-            helper.setTo(emailTo);
-
-
-            //        helper.setText("<b>Dear <code>user.getFirstName()</code></b>,<br><p>Welcome to </p><b>YYDS</b>! Please verify" +
-            //                       " your account within <b>10 minutes</b> following this link: http://yyds" +
-            //                       ".com/<code>token</code></p>", true);
-
-            helper.setText("<b>Dear <code>emailTo</code></b>,<br><p>Welcome to </p><b>YYDS</b>! Please verify" +
-                    " your account within <b>10 minutes</b> following this link: http://yyds" +
-                    ".com/<code>token</code></p>", true);
-
-            mailSender.send(message);
-
-        } catch (Exception e) {
-            return false;
-        }
-
-        return true;
     }
 }
