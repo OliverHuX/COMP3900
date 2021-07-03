@@ -40,8 +40,6 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 
-import static com.yyds.recipe.vo.ErrorCode.EMAIL_VERIFY_ERROR_MESSAGE;
-
 @Service
 @EnableTransactionManagement
 public class UserServiceImpl implements UserService {
@@ -219,7 +217,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ServiceVO<?> emailVerify(String token) {
         if (Boolean.FALSE.equals(redisTemplate.hasKey(token))) {
-            return new ServiceVO<>(ErrorCode.EMAIL_VERIFY_ERROR, EMAIL_VERIFY_ERROR_MESSAGE);
+            return new ServiceVO<>(ErrorCode.EMAIL_VERIFY_ERROR, ErrorCode.EMAIL_VERIFY_ERROR_MESSAGE);
         }
 
         User user = null;
