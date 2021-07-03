@@ -3,10 +3,8 @@ package com.yyds.recipe.utils;
 import org.apache.tomcat.util.codec.binary.Base64;
 
 import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
 import java.util.Arrays;
-import java.util.HashMap;
 
 public class SaltGenerator {
     public static String getSalt() {
