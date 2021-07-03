@@ -7,12 +7,13 @@ import lombok.experimental.Accessors;
 import org.springframework.lang.NonNull;
 
 import javax.validation.constraints.*;
+import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public class User {
+public class User implements Serializable {
     private String userId;
     private String firstName;
     private String lastName;
