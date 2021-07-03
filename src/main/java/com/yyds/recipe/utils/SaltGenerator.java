@@ -19,12 +19,12 @@ public class SaltGenerator {
         return Base64.encodeBase64String(bytes);
     }
 
-    public static String base64UrlEncode(String str) throws Exception {
-        return Base64.encodeBase64String(str.getBytes("UTF-8"));
-    }
-
-    public static String HMACSHA256(String s, String secret) throws Exception {
-        Mac sha256 = Mac.getInstance("HmacSHA256");
-        return s + Base64.encodeBase64String(sha256.doFinal(secret.getBytes("UTF-8")));
-    }
+//    public static String base64UrlEncode(String str) throws Exception {
+//        return Base64.encodeBase64String(str.getBytes("UTF-8"));
+//    }
+//
+//    public static String HMACSHA256(String s, String secret) throws Exception {
+//        Mac sha256 = Mac.getInstance("HmacSHA256");
+//        return s + Base64.encodeBase64String(sha256.doFinal(secret.getBytes("UTF-8")));
+//    }
 }
