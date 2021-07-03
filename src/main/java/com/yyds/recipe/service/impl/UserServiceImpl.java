@@ -115,9 +115,9 @@ public class UserServiceImpl implements UserService {
             mimeMessageHelper.setSubject("[YYDS] Please Verify Your Email!");
             mimeMessageHelper.setFrom(mailSenderAddress);
             mimeMessageHelper.setTo(user.getEmail());
-            mimeMessageHelper.setText("<b>Dear <code>emailTo</code></b>,<br><p>Welcome to </p><b>YYDS</b>! Please verify" +
-                    " your account within <b>10 minutes</b> following this link: localhost:8080/emailVerify/" +
-                    ".com/<code>" + userToken + "</code></p>", true);
+            mimeMessageHelper.setText("<b>Dear <code>" + user.getNickName() + "</code></b>,<br><p>Welcome to </p><b>YYDS</b>! Please verify" +
+                    " your account within <b>30 minutes</b> following this link: localhost:8080/emailVerify/" +
+                    userToken + "</code></p>", true);
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
             redisTemplate.delete(userToken);
