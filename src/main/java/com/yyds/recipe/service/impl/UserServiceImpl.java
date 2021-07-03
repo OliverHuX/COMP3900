@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import static com.yyds.recipe.vo.ErrorCode.EMAIL_VERIFY_ERROR_MESSAGE;
@@ -88,6 +89,25 @@ public class UserServiceImpl implements UserService {
         user.setPassword(md5Hash.toHex());
 
         // Isaac TODO: JWT
+        HashMap<String, Object> header = new HashMap<>();
+        header.put("alg", "HS256");
+        header.put("typ", "JWT");
+
+        HashMap<String, Object> payload = new HashMap<>();
+        payload.put("sub", "Register");
+        payload.put("userId", userId);
+        payload.put("user", user);
+
+        String base = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 256; i++) {
+            int number = random.nextInt(base.length());
+            sb.append(base.charAt(number));
+        }
+        String secret = sb.toString();
+        String jwt = HMACSHA256(base64UrlEncode(header) + "." + base64UrlEncode(payload) + "." + secret);
+
 
         // Kylee TODO: email sender
         if (!isEmailSent(userId)) {
