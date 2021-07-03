@@ -25,11 +25,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.Serializable;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -89,14 +92,14 @@ public class UserServiceImpl implements UserService {
         user.setPassword(md5Hash.toHex());
 
         // Isaac TODO: JWT
-        HashMap<String, Object> header = new HashMap<>();
-        header.put("alg", "HS256");
-        header.put("typ", "JWT");
+        String header = "{";
+        header += "alg: HS256";
+        header += "typ: JWT}";
 
-        HashMap<String, Object> payload = new HashMap<>();
-        payload.put("sub", "Register");
-        payload.put("userId", userId);
-        payload.put("user", user);
+        String payload = "{";
+        payload += "sub: Register";
+        payload += "userId: " + userId;
+        payload += "user" + user.toString() + "}";
 
         String base = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         Random random = new Random();
@@ -106,7 +109,13 @@ public class UserServiceImpl implements UserService {
             sb.append(base.charAt(number));
         }
         String secret = sb.toString();
-        String jwt = HMACSHA256(base64UrlEncode(header) + "." + base64UrlEncode(payload) + "." + secret);
+        String jwt;
+        try {
+            jwt = SaltGenerator.HMACSHA256(SaltGenerator.base64UrlEncode(header) + "." + SaltGenerator.base64UrlEncode(payload), secret);
+        } catch (Exception e) {
+            e.printStackTrace();
+            jwt = header + "." + payload + "." + secret;
+        }
 
 
         // Kylee TODO: email sender
