@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.yyds.recipe.mapper.UserMapper">
-    
+
     <resultMap id="UserResultMap" type="com.yyds.recipe.model.User">
         <result column="user_id" property="userId" jdbcType="VARCHAR"/>
         <result column="email" property="email" jdbcType="VARCHAR"/>
@@ -15,13 +15,15 @@
         <result column="gender" property="gender" jdbcType="INTEGER"/>
         <result column="create_time" property="createTime" jdbcType="VARCHAR"/>
         <result column="profile_photo" property="profilePhoto" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="salt" property="salt" jdbcType="VARCHAR"/>
     </resultMap>
 
     <resultMap id="UserAccountResultMap" type="com.yyds.recipe.model.LoginUser">
         <result column="user_id" property="userId" jdbcType="VARCHAR"/>
         <result column="password" property="password" jdbcType="VARCHAR"/>
     </resultMap>
-    
+
     <insert id="saveUser" parameterType="com.yyds.recipe.model.User">
         insert into recipe.user(user_id, email, first_name, last_name, nick_name, birthdate, gender,
                                 create_time)
@@ -29,8 +31,8 @@
     </insert>
 
     <insert id="saveUserAccount" parameterType="com.yyds.recipe.model.User">
-        insert into recipe.user_account(user_id, password)
-        values (#{userId}, #{password})
+        insert into recipe.user_account(user_id, password, salt)
+        values (#{userId}, #{password}, #{salt})
     </insert>
 
     <update id="editUser" parameterType="com.yyds.recipe.model.User">
@@ -64,7 +66,46 @@
         select ua.user_id, ua.password, u.email
         from recipe.user_account ua
                  inner join recipe.user u
-        on ua.user_id = u.user_id where u.email = #{email}
+                            on ua.user_id = u.user_id
+        where u.email = #{email}
+    </select>
+
+    <select id="getUserByEmail" parameterType="java.lang.String" resultMap="UserResultMap">
+        select u.user_id,
+               u.email,
+               u.first_name,
+               u.last_name,
+               u.nick_name,
+               ua.password,
+               ua.salt,
+               u.birthdate,
+               u.gender,
+               u.contact,
+               u.address,
+               u.create_time,
+               u.profile_photo
+        from recipe.user u
+                 left join recipe.user_account ua on u.user_id = ua.user_id
+        where u.email = #{email};
+    </select>
+
+    <select id="getUserByUserId" parameterType="java.lang.String" resultMap="UserResultMap">
+        select u.user_id,
+               u.email,
+               u.first_name,
+               u.last_name,
+               u.nick_name,
+               ua.password,
+               ua.salt,
+               u.birthdate,
+               u.gender,
+               u.contact,
+               u.address,
+               u.create_time,
+               u.profile_photo
+        from recipe.user u
+                 left join recipe.user_account ua on u.user_id = ua.user_id
+        where u.user_id = #{userId}
     </select>
 
 </mapper>

@@ -18,7 +18,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotNull;
 
 @RestController
-@Validated
+// @Validated
 public class UserController {
 
     @Autowired
@@ -32,53 +32,16 @@ public class UserController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ServiceVO<?> login(@RequestBody LoginUser loginUser, HttpSession httpSession, HttpServletRequest request, HttpServletResponse response) {
         return userService.loginUser(loginUser, httpSession, request, response);
-//        Map<String, Object> rsp = ResponseUtil.getResponse();
-//        LoginUser user = null;
-//        try {
-//            user = userService.loginUser(loginUser);
-//
-//            UserSession userSession = new UserSession(user.getUserId());
-//            httpSession.setAttribute(UserSession.ATTRIBUTE_ID, userSession);
-//
-//            Cookie userCookie = new Cookie("user-login-cookie", user.getUserId());
-//            userCookie.setMaxAge(2 * 60 * 60);
-//            userCookie.setPath(request.getContextPath());
-//            response.addCookie(userCookie);
-//            rsp.put("userId", user.getUserId());
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            rsp.put("code", -1);
-//            rsp.put("error message", e.toString());
-//            return rsp;
-//        }
-//        return rsp;
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public ServiceVO<?> logout(@RequestParam(value = "userId") String userId, HttpSession httpSession, HttpServletResponse response ) {
+    public ServiceVO<?> logout(@RequestParam(value = "userId") String userId, HttpSession httpSession, HttpServletResponse response) {
         return userService.logoutUser(userId, httpSession, response);
-        // TODO: unhandled exceptions
-//        Map<String, Object> rsp = ResponseUtil.getResponse();
-//        httpSession.removeAttribute(UserSession.ATTRIBUTE_ID);
-//        Cookie cookie = new Cookie("user-login-cookie", null);
-//        cookie.setMaxAge(0);
-//        response.addCookie(cookie);
-//        return rsp;
     }
 
     @RequestMapping(value = "/editProfile", method = RequestMethod.POST)
     public ServiceVO<?> editProfile(@RequestBody User user) {
         return userService.editUser(user);
-//        Map<String, Object> rsp = ResponseUtil.getResponse();
-//        try {
-//            userService.editUser(user);
-//        } catch (Exception e) {
-//            rsp.put("code", -1);
-//            rsp.put("error message", e.toString());
-//            return rsp;
-//        }
-//        return rsp;
     }
 
     @AllArgsConstructor
@@ -95,28 +58,32 @@ public class UserController {
 
     @RequestMapping(value = "/editPassword", method = RequestMethod.POST)
     public ServiceVO<?> editPassword(@RequestBody editPasswordReq req) {
-        return userService.editPassword(req.getNewPassword(), req.userId);
-//        Map<String, Object> rsp = ResponseUtil.getResponse();
-//        String newPassword = req.getNewPassword();
-//        String userId = req.getUserId();
-//
-//        try {
-//            userService.editPassword(newPassword, userId);
-//        } catch (Exception e) {
-//            rsp.put("error message", e.toString());
-//            rsp.put("code", -1);
-//            return rsp;
-//        }
-//        return rsp;
+        return userService.editPassword(req.getOldPassword(), req.getNewPassword(), req.userId);
+    }
+
+    @RequestMapping(value = "/emailVerify/{token}", method = RequestMethod.GET)
+    public ServiceVO<?> emailVerify(@PathVariable String token) {
+        return userService.emailVerify(token);
     }
 
     // TODO: just for test! Delete me!
-    @RequestMapping(value = "/index", method = RequestMethod.GET)
+    @RequestMapping(value = "/TestIndex", method = RequestMethod.GET)
     public ServiceVO<?> testIndex() {
         ServiceVO<Object> serviceVO = new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
         String userId = "5f08f1d2-8c35-417b-9016-17c413be6a4f";
         serviceVO.setData(userId);
         return serviceVO;
     }
+
+    @RequestMapping(value = "/TestMySql", method = RequestMethod.GET)
+    public ServiceVO<?> testSql() {
+        return userService.testSqlOnly();
+    }
+
+    @RequestMapping(value = "/TestRedis", method = RequestMethod.GET)
+    public ServiceVO<?> testRedis() {
+        return userService.testRedisOnly();
+    }
+
 }
 
