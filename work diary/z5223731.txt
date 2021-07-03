@@ -1,0 +1,11 @@
+Week1
+
+Week2
+
+Week3
+Add Login and register page of frontend
+Add background of these pages
+
+Week4
+Add following new features of register page:
+Nickname, BOD and Gender
