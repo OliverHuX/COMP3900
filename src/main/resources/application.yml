@@ -32,19 +32,24 @@ spring:
     password: yysd3600
     port: 465
     protocol: smtp
-    properties.mail.smtp.auth: true
-    properties.mail.smtp.starttls.enable: true
-    properties.mail.smtp.starttls.required: true
-
-    properties.mail.smtp.connectiontimeout: 6000
-    properties.mail.smtp.timeout: 5000
-    properties.mail.smtp.writetimeout: 5000
-
-    properties.mail.smtp.ssl.enable: true
-    properties.mail.smtp.socketFactory.port: 465
-    properties.mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
-    #    properties.mail.display.sendmail: COMP3900-YYDS
+    properties.mail.display.sendmail: Springboot
+    properties.mail.display.sendname: COMP3900-YYDS
     default-encoding: utf-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            required: true
+            enable: true
+          timeout: 6000
+          connectiontimeout: 6000
+          writetimeout: 6000
+          ssl: true
+          socketFactory:
+            port: 465
+            class: javax.net.ssl.SSLSocketFactory
+
 
 # mybatis
 mybatis:
