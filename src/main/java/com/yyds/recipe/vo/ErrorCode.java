@@ -29,6 +29,9 @@ public interface ErrorCode {
     int EMAIL_VERIFY_ERROR = 607;
     String EMAIL_VERIFY_ERROR_MESSAGE = "email verify expired";
 
+    int IMAGE_VERIFY_ERROR = 608;
+    String IMAGE_VERIFY_ERROR_MESSAGE = "image verify expired";
+
     // 701 - 800 service logic error
     int BUSINESS_PARAMETER_ERROR = 701;
     String BUSINESS_PARAMETER_ERROR_MESSAGE = "business parameter error";
