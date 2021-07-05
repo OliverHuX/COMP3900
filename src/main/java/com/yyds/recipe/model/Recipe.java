@@ -15,16 +15,13 @@ import java.util.HashMap;
 @Accessors(chain = true)
 public class Recipe {
     private String recipeId;
-    @NotNull
     private String introduction;
+    private String userId;
     // can use enum to create variety type
     private String variety;
     private String createTime;
-    private Integer likes;
-    private Boolean privacy;
-    @NotNull
-    private BufferedInputStream image;
+    private int likes;
+    private Boolean isPrivacy;
+    private String image;
     private HashMap<User, String> comments;
-    @NotNull
-    private User poster;
 }

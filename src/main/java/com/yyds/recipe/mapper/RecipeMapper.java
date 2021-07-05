@@ -10,8 +10,6 @@ public interface RecipeMapper {
 
     void saveRecipe(Recipe recipe);
 
-    void editRecipe(Recipe recipe);
-
     @Select("select * from user where userId = #{userId}")
     User getUserByUserId(String userId);
 }

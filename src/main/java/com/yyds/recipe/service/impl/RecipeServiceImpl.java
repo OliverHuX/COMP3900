@@ -21,13 +21,14 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public ServiceVO<?> postRecipe(Recipe recipe) {
 
-        if (recipe.getPoster() == null || recipeMapper.getUserByUserId(recipe.getPoster().getUserId()) == null) {
-            return new ServiceVO<>(ErrorCode.USERID_NOT_FOUND_ERROR, ErrorCode.USERID_NOT_FOUND_ERROR_MESSAGE);
+        if (recipe.getUserId() == null || recipeMapper.getUserByUserId(recipe.getUserId()) == null) {
+            return new ServiceVO<>(ErrorCode.BUSINESS_PARAMETER_ERROR, ErrorCode.BUSINESS_PARAMETER_ERROR_MESSAGE);
         }
 
-        if (recipe.getImage() == null) {
-            return new ServiceVO<>(ErrorCode.IMAGE_VERIFY_ERROR, ErrorCode.IMAGE_VERIFY_ERROR_MESSAGE);
-        }
+        // TODO: not sure
+        // if (recipe.getImage() == null) {
+        //     return new ServiceVO<>(ErrorCode.IMAGE_VERIFY_ERROR, ErrorCode.IMAGE_VERIFY_ERROR_MESSAGE);
+        // }
 
         String recipeId = UUIDGenerator.createRecipeId();
         recipe.setRecipeId(recipeId);
@@ -46,7 +47,6 @@ public class RecipeServiceImpl implements RecipeService {
 
         HashMap<String, Object> resultMap = new HashMap<>();
         resultMap.put("recipeId", recipe.getRecipeId());
-        resultMap.put("createTime", recipe.getCreateTime());
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, resultMap);
     }
 }
