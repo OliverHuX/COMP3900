@@ -1,5 +1,6 @@
 package com.yyds.recipe.controller;
 
+import com.yyds.recipe.model.Recipe;
 import com.yyds.recipe.service.RecipeService;
 import com.yyds.recipe.vo.ServiceVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ public class RecipeController {
     private RecipeService recipeService;
 
     @RequestMapping(value = "/user/postRecipe", method = RequestMethod.POST)
-    public ServiceVO<?> postRecipe() {
-        return recipeService.postRecipe();
+    public ServiceVO<?> postRecipe(Recipe recipe) {
+        return recipeService.postRecipe(recipe);
     }
 }
