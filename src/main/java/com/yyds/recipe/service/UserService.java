@@ -20,5 +20,9 @@ public interface UserService {
 
     ServiceVO<?> editPassword(String oldPassword, String newPassword, String userId);
 
+    ServiceVO<?> emailVerify(String token);
+
     ServiceVO<?> testSqlOnly();
+
+    ServiceVO<?> testRedisOnly();
 }

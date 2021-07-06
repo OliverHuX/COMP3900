@@ -4,33 +4,41 @@ import com.yyds.recipe.mapper.UserMapper;
 import com.yyds.recipe.model.LoginUser;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
+import com.yyds.recipe.utils.JwtUtil;
 import com.yyds.recipe.utils.SaltGenerator;
 import com.yyds.recipe.utils.UUIDGenerator;
+import com.yyds.recipe.utils.UserSession;
 import com.yyds.recipe.vo.ErrorCode;
 import com.yyds.recipe.vo.ServiceVO;
 import com.yyds.recipe.vo.SuccessCode;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.authc.pam.UnsupportedTokenException;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.sql.SQLException;
+import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
 
 @Service
 @EnableTransactionManagement
@@ -39,12 +47,18 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
-    private static final String PASSWORD_REGEX_PATTERN = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,30}$";
+    @Autowired
+    private RedisTemplate<String, Serializable> redisTemplate;
+
+    @Autowired
+    private JavaMailSender mailSender;
+
+    @Value("${spring.mail.username}")
+    private String mailSenderAddress;
+
+    private static final String PASSWORD_REGEX_PATTERN = "^(?![0-9]+$)(?![a-z]+$)(?![A-Z]+$)(?!([^(0-9a-zA-Z)])+$).{6,20}$";
     private static final int PASSWORD_LENGTH = 6;
     private static final String EMAIL_REGEX_PATTEN = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
-    private static final String NAME_REGEX_PATTEN = "^[A-Za-z]+$";
-    private static final int NAME_LENGTH = 15;
-    private static final String BIRTHDAY_REGEX_PATTEN = "^\\d{4}-\\d{1,2}-\\d{1,2}";
 
     // TODO: transactional does not work
     @Transactional
@@ -84,21 +98,35 @@ public class UserServiceImpl implements UserService {
         Md5Hash md5Hash = new Md5Hash(user.getPassword(), salt, 1024);
         user.setPassword(md5Hash.toHex());
 
+        // JWT
+        HashMap<String, String> payload = new HashMap<>();
+        payload.put("userId", user.getUserId());
+        payload.put("email", user.getEmail());
+        String userToken = JwtUtil.createToken(payload);
 
-        try {
-            userMapper.saveUser(user);
-        } catch (Exception e) {
-            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
-        }
+        // set in redis
+        ValueOperations<String, Serializable> opsForValue = redisTemplate.opsForValue();
+        opsForValue.set(userToken, user, 30, TimeUnit.MINUTES);
 
+        // send email
+        // TODO: test email and smtp
         try {
-            userMapper.saveUserAccount(user);
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+            mimeMessageHelper.setSubject("[YYDS] Please Verify Your Email!");
+            mimeMessageHelper.setFrom(mailSenderAddress);
+            mimeMessageHelper.setTo(user.getEmail());
+            mimeMessageHelper.setText("<b>Dear <code>" + user.getNickName() + "</code></b>,<br><p>Welcome to </p><b>YYDS</b>! Please verify" +
+                    " your account within <b>30 minutes</b> following this link: localhost:8080/emailVerify/" +
+                    userToken + "</code></p>", true);
+            mailSender.send(mimeMessage);
         } catch (Exception e) {
-            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+            redisTemplate.delete(userToken);
+            return new ServiceVO<>(ErrorCode.MAIL_SERVER_ERROR, ErrorCode.MAIL_SERVER_ERROR_MESSAGE);
         }
 
         HashMap<String, Object> resultMap = new HashMap<>();
-        resultMap.put("userId", userId);
+        resultMap.put("token", userToken);
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, resultMap);
 
     }
@@ -187,8 +215,51 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public ServiceVO<?> emailVerify(String token) {
+        if (Boolean.FALSE.equals(redisTemplate.hasKey(token))) {
+            return new ServiceVO<>(ErrorCode.EMAIL_VERIFY_ERROR, ErrorCode.EMAIL_VERIFY_ERROR_MESSAGE);
+        }
+
+        User user = null;
+        try {
+            user = (User) redisTemplate.opsForValue().get(token);
+        } catch (Exception e) {
+            return new ServiceVO<>(ErrorCode.REDIS_ERROR, ErrorCode.REDIS_ERROR_MESSAGE);
+        }
+
+        try {
+            userMapper.saveUser(user);
+        } catch (Exception e) {
+            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+        }
+
+        try {
+            userMapper.saveUserAccount(user);
+        } catch (Exception e) {
+            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+        }
+
+        HashMap<String, Object> res = new HashMap<>();
+        res.put("userId", user.getUserId());
+        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, res);
+
+    }
+
+    @Override
     public ServiceVO<?> testSqlOnly() {
         int count = userMapper.testSql();
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, count);
+    }
+
+    @Override
+    public ServiceVO<?> testRedisOnly() {
+        ValueOperations<String, Serializable> opsForValue = redisTemplate.opsForValue();
+        opsForValue.set("test", "Minimal trader liver inter performances comprehensive boundaries, float gave bbs arguments donated pad certain, verde dad consolidated leg pierre. ");
+        Boolean isExist = redisTemplate.hasKey("test");
+        HashMap<String, Object> res = new HashMap<>();
+        String text = (String) redisTemplate.opsForValue().get("test");
+        res.put("isExist", isExist);
+        res.put("text", text);
+        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, res);
     }
 }

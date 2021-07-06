@@ -3,8 +3,6 @@ package com.yyds.recipe.controller;
 import com.yyds.recipe.model.LoginUser;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
-import com.yyds.recipe.utils.ResponseUtil;
-import com.yyds.recipe.utils.UserSession;
 import com.yyds.recipe.vo.ServiceVO;
 import com.yyds.recipe.vo.SuccessCode;
 import lombok.AllArgsConstructor;
@@ -14,12 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotNull;
-import java.util.Map;
 
 @RestController
 // @Validated
@@ -65,6 +61,11 @@ public class UserController {
         return userService.editPassword(req.getOldPassword(), req.getNewPassword(), req.userId);
     }
 
+    @RequestMapping(value = "/emailVerify/{token}", method = RequestMethod.GET)
+    public ServiceVO<?> emailVerify(@PathVariable String token) {
+        return userService.emailVerify(token);
+    }
+
     // TODO: just for test! Delete me!
     @RequestMapping(value = "/TestIndex", method = RequestMethod.GET)
     public ServiceVO<?> testIndex() {
@@ -78,5 +79,11 @@ public class UserController {
     public ServiceVO<?> testSql() {
         return userService.testSqlOnly();
     }
+
+    @RequestMapping(value = "/TestRedis", method = RequestMethod.GET)
+    public ServiceVO<?> testRedis() {
+        return userService.testRedisOnly();
+    }
+
 }
 
