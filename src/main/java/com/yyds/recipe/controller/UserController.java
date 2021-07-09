@@ -1,6 +1,6 @@
 package com.yyds.recipe.controller;
 
-import com.yyds.recipe.model.LoginUser;
+
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
 import com.yyds.recipe.vo.ServiceVO;
@@ -29,8 +29,8 @@ public class UserController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ServiceVO<?> login(@RequestBody LoginUser loginUser, HttpServletRequest request, HttpServletResponse response) {
-        return userService.loginUser(loginUser, request, response);
+    public ServiceVO<?> login(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
+        return userService.loginUser(user, request, response);
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)

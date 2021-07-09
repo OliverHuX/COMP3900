@@ -1,7 +1,6 @@
 package com.yyds.recipe.service.impl;
 
 import com.yyds.recipe.mapper.UserMapper;
-import com.yyds.recipe.model.LoginUser;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
 import com.yyds.recipe.utils.BcryptPasswordUtil;
@@ -125,7 +124,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ServiceVO<?> loginUser(LoginUser loginUser, HttpServletRequest request, HttpServletResponse response) {
+    public ServiceVO<?> loginUser(User loginUser, HttpServletRequest request, HttpServletResponse response) {
 
         User user = userMapper.getUserByEmail(loginUser.getEmail());
         if (user == null) {

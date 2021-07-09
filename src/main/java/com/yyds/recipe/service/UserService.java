@@ -12,7 +12,7 @@ public interface UserService {
 
     ServiceVO<?> register(User user, HttpServletRequest request, HttpServletResponse response);
 
-    ServiceVO<?> loginUser(LoginUser loginUser, HttpServletRequest request, HttpServletResponse response);
+    ServiceVO<?> loginUser(User loginUser, HttpServletRequest request, HttpServletResponse response);
 
     ServiceVO<?> logoutUser(String userId,HttpServletRequest request, HttpServletResponse response);
 
