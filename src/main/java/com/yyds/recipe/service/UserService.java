@@ -1,12 +1,10 @@
 package com.yyds.recipe.service;
 
-import com.yyds.recipe.model.LoginUser;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.vo.ServiceVO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 public interface UserService {
 
