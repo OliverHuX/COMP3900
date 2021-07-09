@@ -159,9 +159,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ServiceVO<?> logoutUser(String userId, HttpServletRequest request, HttpServletResponse response) {
-        // Subject subject = SecurityUtils.getSubject();
-        // subject.logout();
-
+        String token = request.getHeader("token");
+        redisTemplate.delete(token);
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
     }
 
