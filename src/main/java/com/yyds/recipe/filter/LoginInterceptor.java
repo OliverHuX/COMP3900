@@ -1,5 +1,6 @@
-package com.yyds.recipe.interceptor;
+package com.yyds.recipe.filter;
 
+import com.yyds.recipe.exception.AuthorizationException;
 import com.yyds.recipe.mapper.UserMapper;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.utils.JwtUtil;
@@ -24,25 +25,21 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        // String requestURI = request.getRequestURI();
-        // if (requestURI.contains("/login") || requestURI.contains("/register") || requestURI.contains("emailVerify")) {
-        //     return true;
-        // }
         String token = request.getHeader("token");
         if (!(handler instanceof HandlerMethod)) {
             return true;
         }
         if (StringUtils.isEmpty(token)) {
-            throw new Exception();
+            throw new AuthorizationException();
         }
 
         String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
         User user = userMapper.getUserByUserId(userId);
         if (user == null) {
-            throw new Exception();
+            throw new AuthorizationException();
         }
         if (!redisTemplate.hasKey(token)) {
-            throw new Exception();
+            throw new AuthorizationException();
         }
         return true;
     }

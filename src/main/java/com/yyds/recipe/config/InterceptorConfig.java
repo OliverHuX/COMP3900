@@ -1,6 +1,6 @@
 package com.yyds.recipe.config;
 
-import com.yyds.recipe.interceptor.LoginInterceptor;
+import com.yyds.recipe.filter.LoginInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
