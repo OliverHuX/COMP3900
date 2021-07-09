@@ -4,20 +4,13 @@ import com.yyds.recipe.mapper.UserMapper;
 import com.yyds.recipe.model.LoginUser;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
+import com.yyds.recipe.utils.BcryptPasswordUtil;
 import com.yyds.recipe.utils.JwtUtil;
 import com.yyds.recipe.utils.SaltGenerator;
 import com.yyds.recipe.utils.UUIDGenerator;
-import com.yyds.recipe.utils.UserSession;
 import com.yyds.recipe.vo.ErrorCode;
 import com.yyds.recipe.vo.ServiceVO;
 import com.yyds.recipe.vo.SuccessCode;
-import lombok.SneakyThrows;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.IncorrectCredentialsException;
-import org.apache.shiro.authc.UnknownAccountException;
-import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.crypto.hash.Md5Hash;
-import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -28,15 +21,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
-
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.HashMap;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 
@@ -59,6 +51,7 @@ public class UserServiceImpl implements UserService {
     private static final String PASSWORD_REGEX_PATTERN = "^(?![0-9]+$)(?![a-z]+$)(?![A-Z]+$)(?!([^(0-9a-zA-Z)])+$).{6,20}$";
     private static final int PASSWORD_LENGTH = 6;
     private static final String EMAIL_REGEX_PATTEN = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
+    private static final String EMAIL_VERIFY_TOKEN_PREFIX = "email verify: ";
 
     // TODO: transactional does not work
     @Transactional
@@ -91,22 +84,22 @@ public class UserServiceImpl implements UserService {
 
         String userId = UUIDGenerator.createUserId();
         user.setUserId(userId);
+        user.setPassword(BcryptPasswordUtil.encodePassword(user.getPassword()));
         user.setCreateTime(String.valueOf(System.currentTimeMillis()));
-
-        String salt = SaltGenerator.getSalt();
-        user.setSalt(salt);
-        Md5Hash md5Hash = new Md5Hash(user.getPassword(), salt, 1024);
-        user.setPassword(md5Hash.toHex());
 
         // JWT
         HashMap<String, String> payload = new HashMap<>();
         payload.put("userId", user.getUserId());
         payload.put("email", user.getEmail());
-        String userToken = JwtUtil.createToken(payload);
+        String registerToken = EMAIL_VERIFY_TOKEN_PREFIX + JwtUtil.createToken(payload) ;
+
+        if (redisTemplate.hasKey(registerToken)) {
+            return new ServiceVO<>(ErrorCode.EMAIL_REGISTERED_BUT_NOT_VERIFIED, ErrorCode.EMAIL_REGISTERED_BUT_NOT_VERIFIED_MESSAGE);
+        }
 
         // set in redis
         ValueOperations<String, Serializable> opsForValue = redisTemplate.opsForValue();
-        opsForValue.set(userToken, user, 30, TimeUnit.MINUTES);
+        opsForValue.set(registerToken, user, 30, TimeUnit.MINUTES);
 
         // send email
         // TODO: test email and smtp
@@ -118,15 +111,15 @@ public class UserServiceImpl implements UserService {
             mimeMessageHelper.setTo(user.getEmail());
             mimeMessageHelper.setText("<b>Dear <code>" + user.getNickName() + "</code></b>,<br><p>Welcome to </p><b>YYDS</b>! Please verify" +
                     " your account within <b>30 minutes</b> following this link: localhost:8080/emailVerify/" +
-                    userToken + "</code></p>", true);
+                    registerToken + "</code></p>", true);
             mailSender.send(mimeMessage);
         } catch (Exception e) {
-            redisTemplate.delete(userToken);
+            redisTemplate.delete(registerToken);
             return new ServiceVO<>(ErrorCode.MAIL_SERVER_ERROR, ErrorCode.MAIL_SERVER_ERROR_MESSAGE);
         }
 
         HashMap<String, Object> resultMap = new HashMap<>();
-        resultMap.put("token", userToken);
+        resultMap.put("verify token", registerToken);
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, resultMap);
 
     }
@@ -134,22 +127,31 @@ public class UserServiceImpl implements UserService {
     @Override
     public ServiceVO<?> loginUser(LoginUser loginUser, HttpSession httpSession, HttpServletRequest request, HttpServletResponse response) {
 
-        Subject subject = SecurityUtils.getSubject();
-
-        try {
-            subject.login(new UsernamePasswordToken(loginUser.getEmail(), loginUser.getPassword()));
-        } catch (UnknownAccountException e) {
-            System.out.println("email error or not exist");
+        User user = userMapper.getUserByEmail(loginUser.getEmail());
+        if (user == null) {
             return new ServiceVO<>(ErrorCode.EMAIL_NOT_EXISTS_ERROR, ErrorCode.EMAIL_NOT_EXISTS_ERROR_MESSAGE);
-        } catch (IncorrectCredentialsException e) {
-            System.out.println("password error");
+        }
+        if (!BcryptPasswordUtil.passwordMatch(loginUser.getPassword(), user.getPassword())) {
             return new ServiceVO<>(ErrorCode.PASSWORD_INCORRECT_ERROR, ErrorCode.PASSWORD_INCORRECT_ERROR_MESSAGE);
         }
 
         String email = loginUser.getEmail();
         String userId = userMapper.getUserIdByEmail(email);
+        HashMap<String, String> payload = new HashMap<>();
+        payload.put("email", email);
+        payload.put("userId", userId);
+        String token = JwtUtil.createToken(payload);
         HashMap<String, Object> resultMap = new HashMap<>();
+
+        try {
+            ValueOperations<String, Serializable> opsForValue = redisTemplate.opsForValue();
+            opsForValue.set(token, user, Duration.ofHours(12));
+        } catch (Exception e) {
+            return new ServiceVO<>(ErrorCode.REDIS_ERROR, ErrorCode.REDIS_ERROR_MESSAGE);
+        }
+
         resultMap.put("userId", userId);
+        resultMap.put("token", token);
 
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, resultMap);
 
@@ -157,9 +159,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ServiceVO<?> logoutUser(String userId, HttpSession httpSession, HttpServletResponse response) {
-        Subject subject = SecurityUtils.getSubject();
-        subject.logout();
-        // TODO: have not deal session and cookie
+        // Subject subject = SecurityUtils.getSubject();
+        // subject.logout();
+
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
     }
 
@@ -197,19 +199,6 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = userMapper.getUserByUserId(userId);
-        Md5Hash md5Hash = new Md5Hash(oldPassword, user.getSalt(), 1024);
-        if (!md5Hash.toHex().equals(user.getPassword())) {
-            return new ServiceVO<>(ErrorCode.PASSWORD_INCORRECT_ERROR, ErrorCode.PASSWORD_INCORRECT_ERROR_MESSAGE);
-        }
-
-        String salt = SaltGenerator.getSalt();
-        md5Hash = new Md5Hash(newPassword, salt, 1024);
-        user.setPassword(md5Hash.toHex());
-        try {
-            userMapper.changePassword(userId, user.getPassword(), salt);
-        } catch (Exception e) {
-            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
-        }
 
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
     }
