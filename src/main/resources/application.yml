@@ -25,11 +25,11 @@ spring:
         max-wait: -1
     password: ^P9eVPp737vGjpmgqo#R3#&F%s7i
 
-  # gmail
+  # mail
   mail:
     host: smtp.gmail.com
     username: yyds.w09a@gmail.com
-    password: yysd3600
+    password: jpbdfjoagyzeteds
     port: 465
     protocol: smtp
     properties.mail.display.sendmail: Springboot

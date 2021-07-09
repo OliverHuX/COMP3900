@@ -2,7 +2,6 @@ package com.yyds.recipe.mapper;
 
 import com.yyds.recipe.model.LoginUser;
 import com.yyds.recipe.model.User;
-import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -25,7 +24,7 @@ public interface UserMapper {
     @Select("select password from user_account where user_id = #{userId}")
     String getPasswordByUserid(@Param(value = "userId") String userId);
 
-    @Update("update user_account set password = #{password}, salt = #{salt} where user_id = #{userId}")
+    @Update("update user_account set password = #{password} where user_id = #{userId}")
     void changePassword(@Param(value = "userId") String userId, @Param(value = "password") String newPassword, @Param(value = "salt") String salt);
 
     User getUserByEmail(String email);
