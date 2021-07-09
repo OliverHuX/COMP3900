@@ -18,10 +18,6 @@
         <result column="password" property="password" jdbcType="VARCHAR"/>
     </resultMap>
 
-    <resultMap id="UserAccountResultMap" type="com.yyds.recipe.model.LoginUser">
-        <result column="user_id" property="userId" jdbcType="VARCHAR"/>
-        <result column="password" property="password" jdbcType="VARCHAR"/>
-    </resultMap>
 
     <insert id="saveUser" parameterType="com.yyds.recipe.model.User">
         insert into recipe.user(user_id, email, first_name, last_name, nick_name, birthdate, gender,
