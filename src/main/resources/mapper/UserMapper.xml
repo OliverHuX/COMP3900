@@ -61,13 +61,6 @@
         </where>
     </update>
 
-    <select id="getLoginUserInfo" resultMap="UserAccountResultMap" parameterType="java.lang.String">
-        select ua.user_id, ua.password, u.email
-        from recipe.user_account ua
-                 inner join recipe.user u
-                            on ua.user_id = u.user_id
-        where u.email = #{email}
-    </select>
 
     <select id="getUserByEmail" parameterType="java.lang.String" resultMap="UserResultMap">
         select u.user_id,

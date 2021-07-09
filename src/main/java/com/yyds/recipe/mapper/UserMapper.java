@@ -1,6 +1,5 @@
 package com.yyds.recipe.mapper;
 
-import com.yyds.recipe.model.LoginUser;
 import com.yyds.recipe.model.User;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -19,7 +18,6 @@ public interface UserMapper {
     @Select("select * from user where userId = #{userId}")
     User getUserById(@Param(value = "userId") String userId);
 
-    LoginUser getLoginUserInfo(String email);
 
     @Select("select password from user_account where user_id = #{userId}")
     String getPasswordByUserid(@Param(value = "userId") String userId);
