@@ -2,9 +2,9 @@ package com.yyds.recipe.utils;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 
-import javax.crypto.Mac;
+
 import java.security.SecureRandom;
-import java.util.Arrays;
+
 
 public class SaltGenerator {
     public static String getSalt() {

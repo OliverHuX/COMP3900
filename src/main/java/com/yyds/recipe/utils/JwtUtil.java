@@ -5,6 +5,8 @@ import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class JwtUtil {
@@ -13,6 +15,11 @@ public class JwtUtil {
 
     public static String createToken(Map<String, String> payload) {
         JWTCreator.Builder builder = JWT.create();
+        LinkedHashMap<String, Object> headerMap = new LinkedHashMap<>();
+        headerMap.put("alg", "HS256");
+        headerMap.put("type", "JWT");
+
+        builder.withHeader(headerMap);
 
         payload.forEach(builder::withClaim);
 
