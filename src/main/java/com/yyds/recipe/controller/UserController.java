@@ -1,6 +1,6 @@
 package com.yyds.recipe.controller;
 
-import com.yyds.recipe.model.LoginUser;
+
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
 import com.yyds.recipe.vo.ServiceVO;
@@ -9,12 +9,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotNull;
 
 @RestController
@@ -25,23 +23,23 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public ServiceVO<?> register(@RequestBody User userReq, HttpSession httpSession, HttpServletRequest request, HttpServletResponse response) {
-        return userService.register(userReq, httpSession, request, response);
+    public ServiceVO<?> register(@RequestBody User userReq, HttpServletRequest request, HttpServletResponse response) {
+        return userService.register(userReq, request, response);
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ServiceVO<?> login(@RequestBody LoginUser loginUser, HttpSession httpSession, HttpServletRequest request, HttpServletResponse response) {
-        return userService.loginUser(loginUser, httpSession, request, response);
+    public ServiceVO<?> login(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
+        return userService.loginUser(user, request, response);
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public ServiceVO<?> logout(@RequestParam(value = "userId") String userId, HttpSession httpSession, HttpServletResponse response) {
-        return userService.logoutUser(userId, httpSession, response);
+    public ServiceVO<?> logout(@RequestParam(value = "userId") String userId, HttpServletRequest request, HttpServletResponse response) {
+        return userService.logoutUser(userId, request, response);
     }
 
     @RequestMapping(value = "/editProfile", method = RequestMethod.POST)
-    public ServiceVO<?> editProfile(@RequestBody User user) {
-        return userService.editUser(user);
+    public ServiceVO<?> editProfile(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
+        return userService.editUser(user, request, response);
     }
 
     @AllArgsConstructor
@@ -57,7 +55,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/editPassword", method = RequestMethod.POST)
-    public ServiceVO<?> editPassword(@RequestBody editPasswordReq req) {
+    public ServiceVO<?> editPassword(@RequestBody editPasswordReq req, HttpServletRequest request, HttpServletResponse response) {
         return userService.editPassword(req.getOldPassword(), req.getNewPassword(), req.userId);
     }
 

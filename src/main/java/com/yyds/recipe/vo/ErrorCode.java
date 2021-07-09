@@ -29,6 +29,12 @@ public interface ErrorCode {
     int EMAIL_VERIFY_ERROR = 607;
     String EMAIL_VERIFY_ERROR_MESSAGE = "email verify expired";
 
+    int EMAIL_REGISTERED_BUT_NOT_VERIFIED = 608;
+    String EMAIL_REGISTERED_BUT_NOT_VERIFIED_MESSAGE = "email register in 30 minutes but do not verify please check your email";
+
+    int USER_AUTHORIZATION_ERROR = 609;
+    String USER_AUTHORIZATION_ERROR_MESSAGE = "do not have authorization";
+
     // 701 - 800 service logic error
     int BUSINESS_PARAMETER_ERROR = 701;
     String BUSINESS_PARAMETER_ERROR_MESSAGE = "business parameter error";
