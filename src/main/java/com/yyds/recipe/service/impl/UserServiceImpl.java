@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
     // TODO: transactional does not work
     @Transactional
     @Override
-    public ServiceVO<?> register(User user, HttpSession httpSession, HttpServletRequest request, HttpServletResponse response) {
+    public ServiceVO<?> register(User user, HttpServletRequest request, HttpServletResponse response) {
 
         // check email if exist
         if (userMapper.getUserByEmail(user.getEmail()) != null) {
@@ -125,7 +125,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ServiceVO<?> loginUser(LoginUser loginUser, HttpSession httpSession, HttpServletRequest request, HttpServletResponse response) {
+    public ServiceVO<?> loginUser(LoginUser loginUser, HttpServletRequest request, HttpServletResponse response) {
 
         User user = userMapper.getUserByEmail(loginUser.getEmail());
         if (user == null) {
@@ -158,7 +158,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ServiceVO<?> logoutUser(String userId, HttpSession httpSession, HttpServletResponse response) {
+    public ServiceVO<?> logoutUser(String userId, HttpServletRequest request, HttpServletResponse response) {
         // Subject subject = SecurityUtils.getSubject();
         // subject.logout();
 
@@ -167,7 +167,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public ServiceVO<?> editUser(User user) {
+    public ServiceVO<?> editUser(User user, HttpServletRequest request, HttpServletResponse response) {
 
         if (userMapper.getUserByUserId(user.getUserId()) == null) {
             return new ServiceVO<>(ErrorCode.USERID_NOT_FOUND_ERROR, ErrorCode.USERID_NOT_FOUND_ERROR_MESSAGE);
