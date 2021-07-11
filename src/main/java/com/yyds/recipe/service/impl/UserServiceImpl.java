@@ -1,10 +1,12 @@
 package com.yyds.recipe.service.impl;
 
+import com.yyds.recipe.exception.response.ResponseCode;
 import com.yyds.recipe.mapper.UserMapper;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
 import com.yyds.recipe.utils.BcryptPasswordUtil;
 import com.yyds.recipe.utils.JwtUtil;
+import com.yyds.recipe.utils.ResponseUtil;
 import com.yyds.recipe.utils.UUIDGenerator;
 import com.yyds.recipe.vo.ErrorCode;
 import com.yyds.recipe.vo.ServiceVO;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -52,26 +55,26 @@ public class UserServiceImpl implements UserService {
     // TODO: transactional does not work
     @Transactional
     @Override
-    public ServiceVO<?> register(User user, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> register(User user, HttpServletRequest request, HttpServletResponse response) {
 
         // check email if exist
         if (userMapper.getUserByEmail(user.getEmail()) != null) {
-            return new ServiceVO<>(ErrorCode.EMAIL_ALREADY_EXISTS_ERROR, ErrorCode.EMAIL_ALREADY_EXISTS_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_ALREADY_EXISTS_ERROR, null, null);
         }
 
         if (user.getFirstName() == null || user.getLastName() == null || user.getGender() == null
                 || user.getEmail() == null || user.getPassword() == null || user.getBirthdate() == null) {
-            return new ServiceVO<>(ErrorCode.BUSINESS_PARAMETER_ERROR, ErrorCode.BUSINESS_PARAMETER_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.BUSINESS_PARAMETER_ERROR, null, null);
         }
 
         // check email
         if (!user.getEmail().matches(EMAIL_REGEX_PATTEN)) {
-            return new ServiceVO<>(ErrorCode.EMAIL_REGEX_ERROR, ErrorCode.EMAIL_REGEX_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_REGEX_ERROR, null, null);
         }
 
         // check password
         if (!user.getPassword().matches(PASSWORD_REGEX_PATTERN)) {
-            return new ServiceVO<>(ErrorCode.PASSWORD_REGEX_ERROR, ErrorCode.PASSWORD_REGEX_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.PASSWORD_REGEX_ERROR, null, null);
         }
 
         if (user.getNickName() == null) {
@@ -87,10 +90,14 @@ public class UserServiceImpl implements UserService {
         HashMap<String, String> payload = new HashMap<>();
         payload.put("userId", user.getUserId());
         payload.put("email", user.getEmail());
-        String registerToken = EMAIL_VERIFY_TOKEN_PREFIX + JwtUtil.createToken(payload) ;
+        String registerToken = EMAIL_VERIFY_TOKEN_PREFIX + JwtUtil.createToken(payload);
 
-        if (redisTemplate.hasKey(registerToken)) {
-            return new ServiceVO<>(ErrorCode.EMAIL_REGISTERED_BUT_NOT_VERIFIED, ErrorCode.EMAIL_REGISTERED_BUT_NOT_VERIFIED_MESSAGE);
+        Boolean isRegistered = redisTemplate.hasKey(registerToken);
+        if (isRegistered == null) {
+            return ResponseUtil.getResponse(ResponseCode.REDIS_ERROR, null, null);
+        }
+        if (isRegistered) {
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_REGISTERED_BUT_NOT_VERIFIED, null, null);
         }
 
         // set in redis
@@ -98,7 +105,6 @@ public class UserServiceImpl implements UserService {
         opsForValue.set(registerToken, user, 30, TimeUnit.MINUTES);
 
         // send email
-        // TODO: test email and smtp
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
@@ -111,13 +117,10 @@ public class UserServiceImpl implements UserService {
             mailSender.send(mimeMessage);
         } catch (Exception e) {
             redisTemplate.delete(registerToken);
-            return new ServiceVO<>(ErrorCode.MAIL_SERVER_ERROR, ErrorCode.MAIL_SERVER_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.MAIL_SERVER_ERROR, null, null);
         }
 
-        HashMap<String, Object> resultMap = new HashMap<>();
-        resultMap.put("verify token", registerToken);
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, resultMap);
-
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
     @Override
@@ -204,7 +207,7 @@ public class UserServiceImpl implements UserService {
             return new ServiceVO<>(ErrorCode.EMAIL_VERIFY_ERROR, ErrorCode.EMAIL_VERIFY_ERROR_MESSAGE);
         }
 
-        User user = null;
+        User user;
         try {
             user = (User) redisTemplate.opsForValue().get(token);
         } catch (Exception e) {

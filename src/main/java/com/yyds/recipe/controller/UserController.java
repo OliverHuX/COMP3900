@@ -1,29 +1,35 @@
 package com.yyds.recipe.controller;
 
 
+import com.yyds.recipe.exception.response.ResponseCode;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
+import com.yyds.recipe.utils.ResponseUtil;
 import com.yyds.recipe.vo.ServiceVO;
 import com.yyds.recipe.vo.SuccessCode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.function.ServerResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
-// @Validated
 public class UserController {
 
     @Autowired
     private UserService userService;
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public ServiceVO<?> register(@RequestBody User userReq, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> register(@RequestBody User userReq, HttpServletRequest request, HttpServletResponse response) {
         return userService.register(userReq, request, response);
     }
 
