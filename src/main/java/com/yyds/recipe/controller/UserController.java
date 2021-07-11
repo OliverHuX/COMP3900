@@ -66,28 +66,10 @@ public class UserController {
     }
 
     @RequestMapping(value = "/emailVerify/{token}", method = RequestMethod.GET)
-    public ServiceVO<?> emailVerify(@PathVariable String token) {
+    public ResponseEntity<?> emailVerify(@PathVariable String token) {
         return userService.emailVerify(token);
     }
 
-    // TODO: just for test! Delete me!
-    @RequestMapping(value = "/TestIndex", method = RequestMethod.GET)
-    public ServiceVO<?> testIndex() {
-        ServiceVO<Object> serviceVO = new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
-        String userId = "5f08f1d2-8c35-417b-9016-17c413be6a4f";
-        serviceVO.setData(userId);
-        return serviceVO;
-    }
-
-    @RequestMapping(value = "/TestMySql", method = RequestMethod.GET)
-    public ServiceVO<?> testSql() {
-        return userService.testSqlOnly();
-    }
-
-    @RequestMapping(value = "/TestRedis", method = RequestMethod.GET)
-    public ServiceVO<?> testRedis() {
-        return userService.testRedisOnly();
-    }
 
 }
 

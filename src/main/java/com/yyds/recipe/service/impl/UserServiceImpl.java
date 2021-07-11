@@ -210,51 +210,35 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ServiceVO<?> emailVerify(String token) {
+    public ResponseEntity<?> emailVerify(String token) {
         if (Boolean.FALSE.equals(redisTemplate.hasKey(token))) {
-            return new ServiceVO<>(ErrorCode.EMAIL_VERIFY_ERROR, ErrorCode.EMAIL_VERIFY_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_VERIFY_ERROR, null, null);
         }
 
         User user;
         try {
             user = (User) redisTemplate.opsForValue().get(token);
         } catch (Exception e) {
-            return new ServiceVO<>(ErrorCode.REDIS_ERROR, ErrorCode.REDIS_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.REDIS_ERROR, null, null);
+        }
+
+        if (user == null) {
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_VERIFY_ERROR, null, null);
         }
 
         try {
             userMapper.saveUser(user);
         } catch (Exception e) {
-            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
         }
 
         try {
             userMapper.saveUserAccount(user);
         } catch (Exception e) {
-            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
         }
 
-        HashMap<String, Object> res = new HashMap<>();
-        res.put("userId", user.getUserId());
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, res);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
 
-    }
-
-    @Override
-    public ServiceVO<?> testSqlOnly() {
-        int count = userMapper.testSql();
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, count);
-    }
-
-    @Override
-    public ServiceVO<?> testRedisOnly() {
-        ValueOperations<String, Serializable> opsForValue = redisTemplate.opsForValue();
-        opsForValue.set("test", "Minimal trader liver inter performances comprehensive boundaries, float gave bbs arguments donated pad certain, verde dad consolidated leg pierre. ");
-        Boolean isExist = redisTemplate.hasKey("test");
-        HashMap<String, Object> res = new HashMap<>();
-        String text = (String) redisTemplate.opsForValue().get("test");
-        res.put("isExist", isExist);
-        res.put("text", text);
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, res);
     }
 }
