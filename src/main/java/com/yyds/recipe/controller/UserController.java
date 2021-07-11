@@ -34,7 +34,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ServiceVO<?> login(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> login(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
         return userService.loginUser(user, request, response);
     }
 

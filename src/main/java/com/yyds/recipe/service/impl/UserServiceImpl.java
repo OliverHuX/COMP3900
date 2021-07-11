@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -28,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.concurrent.TimeUnit;
 
 
@@ -124,14 +126,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ServiceVO<?> loginUser(User loginUser, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> loginUser(User loginUser, HttpServletRequest request, HttpServletResponse response) {
 
         User user = userMapper.getUserByEmail(loginUser.getEmail());
         if (user == null) {
-            return new ServiceVO<>(ErrorCode.EMAIL_NOT_EXISTS_ERROR, ErrorCode.EMAIL_NOT_EXISTS_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_NOT_EXISTS_ERROR, null, null);
         }
         if (!BcryptPasswordUtil.passwordMatch(loginUser.getPassword(), user.getPassword())) {
-            return new ServiceVO<>(ErrorCode.PASSWORD_INCORRECT_ERROR, ErrorCode.PASSWORD_INCORRECT_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.PASSWORD_INCORRECT_ERROR, null, null);
         }
 
         String email = loginUser.getEmail();
@@ -140,19 +142,20 @@ public class UserServiceImpl implements UserService {
         payload.put("email", email);
         payload.put("userId", userId);
         String token = JwtUtil.createToken(payload);
-        HashMap<String, Object> resultMap = new HashMap<>();
 
         try {
             ValueOperations<String, Serializable> opsForValue = redisTemplate.opsForValue();
             opsForValue.set(token, user, Duration.ofHours(12));
         } catch (Exception e) {
-            return new ServiceVO<>(ErrorCode.REDIS_ERROR, ErrorCode.REDIS_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.REDIS_ERROR, null, null);
         }
 
-        resultMap.put("userId", userId);
-        resultMap.put("token", token);
-
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, resultMap);
+        LinkedHashMap<String, Object> body = new LinkedHashMap<>();
+        body.put("userId", user.getUserId());
+        body.put("token", token);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("token", token);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, httpHeaders, body);
 
     }
 

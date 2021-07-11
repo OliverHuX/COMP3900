@@ -12,6 +12,8 @@ public enum ResponseCode {
     EMAIL_ALREADY_EXISTS_ERROR(601, "email already exists"),
     EMAIL_REGEX_ERROR(602, "email is not valid"),
     PASSWORD_REGEX_ERROR(603, "password is not valid"),
+    EMAIL_NOT_EXISTS_ERROR(604, "email does not exist"),
+    PASSWORD_INCORRECT_ERROR(605, "password incorrect or email incorrect"),
     EMAIL_REGISTERED_BUT_NOT_VERIFIED(608, "email register in 30 minutes but do not verify please check your email"),
 
     // 701 - 800 service logic error
