@@ -39,12 +39,12 @@ public class UserController {
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public ServiceVO<?> logout(@RequestParam(value = "userId") String userId, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> logout(@RequestParam(value = "userId") String userId, HttpServletRequest request, HttpServletResponse response) {
         return userService.logoutUser(userId, request, response);
     }
 
     @RequestMapping(value = "/editProfile", method = RequestMethod.POST)
-    public ServiceVO<?> editProfile(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> editProfile(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
         return userService.editUser(user, request, response);
     }
 
@@ -61,7 +61,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/editPassword", method = RequestMethod.POST)
-    public ServiceVO<?> editPassword(@RequestBody editPasswordReq req, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> editPassword(@RequestBody editPasswordReq req, HttpServletRequest request, HttpServletResponse response) {
         return userService.editPassword(req.getOldPassword(), req.getNewPassword(), req.userId);
     }
 

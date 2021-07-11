@@ -23,7 +23,7 @@ public interface UserMapper {
     String getPasswordByUserid(@Param(value = "userId") String userId);
 
     @Update("update user_account set password = #{password} where user_id = #{userId}")
-    void changePassword(@Param(value = "userId") String userId, @Param(value = "password") String newPassword, @Param(value = "salt") String salt);
+    void changePassword(@Param(value = "userId") String userId, @Param(value = "password") String newPassword);
 
     User getUserByEmail(String email);
 

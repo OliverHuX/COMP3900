@@ -13,11 +13,11 @@ public interface UserService {
 
     ResponseEntity<?> loginUser(User loginUser, HttpServletRequest request, HttpServletResponse response);
 
-    ServiceVO<?> logoutUser(String userId,HttpServletRequest request, HttpServletResponse response);
+    ResponseEntity<?> logoutUser(String userId,HttpServletRequest request, HttpServletResponse response);
 
-    ServiceVO<?> editUser(User user, HttpServletRequest request, HttpServletResponse response);
+    ResponseEntity<?> editUser(User user, HttpServletRequest request, HttpServletResponse response);
 
-    ServiceVO<?> editPassword(String oldPassword, String newPassword, String userId);
+    ResponseEntity<?> editPassword(String oldPassword, String newPassword, String userId);
 
     ServiceVO<?> emailVerify(String token);
 

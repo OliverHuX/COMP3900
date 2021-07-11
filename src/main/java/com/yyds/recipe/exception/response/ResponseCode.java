@@ -14,6 +14,7 @@ public enum ResponseCode {
     PASSWORD_REGEX_ERROR(603, "password is not valid"),
     EMAIL_NOT_EXISTS_ERROR(604, "email does not exist"),
     PASSWORD_INCORRECT_ERROR(605, "password incorrect or email incorrect"),
+    USERID_NOT_FOUND_ERROR(606, "user id not found"),
     EMAIL_REGISTERED_BUT_NOT_VERIFIED(608, "email register in 30 minutes but do not verify please check your email"),
 
     // 701 - 800 service logic error

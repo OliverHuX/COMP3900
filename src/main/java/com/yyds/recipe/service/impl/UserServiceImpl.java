@@ -160,48 +160,53 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ServiceVO<?> logoutUser(String userId, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> logoutUser(String userId, HttpServletRequest request, HttpServletResponse response) {
         String token = request.getHeader("token");
         redisTemplate.delete(token);
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
     @Override
     @Transactional
-    public ServiceVO<?> editUser(User user, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> editUser(User user, HttpServletRequest request, HttpServletResponse response) {
 
         if (userMapper.getUserByUserId(user.getUserId()) == null) {
-            return new ServiceVO<>(ErrorCode.USERID_NOT_FOUND_ERROR, ErrorCode.USERID_NOT_FOUND_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
         }
 
         if (user.getUserId() == null || (user.getGender() != null && (user.getGender() > 2 || user.getGender() < 0))) {
-            return new ServiceVO<>(ErrorCode.BUSINESS_PARAMETER_ERROR, ErrorCode.BUSINESS_PARAMETER_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.BUSINESS_PARAMETER_ERROR, null, null);
         }
 
         try {
             userMapper.editUser(user);
         } catch (Exception e) {
-            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
         }
-
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
 
     @Override
-    public ServiceVO<?> editPassword(String oldPassword, String newPassword, String userId) {
+    public ResponseEntity<?> editPassword(String oldPassword, String newPassword, String userId) {
 
         if (userMapper.getUserByUserId(userId) == null) {
-            return new ServiceVO<>(ErrorCode.USERID_NOT_FOUND_ERROR, ErrorCode.USERID_NOT_FOUND_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
         }
 
         if (newPassword.length() < PASSWORD_LENGTH || !newPassword.matches(PASSWORD_REGEX_PATTERN)) {
-            return new ServiceVO<>(ErrorCode.PASSWORD_REGEX_ERROR, ErrorCode.PASSWORD_REGEX_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.PASSWORD_REGEX_ERROR, null, null);
         }
 
-        User user = userMapper.getUserByUserId(userId);
+        String encodePassword = BcryptPasswordUtil.encodePassword(newPassword);
 
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
+        try {
+            userMapper.changePassword(userId, encodePassword);
+        } catch (Exception e) {
+            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
+        }
+
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
     @Override
