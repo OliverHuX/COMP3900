@@ -8,23 +8,32 @@ import {
 } from 'react-router-dom';
 import Register from './pages/Register/Register';
 import Login from './pages/Login/Login'
-
+import Home from './pages/Home/index'
+import Footer from './components/footer';
 export default function App () {
   return <>
     <Router>
-      <div className='container'>
+      <div className='container_backg'>
         <Switch>
+          
           <Route path="/" exact>
             <div className='back-Img'>
               <Login />
             </div>
           </Route>
+
+          <Route path="/home" exact>        
+              <Home />       
+          </Route>
+
           <Route path="/register" exact>
             <div className='back-Img'>
               <Register />
             </div>
           </Route>
+
         </Switch>
+        <Footer/>
       </div>
     </Router>
   </>;

@@ -25,7 +25,7 @@ function signup (firstName, lastName, gender, nickName, birthDate, email, passwo
     lastName: lastName,
     gender: gender,
     nickName: nickName,
-    birthDate: birthDate,
+    birthdate: birthDate,
     email: email,
     password: password
   });
@@ -41,7 +41,7 @@ export default function Register () {
   const [lastName, setLastNameInputs] = React.useState('');
   const [nickName, setNickNameInputs] = React.useState('');
   const [gender, setGender] = React.useState(Number(-1));
-  const [birthDate, setBOD] = React.useState('');
+  const [birthDate, setBOD] = React.useState('2000-01-01');
   const [emailInputs, setEmailInputs] = React.useState('');
   const [passWord, setPasswordInputs] = React.useState('');
   const [errorMsg, setErrorMsg] = React.useState('');
