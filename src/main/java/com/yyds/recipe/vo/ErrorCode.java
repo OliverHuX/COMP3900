@@ -32,6 +32,12 @@ public interface ErrorCode {
     int IMAGE_VERIFY_ERROR = 608;
     String IMAGE_VERIFY_ERROR_MESSAGE = "image verify expired";
 
+    int RECIPEID_NOT_FOUND_ERROR = 609;
+    String RECIPEID_NOT_FOUND_MESSAGE = "recipeId can not be found";
+
+    int EMPTY_COMMENT_ERROR = 610;
+    String EMPTY_COMMENT_MESSAGE = "comment is empty";
+
     // 701 - 800 service logic error
     int BUSINESS_PARAMETER_ERROR = 701;
     String BUSINESS_PARAMETER_ERROR_MESSAGE = "business parameter error";
