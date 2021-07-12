@@ -15,3 +15,6 @@ Had a demo with the tutor and the team; the team then had a meeting after the de
 
 Week 6
 Had a meeting with the team to reflect on our past sprint and wrote our Retrospective Report; I added the sendEmail feature to the backend which allows the users to verify their emails
+
+Week 7
+I wrote implemetations for features such as like recipe, unlike recipe, and comment recipe
