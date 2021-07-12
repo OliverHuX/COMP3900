@@ -6,3 +6,12 @@ Had a meeting with the team to discuss the details about our project proposal. I
 
 Week 3
 Had a team meeting and distrubuted workload for the proposal. I wrote some of the the acceptance criteria for the user stories in the proposal.
+
+Week 4
+Had a meeting with the team to finalize the proposal and disscuss about the demo. I helped proof read the proposal
+
+Week 5
+Had a demo with the tutor and the team; the team then had a meeting after the demo to discuss the approaches to tutor's suggestions and advice
+
+Week 6
+Had a meeting with the team to reflect on our past sprint and wrote our Retrospective Report; I added the sendEmail feature to the backend which allows the users to verify their emails
