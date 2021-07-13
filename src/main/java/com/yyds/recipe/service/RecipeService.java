@@ -3,9 +3,10 @@ package com.yyds.recipe.service;
 import com.yyds.recipe.model.Recipe;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.vo.ServiceVO;
+import org.springframework.http.ResponseEntity;
 
 public interface RecipeService {
-    ServiceVO<?> postRecipe(Recipe recipe);
+    ResponseEntity<?> postRecipe(Recipe recipe);
 
     ServiceVO<?> likeRecipe(Recipe recipe);
 
