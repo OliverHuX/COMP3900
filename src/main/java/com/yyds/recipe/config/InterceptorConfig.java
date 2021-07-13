@@ -15,6 +15,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
         registry.addInterceptor(loginInterceptor())
                 .addPathPatterns("/**")
                 .excludePathPatterns(List.of(
+                        "/home",
                         "/login",
                         "/register",
                         "/emailVerify/**",
