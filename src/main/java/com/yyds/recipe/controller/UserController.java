@@ -70,6 +70,9 @@ public class UserController {
         return userService.emailVerify(token);
     }
 
-
+    @RequestMapping(value = "test", method = RequestMethod.GET)
+    public ResponseEntity<?> testEverything() {
+        return ResponseEntity.ok("Hello world!");
+    }
 }
 
