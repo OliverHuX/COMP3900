@@ -1,12 +1,16 @@
 package com.yyds.recipe.service;
 
-import com.yyds.recipe.model.Collection;
-import com.yyds.recipe.model.User;
 import org.springframework.http.ResponseEntity;
 
 public interface CollectionService {
 
-    ResponseEntity<?> createCollection(User user, String collectionName);
+    ResponseEntity<?> addCollection(String userId, String collectionName);
 
-    ResponseEntity<?> changeCollectionName(Collection collection, String collectionName);
+    ResponseEntity<?> removeCollection(String userId, String collectionName);
+
+    ResponseEntity<?> changeCollectionName(String userId, String collectionId, String collectionName);
+
+    ResponseEntity<?> addRecipeToCollection(String userId, String collectionId, String recipeId);
+
+    ResponseEntity<?> removeRecipeFromCollection(String userId, String collectionId, String recipeId);
 }

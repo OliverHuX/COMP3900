@@ -1,7 +1,5 @@
 package com.yyds.recipe.controller;
 
-import com.yyds.recipe.model.Collection;
-import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.CollectionService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,32 +20,75 @@ public class CollectionController {
     @AllArgsConstructor
     @NoArgsConstructor
     @Data
-    public static class createCollection {
+    public static class addCollectionReq {
         @NotNull
-        private User user;
+        private String userId;
         @NotNull
         private String collectionName;
     }
 
-    @RequestMapping(value = "/createCollection", method = RequestMethod.POST)
-    public ResponseEntity<?> createCollection(@RequestBody createCollection req) {
-        return collectionService.createCollection(req.getUser(), req.getCollectionName());
+    @RequestMapping(value = "/addCollection", method = RequestMethod.POST)
+    public ResponseEntity<?> addCollection(@RequestBody addCollectionReq req) {
+        return collectionService.addCollection(req.getUserId(), req.getCollectionName());
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    public static class removeCollectionReq {
+        @NotNull
+        private String userId;
+        @NotNull
+        private String collectionId;
+    }
+
+    @RequestMapping(value = "/removeCollection", method = RequestMethod.POST)
+    public ResponseEntity<?> removeCollection(@RequestBody removeCollectionReq req) {
+        return collectionService.removeCollection(req.getUserId(), req.getCollectionId());
     }
 
 
     @AllArgsConstructor
     @NoArgsConstructor
     @Data
-    public static class changeCollectionName {
+    public static class CollectionReq {
         @NotNull
-        private Collection collection;
+        private String userId;
+        @NotNull
+        private String collectionId;
         @NotNull
         private String collectionName;
     }
 
     @RequestMapping(value = "/changeCollectionName", method = RequestMethod.POST)
-    public ResponseEntity<?> changeCollectionName(@RequestBody changeCollectionName req) {
-        return collectionService.changeCollectionName(req.getCollection(), req.getCollectionName());
+    public ResponseEntity<?> changeCollectionName(@RequestBody CollectionReq req) {
+        return collectionService.changeCollectionName(req.getUserId(), req.getCollectionId(),
+                                                      req.getCollectionName());
+    }
+
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    public static class recipeInCollectionReq {
+        @NotNull
+        private String userId;
+        @NotNull
+        private String collectionId;
+        @NotNull
+        private String recipeId;
+    }
+
+    @RequestMapping(value = "/addRecipeToCollection", method = RequestMethod.POST)
+    public ResponseEntity<?> addRecipeToCollection(@RequestBody recipeInCollectionReq req) {
+        return collectionService.addRecipeToCollection(req.getUserId(), req.getCollectionId(),
+                                                      req.getRecipeId());
+    }
+
+    @RequestMapping(value = "/removeRecipeToCollection", method = RequestMethod.POST)
+    public ResponseEntity<?> removeRecipeToCollection(@RequestBody recipeInCollectionReq req) {
+        return collectionService.removeRecipeFromCollection(req.getUserId(), req.getCollectionId(),
+                                                       req.getRecipeId());
     }
 
 }

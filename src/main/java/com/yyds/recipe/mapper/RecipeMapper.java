@@ -36,4 +36,5 @@ public interface RecipeMapper {
     @Update("update user subscribe set subscribe = #{recipeId}, where userId = #{userId})")
     void deleteSubscribe(@Param(value = "userId") String userId,
                          @Param(value = "recipeId") List<String> recipeId);
+
 }

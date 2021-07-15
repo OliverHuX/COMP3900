@@ -27,4 +27,12 @@ public class User implements Serializable {
     private List<String> subscribes;
     private HashMap<String, Collection> collections;
     private String salt;
+
+    public void addCollection(Collection collection) {
+        collections.put(collection.getCollectionId(), collection);
+    }
+
+    public void removeCollection(String collectionId) {
+        collections.remove(collectionId);
+    }
 }

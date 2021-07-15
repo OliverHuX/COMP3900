@@ -18,4 +18,12 @@ public class Collection implements Serializable {
     private String collectionName;
     private List<Recipe> recipes;
     private String collectorId;
+
+    public void addRecipe(Recipe recipe) {
+        recipes.add(recipe);
+    }
+
+    public void removeRecipe(Recipe recipe) {
+        recipes.remove(recipe);
+    }
 }
