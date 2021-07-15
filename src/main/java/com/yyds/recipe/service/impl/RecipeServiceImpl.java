@@ -142,6 +142,22 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
+    public ResponseEntity<?> summaryRecipe(Recipe recipe) {
+
+        HashMap<String, Object> resultMap = new HashMap<>();
+        resultMap.put("recipeId", recipe.getRecipeId());
+
+        ServiceVO<?> error = verifyRecipe(recipe);
+        if (Objects.nonNull(error)) {
+            resultMap.put("error", error);
+            return ResponseUtil.getResponse(ResponseCode.ERROR, null, resultMap);
+        }
+
+        resultMap.put("summary", recipe.getIntroduction());
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, resultMap);
+    }
+
+    @Override
     public ServiceVO<?> subscribeRecipe(User viewer, Recipe recipe) {
 
         if (userMapper.getUserByUserId(viewer.getUserId()) == null) {
