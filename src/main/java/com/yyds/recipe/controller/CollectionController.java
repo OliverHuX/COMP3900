@@ -1,5 +1,6 @@
 package com.yyds.recipe.controller;
 
+import com.yyds.recipe.model.Collection;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.CollectionService;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,22 @@ public class CollectionController {
     @RequestMapping(value = "/createCollection", method = RequestMethod.POST)
     public ResponseEntity<?> createCollection(@RequestBody createCollection req) {
         return collectionService.createCollection(req.getUser(), req.getCollectionName());
+    }
+
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    public static class changeCollectionName {
+        @NotNull
+        private Collection collection;
+        @NotNull
+        private String collectionName;
+    }
+
+    @RequestMapping(value = "/changeCollectionName", method = RequestMethod.POST)
+    public ResponseEntity<?> changeCollectionName(@RequestBody changeCollectionName req) {
+        return collectionService.changeCollectionName(req.getCollection(), req.getCollectionName());
     }
 
 }

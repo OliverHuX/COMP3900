@@ -47,4 +47,26 @@ public class CollectionServiceImpl implements CollectionService {
 
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
+
+    @Override
+    public ResponseEntity<?> changeCollectionName(Collection collection, String collectionName) {
+
+        if (collection.getCollectionId() == null) {
+            return ResponseUtil.getResponse(ResponseCode.COLLECTION_ID_NOT_FOUND, null, null);
+        }
+
+        if (collectionName == null) {
+            return ResponseUtil.getResponse(ResponseCode.BUSINESS_PARAMETER_ERROR, null, null);
+        }
+
+        collection.setCollectionName(collectionName);
+
+        try {
+            collectionMapper.updateCollectionName(collection, collectionName);
+        } catch (Exception e) {
+            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
+        }
+
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
+    }
 }

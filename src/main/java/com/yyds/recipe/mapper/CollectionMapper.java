@@ -13,4 +13,7 @@ public interface CollectionMapper {
     void updateCollections(@Param(value = "user") User user, @Param(value = "collections") HashMap<String,
             Collection> collections);
 
+    @Update("update collection_name set collectionName = #{collectionName} where collection = #{collection}")
+    void updateCollectionName(@Param(value = "collection")Collection collection,
+                              @Param(value = "collectionName") String collectionName);
 }
