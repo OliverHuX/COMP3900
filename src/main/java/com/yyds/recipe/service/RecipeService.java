@@ -13,4 +13,6 @@ public interface RecipeService {
     ServiceVO<?> unlikeRecipe(Recipe recipe);
 
     ServiceVO<?> commentRecipe(User viewer, Recipe recipe, String comment);
+
+    ServiceVO<?> verifyRecipe(Recipe recipe);
 }

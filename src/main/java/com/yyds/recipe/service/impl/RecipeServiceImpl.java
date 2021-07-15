@@ -139,4 +139,9 @@ public class RecipeServiceImpl implements RecipeService {
 
         return null;
     }
+
+    public ServiceVO<?> subscribeRecipe(User viewer, Recipe recipe) {
+
+        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
+    }
 }
