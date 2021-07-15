@@ -178,4 +178,25 @@ public class RecipeServiceImpl implements RecipeService {
 
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
     }
+
+    @Override
+    public ServiceVO<?> setPrivacyRecipe(Recipe recipe, Boolean privacy) {
+
+        ServiceVO<?> error = verifyRecipe(recipe);
+        if (error!= null) {
+            return error;
+        }
+
+        if (recipeMapper.getRecipeById(recipe.getRecipeId()).getIsPrivacy().equals(privacy)) {
+            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+        }
+
+        try {
+            recipeMapper.updatePrivacy(recipe.getRecipeId(), privacy);
+        } catch (Exception e) {
+            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+        }
+
+        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
+    }
 }
