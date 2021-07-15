@@ -14,5 +14,9 @@ public interface RecipeService {
 
     ServiceVO<?> commentRecipe(User viewer, Recipe recipe, String comment);
 
-    ServiceVO<?> verifyRecipe(Recipe recipe);
+    ResponseEntity<?> summaryRecipe(Recipe recipe);
+
+    ServiceVO<?> subscribeRecipe(User viewer, Recipe recipe);
+
+    ServiceVO<?> setPrivacyRecipe(Recipe recipe, Boolean privacy);
 }
