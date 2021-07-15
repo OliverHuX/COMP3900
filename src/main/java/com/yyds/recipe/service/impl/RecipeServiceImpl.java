@@ -180,6 +180,28 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
+    public ServiceVO<?> cancelSubscribeRecipe(User viewer, Recipe recipe) {
+
+        if (userMapper.getUserByUserId(viewer.getUserId()) == null) {
+            return new ServiceVO<>(ErrorCode.USERID_NOT_FOUND_ERROR, ErrorCode.USERID_NOT_FOUND_ERROR_MESSAGE);
+        }
+
+        ServiceVO<?> error = verifyRecipe(recipe);
+        if (error!= null) {
+            return error;
+        }
+
+        try {
+            viewer.getSubscribes().remove(recipe.getRecipeId());
+            recipeMapper.deleteSubscribe(viewer.getUserId(), viewer.getSubscribes());
+        } catch (Exception e) {
+            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+        }
+
+        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
+    }
+
+    @Override
     public ServiceVO<?> setPrivacyRecipe(Recipe recipe, Boolean privacy) {
 
         ServiceVO<?> error = verifyRecipe(recipe);
