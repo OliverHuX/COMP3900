@@ -19,6 +19,4 @@ public interface UserService {
     ResponseEntity<?> editPassword(String oldPassword, String newPassword, String userId);
 
     ResponseEntity<?> emailVerify(String token);
-
-    ResponseEntity<?> createCollection(User user, String collectionName);
 }

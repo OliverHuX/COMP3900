@@ -67,20 +67,5 @@ public class UserController {
         return ResponseEntity.ok("Hello world!");
     }
 
-
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Data
-    public static class createCollection {
-        @NotNull
-        private User user;
-        @NotNull
-        private String collectionName;
-    }
-
-    @RequestMapping(value = "/createCollection", method = RequestMethod.POST)
-    public ResponseEntity<?> createCollection(@RequestBody createCollection req) {
-        return userService.createCollection(req.getUser(), req.getCollectionName());
-    }
 }
 
