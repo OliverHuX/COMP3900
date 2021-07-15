@@ -32,4 +32,8 @@ public interface RecipeMapper {
     @Update("update recipe privacy set privacy = #{privacy}, where recipeId = #{recipeId})")
     void updatePrivacy(@Param(value = "recipeId") String recipeId,
                        @Param(value = "privacy") Boolean privacy);
+
+    @Update("update user subscribe set subscribe = #{recipeId}, where userId = #{userId})")
+    void deleteSubscribe(@Param(value = "userId") String userId,
+                         @Param(value = "recipeId") List<String> recipeId);
 }
