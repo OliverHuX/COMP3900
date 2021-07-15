@@ -18,5 +18,7 @@ public interface RecipeService {
 
     ServiceVO<?> subscribeRecipe(User viewer, Recipe recipe);
 
+    ServiceVO<?> cancelSubscribeRecipe(User viewer, Recipe recipe);
+
     ServiceVO<?> setPrivacyRecipe(Recipe recipe, Boolean privacy);
 }
