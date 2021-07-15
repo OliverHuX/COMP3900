@@ -1,5 +1,6 @@
 package com.yyds.recipe.service.impl;
 
+import com.yyds.recipe.exception.AuthorizationException;
 import com.yyds.recipe.exception.MySqlErrorException;
 import com.yyds.recipe.exception.response.ResponseCode;
 import com.yyds.recipe.mapper.UserMapper;
@@ -65,7 +66,7 @@ public class UserServiceImpl implements UserService {
 
         if (user.getFirstName() == null || user.getLastName() == null || user.getGender() == null
                 || user.getEmail() == null || user.getPassword() == null || user.getBirthdate() == null) {
-            return ResponseUtil.getResponse(ResponseCode.BUSINESS_PARAMETER_ERROR, null, null);
+            return ResponseUtil.getResponse(ResponseCode.PARAMETER_ERROR, null, null);
         }
 
         // check email
@@ -98,7 +99,7 @@ public class UserServiceImpl implements UserService {
             return ResponseUtil.getResponse(ResponseCode.REDIS_ERROR, null, null);
         }
         if (isRegistered) {
-            return ResponseUtil.getResponse(ResponseCode.EMAIL_REGISTERED_BUT_NOT_VERIFIED, null, null);
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_VERIFY_ERROR, null, null);
         }
 
         // set in redis
@@ -129,10 +130,10 @@ public class UserServiceImpl implements UserService {
 
         User user = userMapper.getUserByEmail(loginUser.getEmail());
         if (user == null) {
-            return ResponseUtil.getResponse(ResponseCode.EMAIL_NOT_EXISTS_ERROR, null, null);
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_OR_PASSWORD_ERROR, null, null);
         }
         if (!BcryptPasswordUtil.passwordMatch(loginUser.getPassword(), user.getPassword())) {
-            return ResponseUtil.getResponse(ResponseCode.PASSWORD_INCORRECT_ERROR, null, null);
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_OR_PASSWORD_ERROR, null, null);
         }
 
         String email = loginUser.getEmail();
@@ -170,11 +171,11 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> editUser(User user, HttpServletRequest request, HttpServletResponse response) {
 
         if (userMapper.getUserByUserId(user.getUserId()) == null) {
-            return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
+            throw new AuthorizationException();
         }
 
         if (user.getUserId() == null || (user.getGender() != null && (user.getGender() > 2 || user.getGender() < 0))) {
-            return ResponseUtil.getResponse(ResponseCode.BUSINESS_PARAMETER_ERROR, null, null);
+            return ResponseUtil.getResponse(ResponseCode.PARAMETER_ERROR, null, null);
         }
 
         try {
@@ -190,7 +191,7 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> editPassword(String oldPassword, String newPassword, String userId) {
 
         if (userMapper.getUserByUserId(userId) == null) {
-            return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
+            throw new AuthorizationException();
         }
 
         if (newPassword.length() < PASSWORD_LENGTH || !newPassword.matches(PASSWORD_REGEX_PATTERN)) {
