@@ -1,5 +1,6 @@
 package com.yyds.recipe.service.impl;
 
+import com.yyds.recipe.exception.MySqlErrorException;
 import com.yyds.recipe.exception.response.ResponseCode;
 import com.yyds.recipe.mapper.UserMapper;
 import com.yyds.recipe.model.User;
@@ -54,8 +55,6 @@ public class UserServiceImpl implements UserService {
     private static final String EMAIL_REGEX_PATTEN = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
     private static final String EMAIL_VERIFY_TOKEN_PREFIX = "email verify: ";
 
-    // TODO: transactional does not work
-    @Transactional
     @Override
     public ResponseEntity<?> register(User user, HttpServletRequest request, HttpServletResponse response) {
 
@@ -210,6 +209,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(value = "transactionManager", rollbackFor = Exception.class)
     public ResponseEntity<?> emailVerify(String token) {
         if (Boolean.FALSE.equals(redisTemplate.hasKey(token))) {
             return ResponseUtil.getResponse(ResponseCode.EMAIL_VERIFY_ERROR, null, null);
@@ -222,21 +222,31 @@ public class UserServiceImpl implements UserService {
             return ResponseUtil.getResponse(ResponseCode.REDIS_ERROR, null, null);
         }
 
+
         if (user == null) {
             return ResponseUtil.getResponse(ResponseCode.EMAIL_VERIFY_ERROR, null, null);
+        }
+
+        User checkedUser = userMapper.getUserByUserId(user.getUserId());
+        if (checkedUser != null) {
+            redisTemplate.delete(token);
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_ALREADY_VERIFIED, null, null);
         }
 
         try {
             userMapper.saveUser(user);
         } catch (Exception e) {
-            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
+            throw new MySqlErrorException();
         }
+
 
         try {
             userMapper.saveUserAccount(user);
         } catch (Exception e) {
-            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
+            throw new MySqlErrorException();
         }
+
+        redisTemplate.delete(token);
 
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
 

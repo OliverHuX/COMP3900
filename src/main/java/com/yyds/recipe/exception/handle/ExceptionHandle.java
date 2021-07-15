@@ -1,6 +1,8 @@
 package com.yyds.recipe.exception.handle;
 
 import com.yyds.recipe.exception.AuthorizationException;
+import com.yyds.recipe.exception.MySqlErrorException;
+import com.yyds.recipe.exception.response.ResponseCode;
 import com.yyds.recipe.utils.ResponseUtil;
 import com.yyds.recipe.vo.ErrorCode;
 import com.yyds.recipe.vo.ServiceVO;
@@ -16,5 +18,11 @@ public class ExceptionHandle {
     @ResponseBody
     public ResponseEntity<?> authorizationException() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @ExceptionHandler(MySqlErrorException.class)
+    @ResponseBody
+    public ResponseEntity<?> mysqlErrorException() {
+        return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
     }
 }

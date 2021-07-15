@@ -17,6 +17,7 @@ public enum ResponseCode {
     USERID_NOT_FOUND_ERROR(606, "user id not found"),
     EMAIL_VERIFY_ERROR(607, "email verify expired"),
     EMAIL_REGISTERED_BUT_NOT_VERIFIED(608, "email register in 30 minutes but do not verify please check your email"),
+    EMAIL_ALREADY_VERIFIED(609, "email has already verified"),
 
     // 701 - 800 service logic error
     BUSINESS_PARAMETER_ERROR(701, "business parameter error"),

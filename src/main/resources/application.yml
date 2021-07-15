@@ -13,6 +13,9 @@ spring:
     initial-size: 10
     max-active: 150
 
+  transaction:
+    rollback-on-commit-failure: true
+
   # redis
   redis:
     host: 120.77.180.200
