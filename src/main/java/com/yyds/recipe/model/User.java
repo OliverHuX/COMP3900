@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 
 @Data
@@ -24,5 +25,6 @@ public class User implements Serializable {
     private String createTime;
     private String profilePhoto;
     private List<String> subscribes;
+    private HashMap<String, Collection> collections;
     private String salt;
 }

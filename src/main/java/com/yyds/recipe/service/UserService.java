@@ -1,7 +1,6 @@
 package com.yyds.recipe.service;
 
 import com.yyds.recipe.model.User;
-import com.yyds.recipe.vo.ServiceVO;
 import org.springframework.http.ResponseEntity;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,4 +19,6 @@ public interface UserService {
     ResponseEntity<?> editPassword(String oldPassword, String newPassword, String userId);
 
     ResponseEntity<?> emailVerify(String token);
+
+    ResponseEntity<?> createCollection(User user, String collectionName);
 }

@@ -1,10 +1,13 @@
 package com.yyds.recipe.mapper;
 
+import com.yyds.recipe.model.Collection;
 import com.yyds.recipe.model.User;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
+
+import java.util.HashMap;
 
 @Repository
 public interface UserMapper {
@@ -17,7 +20,6 @@ public interface UserMapper {
 
     @Select("select * from user where userId = #{userId}")
     User getUserById(@Param(value = "userId") String userId);
-
 
     @Select("select password from user_account where user_id = #{userId}")
     String getPasswordByUserid(@Param(value = "userId") String userId);
@@ -34,4 +36,10 @@ public interface UserMapper {
 
     @Select("select count(1) from recipe.user")
     int testSql();
+
+
+    @Update("update user_collections set collections = #{collections} where user = #{user}")
+    void updateCollections(@Param(value = "user") User user, @Param(value = "collections")HashMap<String,
+            Collection> collections);
+
 }
