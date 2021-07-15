@@ -11,7 +11,7 @@ import Login from './pages/Login/Login'
 import Home from './pages/Home/index'
 import Footer from './components/footer';
 export default function App () {
-  return <>
+  return (
     <Router>
       <div className='container_backg'>
         <Switch>
@@ -36,5 +36,5 @@ export default function App () {
         <Footer/>
       </div>
     </Router>
-  </>;
+  )
 }
