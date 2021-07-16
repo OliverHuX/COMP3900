@@ -36,7 +36,8 @@ public class RecipeServiceImpl implements RecipeService {
 
         if (recipe.getUserId() == null || userMapper.getUserByUserId(recipe.getUserId()) == null) {
             // return new ServiceVO<>(ErrorCode.BUSINESS_PARAMETER_ERROR, ErrorCode.BUSINESS_PARAMETER_ERROR_MESSAGE);
-            return ResponseUtil.getResponse(ResponseCode.ERROR, null, null);
+            // return ResponseUtil.getResponse(ResponseCode.ERROR, null, null);
+            return null;
         }
 
         // TODO: not sure
@@ -58,7 +59,8 @@ public class RecipeServiceImpl implements RecipeService {
         } catch (Exception e) {
             // return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null
             //);
-            return ResponseUtil.getResponse(ResponseCode.ERROR, null, null);
+            // return ResponseUtil.getResponse(ResponseCode.ERROR, null, null);
+            return null;
         }
 
         HashMap<String, Object> resultMap = new HashMap<>();
@@ -120,7 +122,7 @@ public class RecipeServiceImpl implements RecipeService {
         }
 
         if (comment == null) {
-            return ResponseUtil.getResponse(ResponseCode.BUSINESS_PARAMETER_ERROR, null, null);
+            return ResponseUtil.getResponse(ResponseCode.PARAMETER_ERROR, null, null);
         }
 
         Recipe recipe = recipeMapper.getRecipeById(recipeId);
@@ -169,7 +171,8 @@ public class RecipeServiceImpl implements RecipeService {
         ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipe.getRecipeId());
         if (Objects.nonNull(recipeError)) {
             resultMap.put("recipeError", recipeError);
-            return ResponseUtil.getResponse(ResponseCode.ERROR, null, resultMap);
+            // return ResponseUtil.getResponse(ResponseCode.ERROR, null, resultMap);
+            return null;
         }
 
         resultMap.put("summary", recipe.getIntroduction());
@@ -180,7 +183,8 @@ public class RecipeServiceImpl implements RecipeService {
     public ResponseEntity<?> subscribeRecipe(User viewer, Recipe recipe) {
 
         if (userMapper.getUserByUserId(viewer.getUserId()) == null) {
-            return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
+            // return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
+            return null;
         }
 
         ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipe.getRecipeId());
@@ -202,7 +206,8 @@ public class RecipeServiceImpl implements RecipeService {
     public ResponseEntity<?> cancelSubscribeRecipe(User viewer, Recipe recipe) {
 
         if (userMapper.getUserByUserId(viewer.getUserId()) == null) {
-            return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
+            // return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
+            return null;
         }
 
         ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipe.getRecipeId());

@@ -22,13 +22,15 @@ public class Helper {
     public ResponseEntity<?> verifyRecipeExist(String recipeId) {
 
         if (recipeId == null) {
-            return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
+            // return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
+            return null;
         }
 
         try {
             recipeMapper.getRecipeById(recipeId);
         } catch (Exception e) {
-            return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
+            // return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
+            return null;
         }
 
         return null;
@@ -37,13 +39,15 @@ public class Helper {
     public  ResponseEntity<?> verifyUserExist(String userId) {
 
         if (userId == null) {
-            return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
+            // return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
+            return null;
         }
 
         try {
             userMapper.getUserByUserId(userId);
         } catch (Exception e) {
-            return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
+            // return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
+            return null;
         }
 
         return null;

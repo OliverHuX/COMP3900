@@ -228,7 +228,7 @@ public class UserServiceImpl implements UserService {
         User checkedUser = userMapper.getUserByUserId(user.getUserId());
         if (checkedUser != null) {
             redisTemplate.delete(token);
-            return ResponseUtil.getResponse(ResponseCode.EMAIL_ALREADY_VERIFIED, null, null);
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_VERIFY_ERROR, null, null);
         }
 
         try {

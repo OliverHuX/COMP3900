@@ -38,7 +38,7 @@ public class CollectionServiceImpl implements CollectionService {
         }
 
         if (collectionName == null) {
-            return ResponseUtil.getResponse(ResponseCode.BUSINESS_PARAMETER_ERROR, null, null);
+            return ResponseUtil.getResponse(ResponseCode.PARAMETER_ERROR, null, null);
         }
 
         User user = userMapper.getUserByUserId(userId);
