@@ -14,4 +14,8 @@ public class UUIDGenerator {
     public static String createCollectionId() {
         return UUID.randomUUID().toString().replace("-", "");
     }
+
+    public static String generateUUID() {
+        return UUID.randomUUID().toString().replace("-", "");
+    }
 }
