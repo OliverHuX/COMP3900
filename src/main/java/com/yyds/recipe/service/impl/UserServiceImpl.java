@@ -1,5 +1,7 @@
 package com.yyds.recipe.service.impl;
 
+import com.yyds.recipe.exception.AuthorizationException;
+import com.yyds.recipe.exception.MySqlErrorException;
 import com.yyds.recipe.exception.response.ResponseCode;
 import com.yyds.recipe.mapper.UserMapper;
 import com.yyds.recipe.model.User;
@@ -51,8 +53,6 @@ public class UserServiceImpl implements UserService {
     private static final String EMAIL_REGEX_PATTEN = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
     private static final String EMAIL_VERIFY_TOKEN_PREFIX = "email verify: ";
 
-    // TODO: transactional does not work
-    @Transactional
     @Override
     public ResponseEntity<?> register(User user, HttpServletRequest request, HttpServletResponse response) {
 
@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
 
         if (user.getFirstName() == null || user.getLastName() == null || user.getGender() == null
                 || user.getEmail() == null || user.getPassword() == null || user.getBirthdate() == null) {
-            return ResponseUtil.getResponse(ResponseCode.BUSINESS_PARAMETER_ERROR, null, null);
+            return ResponseUtil.getResponse(ResponseCode.PARAMETER_ERROR, null, null);
         }
 
         // check email
@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService {
             return ResponseUtil.getResponse(ResponseCode.REDIS_ERROR, null, null);
         }
         if (isRegistered) {
-            return ResponseUtil.getResponse(ResponseCode.EMAIL_REGISTERED_BUT_NOT_VERIFIED, null, null);
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_VERIFY_ERROR, null, null);
         }
 
         // set in redis
@@ -127,10 +127,10 @@ public class UserServiceImpl implements UserService {
 
         User user = userMapper.getUserByEmail(loginUser.getEmail());
         if (user == null) {
-            return ResponseUtil.getResponse(ResponseCode.EMAIL_NOT_EXISTS_ERROR, null, null);
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_OR_PASSWORD_ERROR, null, null);
         }
         if (!BcryptPasswordUtil.passwordMatch(loginUser.getPassword(), user.getPassword())) {
-            return ResponseUtil.getResponse(ResponseCode.PASSWORD_INCORRECT_ERROR, null, null);
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_OR_PASSWORD_ERROR, null, null);
         }
 
         String email = loginUser.getEmail();
@@ -168,11 +168,11 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> editUser(User user, HttpServletRequest request, HttpServletResponse response) {
 
         if (userMapper.getUserByUserId(user.getUserId()) == null) {
-            return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
+            throw new AuthorizationException();
         }
 
         if (user.getUserId() == null || (user.getGender() != null && (user.getGender() > 2 || user.getGender() < 0))) {
-            return ResponseUtil.getResponse(ResponseCode.BUSINESS_PARAMETER_ERROR, null, null);
+            return ResponseUtil.getResponse(ResponseCode.PARAMETER_ERROR, null, null);
         }
 
         try {
@@ -188,7 +188,7 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> editPassword(String oldPassword, String newPassword, String userId) {
 
         if (userMapper.getUserByUserId(userId) == null) {
-            return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
+            throw new AuthorizationException();
         }
 
         if (newPassword.length() < PASSWORD_LENGTH || !newPassword.matches(PASSWORD_REGEX_PATTERN)) {
@@ -207,6 +207,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(value = "transactionManager", rollbackFor = Exception.class)
     public ResponseEntity<?> emailVerify(String token) {
         if (Boolean.FALSE.equals(redisTemplate.hasKey(token))) {
             return ResponseUtil.getResponse(ResponseCode.EMAIL_VERIFY_ERROR, null, null);
@@ -219,21 +220,31 @@ public class UserServiceImpl implements UserService {
             return ResponseUtil.getResponse(ResponseCode.REDIS_ERROR, null, null);
         }
 
+
         if (user == null) {
             return ResponseUtil.getResponse(ResponseCode.EMAIL_VERIFY_ERROR, null, null);
+        }
+
+        User checkedUser = userMapper.getUserByUserId(user.getUserId());
+        if (checkedUser != null) {
+            redisTemplate.delete(token);
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_ALREADY_VERIFIED, null, null);
         }
 
         try {
             userMapper.saveUser(user);
         } catch (Exception e) {
-            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
+            throw new MySqlErrorException();
         }
+
 
         try {
             userMapper.saveUserAccount(user);
         } catch (Exception e) {
-            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
+            throw new MySqlErrorException();
         }
+
+        redisTemplate.delete(token);
 
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
 
