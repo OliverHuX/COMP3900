@@ -17,4 +17,4 @@ Week 6
 Had a meeting with the team to reflect on our past sprint and wrote our Retrospective Report; I added the sendEmail feature to the backend which allows the users to verify their emails
 
 Week 7
-I wrote implemetations for features such as like recipe, unlike recipe, and comment recipe
+I wrote implemetations for features such as like recipe, unlike recipe, and comment recipe; Had a meeting with a team and assigned new tasks; I later wrote more methods for the user stories that I was assigned to
