@@ -12,22 +12,22 @@ import java.util.List;
 public class InterceptorConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(loginInterceptor())
-                .addPathPatterns("/**")
-                .excludePathPatterns(List.of(
-                        "/home",
-                        "/login",
-                        "/register",
-                        "/emailVerify/**",
-                        "swagger/**",
-                        "/swagger-ui.html",
-                        "swagger-ui.html",
-                        "/webjars/**",
-                        "/swagger-ui.html/*",
-                        "/swagger-resources",
-                        "/swagger-resources/**",
-                        "/test"
-                ));
+        // registry.addInterceptor(loginInterceptor())
+                // .addPathPatterns("/**")
+                // .excludePathPatterns(List.of(
+                //         "/home",
+                //         "/login",
+                //         "/register",
+                //         "/emailVerify/**",
+                //         "swagger/**",
+                //         "/swagger-ui.html",
+                //         "swagger-ui.html",
+                //         "/webjars/**",
+                //         "/swagger-ui.html/*",
+                //         "/swagger-resources",
+                //         "/swagger-resources/**",
+                //         "/test"
+                // ));
     }
 
     @Bean
