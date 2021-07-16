@@ -1,23 +1,31 @@
 package com.yyds.recipe.mapper;
 
 import com.yyds.recipe.model.Collection;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import com.yyds.recipe.model.Recipe;
+import com.yyds.recipe.model.User;
+import org.apache.ibatis.annotations.*;
 
-import java.util.HashMap;
+import java.util.List;
 
 public interface CollectionMapper {
 
-    @Update("update user_collections set collections = #{collections} where userId = #{userId}")
-    void updateCollections(@Param(value = "userId") String userId, @Param(value = "collections") HashMap<String,
-            Collection> collections);
+    void saveCollection(Collection collection);
 
-//    @Update("update collection_name set collectionName = #{collectionName} where collection = #{collection}")
-//    void updateCollectionName(@Param(value = "collection")Collection collection,
-//                              @Param(value = "collectionName") String collectionName);
+    @Insert("update collection set recipes =#{recipes} where collectionId =#{collectionId}")
+    void updateCollectionRecipes(@Param(value = "collectionId") String collectionId,
+                                 @Param(value = "recipes") List<Recipe> recipes);
 
-    @Select("select collection from user where userId = #{userId}, collectionId = #{collectionId}")
-    Collection getCollectionById(@Param(value = "userId") String userId,
-                             @Param(value = "collectionId") String collectionId);
+    @Delete("delete from collection where collectionId =#{collectionId}")
+    void removeCollection(@Param(value = "collectionId") String collectionId);
+
+    @Update("update collection_name set collectionName = #{collectionName} where collectionId = #{collectionId}")
+    void changeCollectionName(@Param(value = "collection")String collectionId,
+                              @Param(value = "collectionName") String collectionName);
+
+    @Select("select * from collection where collectionId = #{collectionId}")
+    User getCollectionById(@Param(value = "collectionId") String collectionId);
+
+    @Update("update collection_name set collectionName = #{collectionName} where collectionId = #{collectionId}")
+    void updateCollectionName(@Param(value = "collection")String collectionId,
+                              @Param(value = "collectionName") String collectionName);
 }

@@ -27,6 +27,8 @@ public class RecipeServiceImpl implements RecipeService {
     @Autowired
     private RecipeMapper recipeMapper;
 
+    private Helper helper = new Helper();
+
     @Override
     public ResponseEntity<?> postRecipe(Recipe recipe) {
 
@@ -66,7 +68,7 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public ResponseEntity<?> likeRecipe(String recipeId) {
 
-        ResponseEntity<?> recipeError = verifyRecipeExist(recipeId);
+        ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipeId);
         if (recipeError!= null) {
             return recipeError;
         }
@@ -86,7 +88,7 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public ResponseEntity<?> unlikeRecipe(String recipeId) {
 
-        ResponseEntity<?> recipeError = verifyRecipeExist(recipeId);
+        ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipeId);
         if (recipeError!= null) {
             return recipeError;
         }
@@ -105,12 +107,12 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public ResponseEntity<?> commentRecipe(String viewerUserId, String recipeId, String comment) {
 
-        ResponseEntity<?> userError = verifyUserExist(viewerUserId);
+        ResponseEntity<?> userError = helper.verifyUserExist(viewerUserId);
         if (userError!= null) {
             return userError;
         }
 
-        ResponseEntity<?> recipeError = verifyRecipeExist(recipeId);
+        ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipeId);
         if (recipeError!= null) {
             return recipeError;
         }
@@ -134,12 +136,12 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public ResponseEntity<?> deleteComment(String viewerUserId, String recipeId) {
 
-        ResponseEntity<?> userError = verifyUserExist(viewerUserId);
+        ResponseEntity<?> userError = helper.verifyUserExist(viewerUserId);
         if (userError!= null) {
             return userError;
         }
 
-        ResponseEntity<?> recipeError = verifyRecipeExist(recipeId);
+        ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipeId);
         if (recipeError!= null) {
             return recipeError;
         }
@@ -162,7 +164,7 @@ public class RecipeServiceImpl implements RecipeService {
         HashMap<String, Object> resultMap = new HashMap<>();
         resultMap.put("recipeId", recipe.getRecipeId());
 
-        ResponseEntity<?> recipeError = verifyRecipeExist(recipe.getRecipeId());
+        ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipe.getRecipeId());
         if (Objects.nonNull(recipeError)) {
             resultMap.put("recipeError", recipeError);
             return ResponseUtil.getResponse(ResponseCode.ERROR, null, resultMap);
@@ -179,7 +181,7 @@ public class RecipeServiceImpl implements RecipeService {
             return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
         }
 
-        ResponseEntity<?> recipeError = verifyRecipeExist(recipe.getRecipeId());
+        ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipe.getRecipeId());
         if (recipeError!= null) {
             return recipeError;
         }
@@ -201,7 +203,7 @@ public class RecipeServiceImpl implements RecipeService {
             return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
         }
 
-        ResponseEntity<?> recipeError = verifyRecipeExist(recipe.getRecipeId());
+        ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipe.getRecipeId());
         if (recipeError!= null) {
             return recipeError;
         }
@@ -219,7 +221,7 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public ResponseEntity<?> setPrivacyRecipe(Recipe recipe, Boolean privacy) {
 
-        ResponseEntity<?> recipeError = verifyRecipeExist(recipe.getRecipeId());
+        ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipe.getRecipeId());
         if (recipeError!= null) {
             return recipeError;
         }
@@ -240,15 +242,22 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public ResponseEntity<?> collectRecipe(String viewerUserId, String collectionId, String recipeId) {
 
-        ResponseEntity<?> userError = verifyUserExist(viewerUserId);
+        ResponseEntity<?> userError = helper.verifyUserExist(viewerUserId);
         if (userError!= null) {
             return userError;
         }
 
-        ResponseEntity<?> recipeError = verifyRecipeExist(recipeId);
+        ResponseEntity<?> collectionError = helper.verifyCollectionExist(viewerUserId, );
+        if (userError!= null) {
+            return userError;
+        }
+
+        ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipeId);
         if (recipeError!= null) {
             return recipeError;
         }
+
+
 
 
         User viewer = userMapper.getUserByUserId(viewerUserId);

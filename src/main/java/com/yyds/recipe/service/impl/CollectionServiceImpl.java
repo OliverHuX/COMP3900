@@ -26,7 +26,7 @@ public class CollectionServiceImpl implements CollectionService {
     @Autowired
     private RecipeMapper recipeMapper;
 
-    private Helper helper;
+    private Helper helper = new Helper();
 
     @Override
     public ResponseEntity<?> addCollection(String userId, String collectionName) {
@@ -52,7 +52,8 @@ public class CollectionServiceImpl implements CollectionService {
         user.addCollection(newCollection);
 
         try {
-            collectionMapper.updateCollections(userId, user.getCollections());
+            userMapper.updateCollections(userId, user.getCollections());
+            collectionMapper.saveCollection(newCollection);
         } catch (Exception e) {
             return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
         }
@@ -79,7 +80,8 @@ public class CollectionServiceImpl implements CollectionService {
         user.removeCollection(collectionId);
 
         try {
-            collectionMapper.updateCollections(userId, user.getCollections());
+            userMapper.updateCollections(userId, user.getCollections());
+            collectionMapper.removeCollection(collectionId);
         } catch (Exception e) {
             return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
         }
@@ -109,7 +111,8 @@ public class CollectionServiceImpl implements CollectionService {
         collections.get(collectionId).setCollectionName(collectionName);
 
         try {
-            collectionMapper.updateCollections(userId, collections);
+            userMapper.updateCollections(userId, collections);
+            collectionMapper.changeCollectionName(collectionId, collectionName);
         } catch (Exception e) {
             return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
         }
@@ -145,7 +148,8 @@ public class CollectionServiceImpl implements CollectionService {
         collections.get(collectionId).addRecipe(recipe);
 
         try {
-            collectionMapper.updateCollections(userId, collections);
+            userMapper.updateCollections(userId, collections);
+            collectionMapper.updateCollectionRecipes(collectionId, collections.get(collectionId).getRecipes());
         } catch (Exception e) {
             return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
         }
@@ -182,7 +186,8 @@ public class CollectionServiceImpl implements CollectionService {
         collections.get(collectionId).removeRecipe(recipe);
 
         try {
-            collectionMapper.updateCollections(userId, collections);
+            userMapper.updateCollections(userId, collections);
+            collectionMapper.updateCollectionRecipes(collectionId, collections.get(collectionId).getRecipes());
         } catch (Exception e) {
             return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
         }
