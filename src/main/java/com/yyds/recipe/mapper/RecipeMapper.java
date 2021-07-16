@@ -14,6 +14,8 @@ public interface RecipeMapper {
 
     void saveRecipe(Recipe recipe);
 
+    void savePhotos(String recipeId, List<String> uploadPhotos);
+
     @Select("select * from user where recipeId = #{recipeId}")
     Recipe getRecipeById(String recipeId);
 
@@ -22,7 +24,7 @@ public interface RecipeMapper {
 
     @Update("update recipe comments set comments = #{comments}, where recipeId = #{recipeId}")
     void updateRecipeComments(@Param(value = "recipeId") String recipeId,
-                              @Param(value = "comments")HashMap<String, String> comments);
+                              @Param(value = "comments") HashMap<String, String> comments);
 
     @Update("update user subscribe set subscribe = #{recipeId}, where userId = #{userId})")
     void updateSubscribe(@Param(value = "userId") String userId,

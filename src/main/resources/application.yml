@@ -65,6 +65,12 @@ minio:
   endpoint: http://localhost:9000
   accessKey: minioadmin
   secretKey: minioadmin
+  bucket:
+    profile:
+      photo: profile-photo
+    recipe:
+      photo: recipe-photo
+      video: recipe-video
 
 # actuator
 management:

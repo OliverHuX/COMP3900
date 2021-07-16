@@ -1,6 +1,7 @@
 package com.yyds.recipe.service.impl;
 
 import com.yyds.recipe.exception.AuthorizationException;
+import com.yyds.recipe.exception.MySqlErrorException;
 import com.yyds.recipe.exception.response.ResponseCode;
 import com.yyds.recipe.mapper.CollectionMapper;
 import com.yyds.recipe.mapper.RecipeMapper;
@@ -15,8 +16,11 @@ import com.yyds.recipe.utils.UUIDGenerator;
 import com.yyds.recipe.vo.ServiceVO;
 import com.yyds.recipe.vo.SuccessCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -25,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
+@EnableTransactionManagement
 @Service
 public class RecipeServiceImpl implements RecipeService {
 
@@ -40,9 +45,16 @@ public class RecipeServiceImpl implements RecipeService {
     @Autowired
     private MinioUtil minioUtil;
 
+    @Value("${minio.bucket.recipe.photo}")
+    private String recipePhotoBucketName;
+
+    @Value("${minio.bucket.recipe.video}}")
+    private String recipeVideoBucketName;
+
     private Helper helper = new Helper();
 
     @Override
+    @Transactional(value = "transactionManager", rollbackFor = Exception.class)
     public ResponseEntity<?> postRecipe(String userId, MultipartFile[] uploadPhotos, Recipe recipe) {
 
         if (userMapper.getUserByUserId(userId) == null) {
@@ -52,9 +64,21 @@ public class RecipeServiceImpl implements RecipeService {
         String recipeId = UUIDGenerator.createRecipeId();
         recipe.setRecipeId(recipeId);
         recipe.setCreateTime(String.valueOf(System.currentTimeMillis()));
+        recipe.setUserId(userId);
+
+        // insert into recipe table
+        try {
+            recipeMapper.saveRecipe(recipe);
+        } catch (Exception e) {
+            throw new MySqlErrorException();
+        }
+
         recipe.setRecipePhotos(new ArrayList<>());
         for (MultipartFile uploadPhoto : uploadPhotos) {
             String originalFilename = uploadPhoto.getOriginalFilename();
+            if (originalFilename == null) {
+                continue;
+            }
             String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
             String contentType = uploadPhoto.getContentType();
             InputStream inputStream = null;
@@ -64,23 +88,18 @@ public class RecipeServiceImpl implements RecipeService {
                 e.printStackTrace();
             }
             String photoName = UUIDGenerator.generateUUID() + suffix;
-            minioUtil.putObject("recipe-photo", photoName, contentType, inputStream);
+            minioUtil.putObject(recipePhotoBucketName, photoName, contentType, inputStream);
             recipe.getRecipePhotos().add(photoName);
         }
 
-        // try {
-        //     recipeMapper.saveRecipe(recipe);
-        // } catch (Exception e) {
-        //     return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
-        // }
+        // insert into photo table
+        try {
+            recipeMapper.savePhotos(recipeId, recipe.getRecipePhotos());
+        } catch (Exception e) {
+            throw new MySqlErrorException();
+        }
 
-        HashMap<String, Object> resultMap = new HashMap<>();
-        resultMap.put("recipeId", recipe.getRecipeId());
-        resultMap.put("introduction", recipe.getIntroduction());
-        resultMap.put("title", recipe.getTitle());
-        resultMap.put("method", recipe.getMethod());
-        resultMap.put("photos", recipe.getRecipePhotos());
-        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, resultMap);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
     @Override

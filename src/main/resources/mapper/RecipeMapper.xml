@@ -5,7 +5,24 @@
 
 <mapper namespace="com.yyds.recipe.mapper.RecipeMapper">
 
-    <select id="saveRecipe">
-        
-    </select>
+    <insert id="saveRecipe" parameterType="com.yyds.recipe.model.Recipe">
+        insert into recipe.recipe(recipe_id,
+                                  title,
+                                  introduction,
+                                  ingredients,
+                                  method,
+                                  create_time,
+                                  timeDuration,
+                                  user_id)
+        values (#{recipeId}, #{title}, #{introduction}, #{ingredients}, #{method}, #{createTime}, #{timeDuration},
+                #{userId})
+    </insert>
+
+    <insert id="savePhotos">
+        insert into recipe.photo(recipe_id, file_name)
+        values
+        <foreach collection="uploadPhotos" item="photo" separator=",">
+            (#{recipeId,jdbcType=VARCHAR},#{photo, jdbcType=VARCHAR})
+        </foreach>
+    </insert>
 </mapper>
