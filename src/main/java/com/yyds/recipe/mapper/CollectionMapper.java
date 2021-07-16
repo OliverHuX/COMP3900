@@ -12,7 +12,7 @@ public interface CollectionMapper {
 
     void saveCollection(Collection collection);
 
-    @Insert("update collection set recipes =#{recipes} where collectionId =#{collectionId}")
+    @Update("update collection set recipes =#{recipes} where collectionId =#{collectionId}")
     void updateCollectionRecipes(@Param(value = "collectionId") String collectionId,
                                  @Param(value = "recipes") List<Recipe> recipes);
 
