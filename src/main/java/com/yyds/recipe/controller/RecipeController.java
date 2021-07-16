@@ -7,10 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
 
@@ -20,9 +18,11 @@ public class RecipeController {
     @Autowired
     private RecipeService recipeService;
 
-    @RequestMapping(value = "/user/postRecipe", method = RequestMethod.POST)
-    public ResponseEntity<?> postRecipe(Recipe recipe) {
-        return recipeService.postRecipe(recipe);
+    @RequestMapping(value = "/{userId}/postRecipe", method = RequestMethod.POST)
+    public ResponseEntity<?> postRecipe(@PathVariable(value = "userId") String userId,
+                                        @RequestPart(value = "uploadPhotos") MultipartFile[] uploadPhotos,
+                                        @RequestPart(value = "jsonData") Recipe recipe) {
+        return recipeService.postRecipe(userId, uploadPhotos, recipe);
     }
 
     @RequestMapping(value = "/recipe/like", method = RequestMethod.POST)
@@ -81,6 +81,7 @@ public class RecipeController {
         @NotNull
         private String recipeId;
     }
+
     @RequestMapping(value = "/recipe/collectRecipe", method = RequestMethod.POST)
     public ResponseEntity<?> collectRecipe(@RequestBody collectRecipeReq req) {
         return recipeService.collectRecipe(req.getViewerUserId(), req.getCollectionId(), req.getRecipeId());
