@@ -1,9 +1,7 @@
 package com.yyds.recipe.controller;
 
 import com.yyds.recipe.model.Recipe;
-import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.RecipeService;
-import com.yyds.recipe.vo.ServiceVO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,13 +26,13 @@ public class RecipeController {
     }
 
     @RequestMapping(value = "/recipe/like", method = RequestMethod.POST)
-    public ResponseEntity<?> likeRecipe(@RequestBody Recipe recipe) {
-        return recipeService.likeRecipe(recipe);
+    public ResponseEntity<?> likeRecipe(@RequestBody String recipeId) {
+        return recipeService.likeRecipe(recipeId);
     }
 
     @RequestMapping(value = "/recipe/unlike", method = RequestMethod.POST)
-    public ResponseEntity<?> unlikeRecipe(@RequestBody Recipe recipe) {
-        return recipeService.unlikeRecipe(recipe);
+    public ResponseEntity<?> unlikeRecipe(@RequestBody String recipeId) {
+        return recipeService.unlikeRecipe(recipeId);
     }
 
 
@@ -69,5 +67,22 @@ public class RecipeController {
     @RequestMapping(value = "/recipe/deleteComment", method = RequestMethod.POST)
     public ResponseEntity<?> deleteComment(@RequestBody commentRecipeReq req) {
         return recipeService.deleteComment(req.getViewerUserId(), req.getRecipeId());
+    }
+
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    public static class collectRecipeReq {
+        @NotNull
+        private String viewerUserId;
+        @NotNull
+        private String collectionId;
+        @NotNull
+        private String recipeId;
+    }
+    @RequestMapping(value = "/recipe/collectRecipe", method = RequestMethod.POST)
+    public ResponseEntity<?> collectRecipe(@RequestBody collectRecipeReq req) {
+        return recipeService.collectRecipe(req.getViewerUserId(), req.getCollectionId(), req.getRecipeId());
     }
 }

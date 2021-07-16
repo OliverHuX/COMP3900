@@ -70,7 +70,7 @@ public class CollectionServiceImpl implements CollectionService {
             return userError;
         }
 
-        ResponseEntity<?> collectionError = helper.verifyCollectionExist(userId, collectionId);
+        ResponseEntity<?> collectionError = helper.verifyCollectionExist(collectionId);
 
         if (collectionError != null) {
             return collectionError;
@@ -99,7 +99,7 @@ public class CollectionServiceImpl implements CollectionService {
             return userError;
         }
 
-        ResponseEntity<?> collectionError = helper.verifyCollectionExist(userId, collectionId);
+        ResponseEntity<?> collectionError = helper.verifyCollectionExist(collectionId);
 
         if (collectionError != null) {
             return collectionError;
@@ -129,7 +129,7 @@ public class CollectionServiceImpl implements CollectionService {
             return userError;
         }
 
-        ResponseEntity<?> collectionError = helper.verifyCollectionExist(userId, collectionId);
+        ResponseEntity<?> collectionError = helper.verifyCollectionExist(collectionId);
 
         if (collectionError != null) {
             return collectionError;
@@ -167,7 +167,7 @@ public class CollectionServiceImpl implements CollectionService {
             return userError;
         }
 
-        ResponseEntity<?> collectionError = helper.verifyCollectionExist(userId, collectionId);
+        ResponseEntity<?> collectionError = helper.verifyCollectionExist(collectionId);
 
         if (collectionError != null) {
             return collectionError;

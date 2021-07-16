@@ -1,16 +1,15 @@
 package com.yyds.recipe.service.impl;
 
 import com.yyds.recipe.exception.response.ResponseCode;
+import com.yyds.recipe.mapper.CollectionMapper;
 import com.yyds.recipe.mapper.RecipeMapper;
 import com.yyds.recipe.mapper.UserMapper;
+import com.yyds.recipe.model.Collection;
 import com.yyds.recipe.model.Recipe;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.RecipeService;
 import com.yyds.recipe.utils.ResponseUtil;
 import com.yyds.recipe.utils.UUIDGenerator;
-import com.yyds.recipe.vo.ErrorCode;
-import com.yyds.recipe.vo.ServiceVO;
-import com.yyds.recipe.vo.SuccessCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,6 +19,9 @@ import java.util.Objects;
 
 @Service
 public class RecipeServiceImpl implements RecipeService {
+
+    @Autowired
+    private CollectionMapper collectionMapper;
 
     @Autowired
     private UserMapper userMapper;
@@ -247,9 +249,9 @@ public class RecipeServiceImpl implements RecipeService {
             return userError;
         }
 
-        ResponseEntity<?> collectionError = helper.verifyCollectionExist(viewerUserId, );
-        if (userError!= null) {
-            return userError;
+        ResponseEntity<?> collectionError = helper.verifyCollectionExist(collectionId);
+        if (collectionError!= null) {
+            return collectionError;
         }
 
         ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipeId);
@@ -257,12 +259,22 @@ public class RecipeServiceImpl implements RecipeService {
             return recipeError;
         }
 
-
-
-
         User viewer = userMapper.getUserByUserId(viewerUserId);
+        Collection collection = collectionMapper.getCollectionById(collectionId);
+        Recipe recipe = recipeMapper.getRecipeById(recipeId);
+        collection.addRecipe(recipe);
 
-        viewer.
+        HashMap<String, Collection> collections = viewer.getCollections();
+        collections.put(collectionId, collection);
+
+        try {
+            userMapper.updateCollections(viewerUserId, collections);
+            collectionMapper.updateCollectionRecipes(collectionId, collection.getRecipes());
+        } catch (Exception e) {
+            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
+        }
+
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
 
     }
 }

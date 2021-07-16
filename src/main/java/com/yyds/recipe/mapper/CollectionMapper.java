@@ -2,11 +2,12 @@ package com.yyds.recipe.mapper;
 
 import com.yyds.recipe.model.Collection;
 import com.yyds.recipe.model.Recipe;
-import com.yyds.recipe.model.User;
 import org.apache.ibatis.annotations.*;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface CollectionMapper {
 
     void saveCollection(Collection collection);
@@ -23,7 +24,7 @@ public interface CollectionMapper {
                               @Param(value = "collectionName") String collectionName);
 
     @Select("select * from collection where collectionId = #{collectionId}")
-    User getCollectionById(@Param(value = "collectionId") String collectionId);
+    Collection getCollectionById(@Param(value = "collectionId") String collectionId);
 
     @Update("update collection_name set collectionName = #{collectionName} where collectionId = #{collectionId}")
     void updateCollectionName(@Param(value = "collection")String collectionId,

@@ -4,8 +4,6 @@ import com.yyds.recipe.exception.response.ResponseCode;
 import com.yyds.recipe.mapper.CollectionMapper;
 import com.yyds.recipe.mapper.RecipeMapper;
 import com.yyds.recipe.mapper.UserMapper;
-import com.yyds.recipe.model.Collection;
-import com.yyds.recipe.model.User;
 import com.yyds.recipe.utils.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -51,17 +49,15 @@ public class Helper {
         return null;
     }
 
-    public  ResponseEntity<?> verifyCollectionExist(String userId, String collectionId) {
+    public  ResponseEntity<?> verifyCollectionExist(String collectionId) {
 
         if (collectionId == null) {
             return ResponseUtil.getResponse(ResponseCode.COLLECTION_ID_NOT_FOUND, null, null);
         }
 
-        User user = userMapper.getUserByUserId(userId);
-
-        Collection collection = user.findCollectionById(collectionId);
-
-        if (collection == null) {
+        try {
+            collectionMapper.getCollectionById(collectionId);
+        } catch (Exception e) {
             return ResponseUtil.getResponse(ResponseCode.COLLECTION_ID_NOT_FOUND, null, null);
         }
 

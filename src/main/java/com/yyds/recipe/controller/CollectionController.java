@@ -42,7 +42,7 @@ public class CollectionController {
         private String collectionId;
     }
 
-    @RequestMapping(value = "/removeCollection", method = RequestMethod.POST)
+    @RequestMapping(value = "/collection/removeCollection", method = RequestMethod.POST)
     public ResponseEntity<?> removeCollection(@RequestBody removeCollectionReq req) {
         return collectionService.removeCollection(req.getUserId(), req.getCollectionId());
     }
@@ -60,7 +60,7 @@ public class CollectionController {
         private String collectionName;
     }
 
-    @RequestMapping(value = "/changeCollectionName", method = RequestMethod.POST)
+    @RequestMapping(value = "/collection/changeCollectionName", method = RequestMethod.POST)
     public ResponseEntity<?> changeCollectionName(@RequestBody CollectionReq req) {
         return collectionService.changeCollectionName(req.getUserId(), req.getCollectionId(),
                                                       req.getCollectionName());
@@ -79,13 +79,13 @@ public class CollectionController {
         private String recipeId;
     }
 
-    @RequestMapping(value = "/addRecipeToCollection", method = RequestMethod.POST)
+    @RequestMapping(value = "/collection/addRecipeToCollection", method = RequestMethod.POST)
     public ResponseEntity<?> addRecipeToCollection(@RequestBody recipeInCollectionReq req) {
         return collectionService.addRecipeToCollection(req.getUserId(), req.getCollectionId(),
                                                       req.getRecipeId());
     }
 
-    @RequestMapping(value = "/removeRecipeToCollection", method = RequestMethod.POST)
+    @RequestMapping(value = "/collection/removeRecipeToCollection", method = RequestMethod.POST)
     public ResponseEntity<?> removeRecipeToCollection(@RequestBody recipeInCollectionReq req) {
         return collectionService.removeRecipeFromCollection(req.getUserId(), req.getCollectionId(),
                                                        req.getRecipeId());
