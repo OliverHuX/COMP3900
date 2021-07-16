@@ -195,4 +195,49 @@ public class CollectionServiceImpl implements CollectionService {
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
+    @Override
+    public ResponseEntity<?> getUserCollections(String userId) {
+
+        ResponseEntity<?> userError = helper.verifyUserExist(userId);
+
+        if (userError != null) {
+            return userError;
+        }
+
+        User user = userMapper.getUserByUserId(userId);
+        HashMap<String, Collection> collections = user.getCollections();
+        HashMap<String, Object> ret = new HashMap<>();
+        ret.put("collections", collections);
+
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, ret);
+    }
+
+    @Override
+    public ResponseEntity<?> getCreatorCollections(String viewerUserId, String creatorUserId) {
+        ResponseEntity<?> user1Error = helper.verifyUserExist(viewerUserId);
+        ResponseEntity<?> user2Error = helper.verifyUserExist(creatorUserId);
+
+        if (user1Error != null) {
+            return user1Error;
+        }
+
+        if (user2Error != null) {
+            return user2Error;
+        }
+
+        User creator = userMapper.getUserByUserId(creatorUserId);
+        User viewer = userMapper.getUserByUserId(viewerUserId);
+
+        if (viewer.isSubscribedTo(creatorUserId)) {
+            HashMap<String, Collection> collections = creator.getCollections();
+            HashMap<String, Object> ret = new HashMap<>();
+            ret.put("collections", collections);
+
+            return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, ret);
+        } else {
+            return ResponseUtil.getResponse(ResponseCode.USER_IS_NOT_A_SUBSCRIBER, null, null);
+        }
+
+    }
+
 }

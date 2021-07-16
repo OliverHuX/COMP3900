@@ -39,4 +39,8 @@ public class User implements Serializable {
     public Collection findCollectionById(String collectionId) {
         return collections.get(collectionId);
     }
+
+    public boolean isSubscribedTo(String creator) {
+        return subscribes.contains(creator);
+    }
 }

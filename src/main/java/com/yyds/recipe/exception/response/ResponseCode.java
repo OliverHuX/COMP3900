@@ -19,6 +19,7 @@ public enum ResponseCode {
     EMAIL_REGISTERED_BUT_NOT_VERIFIED(608, "email register in 30 minutes but do not verify please check your email"),
     COLLECTION_ID_NOT_FOUND(609, "collection does not exist"),
     RECIPE_ID_NOT_FOUND(610, "recipe does not exist"),
+    USER_IS_NOT_A_SUBSCRIBER(611, "user is not a subscriber"),
 
     // 701 - 800 service logic error
     BUSINESS_PARAMETER_ERROR(701, "business parameter err or"),

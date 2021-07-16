@@ -13,4 +13,9 @@ public interface CollectionService {
     ResponseEntity<?> addRecipeToCollection(String userId, String collectionId, String recipeId);
 
     ResponseEntity<?> removeRecipeFromCollection(String userId, String collectionId, String recipeId);
+
+    ResponseEntity<?> getUserCollections(String userId);
+
+    ResponseEntity<?> getCreatorCollections(String viewerUserId, String creatorUserId);
+
 }

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.constraints.NotNull;
 
@@ -91,4 +92,14 @@ public class CollectionController {
                                                        req.getRecipeId());
     }
 
+    @RequestMapping(value = "/collection/getUserCollections", method = RequestMethod.GET)
+    public ResponseEntity<?> getUserCollections(@RequestParam(value = "userId") String userId) {
+        return collectionService.getUserCollections(userId);
+    }
+
+    @RequestMapping(value = "/collection/getCreatorCollections", method = RequestMethod.GET)
+    public ResponseEntity<?> getCreatorCollections(@RequestParam(value = "viewUserId") String viewUserId,
+                                                   @RequestParam(value = "creatorUserId") String creatorUserId) {
+        return collectionService.getCreatorCollections(viewUserId, creatorUserId);
+    }
 }
