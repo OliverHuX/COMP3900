@@ -35,4 +35,8 @@ public class User implements Serializable {
     public void removeCollection(String collectionId) {
         collections.remove(collectionId);
     }
+
+    public Collection findCollectionById(String collectionId) {
+        return collections.get(collectionId);
+    }
 }

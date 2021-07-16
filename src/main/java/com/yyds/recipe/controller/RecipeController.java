@@ -28,12 +28,12 @@ public class RecipeController {
     }
 
     @RequestMapping(value = "/recipe/like", method = RequestMethod.POST)
-    public ServiceVO<?> likeRecipe(@RequestBody Recipe recipe) {
+    public ResponseEntity<?> likeRecipe(@RequestBody Recipe recipe) {
         return recipeService.likeRecipe(recipe);
     }
 
     @RequestMapping(value = "/recipe/unlike", method = RequestMethod.POST)
-    public ServiceVO<?> unlikeRecipe(@RequestBody Recipe recipe) {
+    public ResponseEntity<?> unlikeRecipe(@RequestBody Recipe recipe) {
         return recipeService.unlikeRecipe(recipe);
     }
 
@@ -43,15 +43,31 @@ public class RecipeController {
     @Data
     public static class commentRecipeReq {
         @NotNull
-        private User viewer;
+        private String viewerUserId;
         @NotNull
-        private Recipe recipe;
+        private String recipeId;
         @NotNull
         private String comment;
     }
 
     @RequestMapping(value = "/recipe/comment", method = RequestMethod.POST)
-    public ServiceVO<?> commentRecipe(@RequestBody commentRecipeReq req) {
-        return recipeService.commentRecipe(req.getViewer(), req.getRecipe(), req.getComment());
+    public ResponseEntity<?> commentRecipe(@RequestBody commentRecipeReq req) {
+        return recipeService.commentRecipe(req.getViewerUserId(), req.getRecipeId(), req.getComment());
+    }
+
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    public static class deleteCommentReq {
+        @NotNull
+        private String viewerUserId;
+        @NotNull
+        private String recipeId;
+    }
+
+    @RequestMapping(value = "/recipe/deleteComment", method = RequestMethod.POST)
+    public ResponseEntity<?> deleteComment(@RequestBody commentRecipeReq req) {
+        return recipeService.deleteComment(req.getViewerUserId(), req.getRecipeId());
     }
 }

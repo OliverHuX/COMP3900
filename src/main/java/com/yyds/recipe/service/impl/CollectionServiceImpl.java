@@ -26,23 +26,22 @@ public class CollectionServiceImpl implements CollectionService {
     @Autowired
     private RecipeMapper recipeMapper;
 
+    private Helper helper;
+
     @Override
     public ResponseEntity<?> addCollection(String userId, String collectionName) {
 
-        if (userId == null) {
-            return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
+        ResponseEntity<?> userError = helper.verifyUserExist(userId);
+
+        if (userError != null) {
+            return userError;
         }
 
         if (collectionName == null) {
             return ResponseUtil.getResponse(ResponseCode.BUSINESS_PARAMETER_ERROR, null, null);
         }
 
-        User user = null;
-        try {
-            user = userMapper.getUserByUserId(userId);
-        } catch (Exception e) {
-            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
-        }
+        User user = userMapper.getUserByUserId(userId);
 
         String collectionId = UUIDGenerator.createCollectionId();
         Collection newCollection = new Collection();
@@ -63,10 +62,17 @@ public class CollectionServiceImpl implements CollectionService {
 
     @Override
     public ResponseEntity<?> removeCollection(String userId, String collectionId) {
-        ResponseEntity<?> error = verifyCollection(userId, collectionId);
 
-        if (error != null) {
-            return error;
+        ResponseEntity<?> userError = helper.verifyUserExist(userId);
+
+        if (userError != null) {
+            return userError;
+        }
+
+        ResponseEntity<?> collectionError = helper.verifyCollectionExist(userId, collectionId);
+
+        if (collectionError != null) {
+            return collectionError;
         }
 
         User user = userMapper.getUserByUserId(userId);
@@ -85,14 +91,16 @@ public class CollectionServiceImpl implements CollectionService {
     @Override
     public ResponseEntity<?> changeCollectionName(String userId, String collectionId, String collectionName) {
 
-        ResponseEntity<?> error = verifyCollection(userId, collectionId);
+        ResponseEntity<?> userError = helper.verifyUserExist(userId);
 
-        if (error != null) {
-            return error;
+        if (userError != null) {
+            return userError;
         }
 
-        if (collectionName == null) {
-            return ResponseUtil.getResponse(ResponseCode.BUSINESS_PARAMETER_ERROR, null, null);
+        ResponseEntity<?> collectionError = helper.verifyCollectionExist(userId, collectionId);
+
+        if (collectionError != null) {
+            return collectionError;
         }
 
         User user = userMapper.getUserByUserId(userId);
@@ -111,14 +119,23 @@ public class CollectionServiceImpl implements CollectionService {
 
     @Override
     public ResponseEntity<?> addRecipeToCollection(String userId, String collectionId, String recipeId) {
-        ResponseEntity<?> error = verifyCollection(userId, collectionId);
 
-        if (error != null) {
-            return error;
+        ResponseEntity<?> userError = helper.verifyUserExist(userId);
+
+        if (userError != null) {
+            return userError;
         }
 
-        if (recipeId == null || recipeMapper.getRecipeById(recipeId) == null) {
-            return ResponseUtil.getResponse(ResponseCode.RECIPE_ID_NOT_FOUND, null, null);
+        ResponseEntity<?> collectionError = helper.verifyCollectionExist(userId, collectionId);
+
+        if (collectionError != null) {
+            return collectionError;
+        }
+
+        ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipeId);
+
+        if (recipeError != null) {
+            return recipeError;
         }
 
         User user = userMapper.getUserByUserId(userId);
@@ -140,14 +157,22 @@ public class CollectionServiceImpl implements CollectionService {
     @Override
     public ResponseEntity<?> removeRecipeFromCollection(String userId, String collectionId, String recipeId) {
 
-        ResponseEntity<?> error = verifyCollection(userId, collectionId);
+        ResponseEntity<?> userError = helper.verifyUserExist(userId);
 
-        if (error != null) {
-            return error;
+        if (userError != null) {
+            return userError;
         }
 
-        if (recipeId == null || recipeMapper.getRecipeById(recipeId) == null) {
-            return ResponseUtil.getResponse(ResponseCode.RECIPE_ID_NOT_FOUND, null, null);
+        ResponseEntity<?> collectionError = helper.verifyCollectionExist(userId, collectionId);
+
+        if (collectionError != null) {
+            return collectionError;
+        }
+
+        ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipeId);
+
+        if (recipeError != null) {
+            return recipeError;
         }
 
         User user = userMapper.getUserByUserId(userId);
@@ -165,22 +190,4 @@ public class CollectionServiceImpl implements CollectionService {
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
-    public ResponseEntity<?> verifyCollection(String userId, String collectionId) {
-
-        if (userId == null) {
-            return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
-        }
-
-        if (collectionId == null) {
-            return ResponseUtil.getResponse(ResponseCode.BUSINESS_PARAMETER_ERROR, null, null);
-        }
-
-        try {
-            userMapper.getUserByUserId(userId);
-        } catch (Exception e) {
-            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
-        }
-
-        return null;
-    }
 }

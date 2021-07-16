@@ -52,7 +52,8 @@ public class RecipeServiceImpl implements RecipeService {
         try {
             recipeMapper.saveRecipe(recipe);
         } catch (Exception e) {
-            // return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+            // return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null
+            //);
             return ResponseUtil.getResponse(ResponseCode.ERROR, null, null);
         }
 
@@ -63,82 +64,96 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public ServiceVO<?> likeRecipe(Recipe recipe) {
+    public ResponseEntity<?> likeRecipe(String recipeId) {
 
-        ServiceVO<?> error = verifyRecipe(recipe);
-        if (error!= null) {
-            return error;
+        ResponseEntity<?> recipeError = verifyRecipeExist(recipeId);
+        if (recipeError!= null) {
+            return recipeError;
         }
 
+        Recipe recipe = recipeMapper.getRecipeById(recipeId);
         recipe.setLikes(recipe.getLikes() + 1);
+
         try {
-            recipeMapper.updateRecipeLikes(recipe.getRecipeId(), recipe.getLikes());
+            recipeMapper.updateRecipeLikes(recipeId, recipe.getLikes());
         } catch (Exception e) {
-            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
         }
 
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
     @Override
-    public ServiceVO<?> unlikeRecipe(Recipe recipe) {
+    public ResponseEntity<?> unlikeRecipe(String recipeId) {
 
-        ServiceVO<?> error = verifyRecipe(recipe);
-        if (error!= null) {
-            return error;
+        ResponseEntity<?> recipeError = verifyRecipeExist(recipeId);
+        if (recipeError!= null) {
+            return recipeError;
         }
 
+        Recipe recipe = recipeMapper.getRecipeById(recipeId);
         recipe.setLikes(recipe.getLikes() - 1);
         try {
-            recipeMapper.updateRecipeLikes(recipe.getRecipeId(), recipe.getLikes());
+            recipeMapper.updateRecipeLikes(recipeId, recipe.getLikes());
         } catch (Exception e) {
-            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
         }
 
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
     @Override
-    public ServiceVO<?> commentRecipe(User viewer, Recipe recipe, String comment) {
+    public ResponseEntity<?> commentRecipe(String viewerUserId, String recipeId, String comment) {
 
-        if (userMapper.getUserByUserId(viewer.getUserId()) == null) {
-            return new ServiceVO<>(ErrorCode.USERID_NOT_FOUND_ERROR, ErrorCode.USERID_NOT_FOUND_ERROR_MESSAGE);
+        ResponseEntity<?> userError = verifyUserExist(viewerUserId);
+        if (userError!= null) {
+            return userError;
         }
 
-        ServiceVO<?> error = verifyRecipe(recipe);
-        if (error!= null) {
-            return error;
+        ResponseEntity<?> recipeError = verifyRecipeExist(recipeId);
+        if (recipeError!= null) {
+            return recipeError;
         }
 
         if (comment == null) {
-            return new ServiceVO<>(ErrorCode.EMPTY_COMMENT_ERROR, ErrorCode.EMPTY_COMMENT_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.BUSINESS_PARAMETER_ERROR, null, null);
         }
 
-        HashMap<User, String> comments = recipe.getComments();
-        comments.put(viewer, comment);
-
-        recipe.setComments(comments);
+        Recipe recipe = recipeMapper.getRecipeById(recipeId);
+        recipe.addComment(viewerUserId, comment);
 
         try {
-            recipeMapper.updateRecipeComments(recipe.getRecipeId(), recipe.getComments());
+            recipeMapper.updateRecipeComments(recipeId, recipe.getComments());
         } catch (Exception e) {
-            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
         }
 
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
-    public ServiceVO<?> verifyRecipe(Recipe recipe) {
+    @Override
+    public ResponseEntity<?> deleteComment(String viewerUserId, String recipeId) {
 
-        if (userMapper.getUserByUserId(recipe.getUserId()) == null) {
-            return new ServiceVO<>(ErrorCode.USERID_NOT_FOUND_ERROR, ErrorCode.USERID_NOT_FOUND_ERROR_MESSAGE);
+        ResponseEntity<?> userError = verifyUserExist(viewerUserId);
+        if (userError!= null) {
+            return userError;
         }
 
-        if (recipeMapper.getRecipeById(recipe.getRecipeId()) == null) {
-            return new ServiceVO<>(ErrorCode.RECIPEID_NOT_FOUND_ERROR, ErrorCode.RECIPEID_NOT_FOUND_MESSAGE);
+        ResponseEntity<?> recipeError = verifyRecipeExist(recipeId);
+        if (recipeError!= null) {
+            return recipeError;
         }
 
-        return null;
+        Recipe recipe = recipeMapper.getRecipeById(recipeId);
+        recipe.deleteComment(viewerUserId);
+
+        try {
+            recipeMapper.updateRecipeComments(recipeId, recipe.getComments());
+        } catch (Exception e) {
+            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
+        }
+
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
     @Override
@@ -147,9 +162,9 @@ public class RecipeServiceImpl implements RecipeService {
         HashMap<String, Object> resultMap = new HashMap<>();
         resultMap.put("recipeId", recipe.getRecipeId());
 
-        ServiceVO<?> error = verifyRecipe(recipe);
-        if (Objects.nonNull(error)) {
-            resultMap.put("error", error);
+        ResponseEntity<?> recipeError = verifyRecipeExist(recipe.getRecipeId());
+        if (Objects.nonNull(recipeError)) {
+            resultMap.put("recipeError", recipeError);
             return ResponseUtil.getResponse(ResponseCode.ERROR, null, resultMap);
         }
 
@@ -158,67 +173,87 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public ServiceVO<?> subscribeRecipe(User viewer, Recipe recipe) {
+    public ResponseEntity<?> subscribeRecipe(User viewer, Recipe recipe) {
 
         if (userMapper.getUserByUserId(viewer.getUserId()) == null) {
-            return new ServiceVO<>(ErrorCode.USERID_NOT_FOUND_ERROR, ErrorCode.USERID_NOT_FOUND_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
         }
 
-        ServiceVO<?> error = verifyRecipe(recipe);
-        if (error!= null) {
-            return error;
+        ResponseEntity<?> recipeError = verifyRecipeExist(recipe.getRecipeId());
+        if (recipeError!= null) {
+            return recipeError;
         }
 
         try {
             viewer.getSubscribes().add(recipe.getRecipeId());
             recipeMapper.updateSubscribe(viewer.getUserId(), viewer.getSubscribes());
         } catch (Exception e) {
-            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
         }
 
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
     @Override
-    public ServiceVO<?> cancelSubscribeRecipe(User viewer, Recipe recipe) {
+    public ResponseEntity<?> cancelSubscribeRecipe(User viewer, Recipe recipe) {
 
         if (userMapper.getUserByUserId(viewer.getUserId()) == null) {
-            return new ServiceVO<>(ErrorCode.USERID_NOT_FOUND_ERROR, ErrorCode.USERID_NOT_FOUND_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
         }
 
-        ServiceVO<?> error = verifyRecipe(recipe);
-        if (error!= null) {
-            return error;
+        ResponseEntity<?> recipeError = verifyRecipeExist(recipe.getRecipeId());
+        if (recipeError!= null) {
+            return recipeError;
         }
 
         try {
             viewer.getSubscribes().remove(recipe.getRecipeId());
             recipeMapper.deleteSubscribe(viewer.getUserId(), viewer.getSubscribes());
         } catch (Exception e) {
-            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
         }
 
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
     @Override
-    public ServiceVO<?> setPrivacyRecipe(Recipe recipe, Boolean privacy) {
+    public ResponseEntity<?> setPrivacyRecipe(Recipe recipe, Boolean privacy) {
 
-        ServiceVO<?> error = verifyRecipe(recipe);
-        if (error!= null) {
-            return error;
+        ResponseEntity<?> recipeError = verifyRecipeExist(recipe.getRecipeId());
+        if (recipeError!= null) {
+            return recipeError;
         }
 
         if (recipeMapper.getRecipeById(recipe.getRecipeId()).getIsPrivacy().equals(privacy)) {
-            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
         }
 
         try {
             recipeMapper.updatePrivacy(recipe.getRecipeId(), privacy);
         } catch (Exception e) {
-            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
         }
 
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
+    }
+
+    @Override
+    public ResponseEntity<?> collectRecipe(String viewerUserId, String collectionId, String recipeId) {
+
+        ResponseEntity<?> userError = verifyUserExist(viewerUserId);
+        if (userError!= null) {
+            return userError;
+        }
+
+        ResponseEntity<?> recipeError = verifyRecipeExist(recipeId);
+        if (recipeError!= null) {
+            return recipeError;
+        }
+
+
+        User viewer = userMapper.getUserByUserId(viewerUserId);
+
+        viewer.
+
     }
 }

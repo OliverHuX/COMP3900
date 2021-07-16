@@ -5,8 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.NotNull;
-import java.io.BufferedInputStream;
 import java.util.HashMap;
 
 @Data
@@ -23,5 +21,13 @@ public class Recipe {
     private int likes;
     private Boolean isPrivacy;
     private String image;
-    private HashMap<User, String> comments;
+    private HashMap<String, String> comments;
+
+    public void addComment(String userId, String comment) {
+        comments.put(userId, comment);
+    }
+
+    public void deleteComment(String userId) {
+        comments.remove(userId);
+    }
 }

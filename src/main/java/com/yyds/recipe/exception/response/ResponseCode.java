@@ -21,7 +21,7 @@ public enum ResponseCode {
     RECIPE_ID_NOT_FOUND(610, "recipe does not exist"),
 
     // 701 - 800 service logic error
-    BUSINESS_PARAMETER_ERROR(701, "business parameter error"),
+    BUSINESS_PARAMETER_ERROR(701, "business parameter err or"),
 
     // 801 - 900 middleware error
     DATABASE_GENERAL_ERROR(801, "mysql database general error"),

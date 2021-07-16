@@ -1,7 +1,6 @@
 package com.yyds.recipe.mapper;
 
 import com.yyds.recipe.model.Recipe;
-import com.yyds.recipe.model.User;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -23,7 +22,7 @@ public interface RecipeMapper {
 
     @Update("update recipe comments set comments = #{comments}, where recipeId = #{recipeId}")
     void updateRecipeComments(@Param(value = "recipeId") String recipeId,
-                              @Param(value = "comments")HashMap<User, String> comments);
+                              @Param(value = "comments")HashMap<String, String> comments);
 
     @Update("update user subscribe set subscribe = #{recipeId}, where userId = #{userId})")
     void updateSubscribe(@Param(value = "userId") String userId,

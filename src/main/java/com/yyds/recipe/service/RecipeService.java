@@ -2,25 +2,26 @@ package com.yyds.recipe.service;
 
 import com.yyds.recipe.model.Recipe;
 import com.yyds.recipe.model.User;
-import com.yyds.recipe.vo.ServiceVO;
 import org.springframework.http.ResponseEntity;
 
 public interface RecipeService {
     ResponseEntity<?> postRecipe(Recipe recipe);
 
-    ServiceVO<?> likeRecipe(Recipe recipe);
+    ResponseEntity<?> likeRecipe(String recipeId);
 
-    ServiceVO<?> unlikeRecipe(Recipe recipe);
+    ResponseEntity<?> unlikeRecipe(String recipeId);
 
-    ServiceVO<?> commentRecipe(User viewer, Recipe recipe, String comment);
+    ResponseEntity<?> commentRecipe(String viewerUserId, String recipeId, String comment);
+
+    ResponseEntity<?> deleteComment(String viewerUserId, String recipeId);
 
     ResponseEntity<?> summaryRecipe(Recipe recipe);
 
-    ServiceVO<?> subscribeRecipe(User viewer, Recipe recipe);
+    ResponseEntity<?> subscribeRecipe(User viewer, Recipe recipe);
 
-    ServiceVO<?> cancelSubscribeRecipe(User viewer, Recipe recipe);
+    ResponseEntity<?> cancelSubscribeRecipe(User viewer, Recipe recipe);
 
-    ServiceVO<?> setPrivacyRecipe(Recipe recipe, Boolean privacy);
+    ResponseEntity<?> setPrivacyRecipe(Recipe recipe, Boolean privacy);
 
-    ServiceVO<?> collectRecipe(User viewer, Recipe recipe);
+    ResponseEntity<?> collectRecipe(String viewerUserId, String collectionId, String recipeId);
 }
