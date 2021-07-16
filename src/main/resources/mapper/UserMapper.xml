@@ -26,7 +26,7 @@
     </insert>
 
     <insert id="saveUserAccount" parameterType="com.yyds.recipe.model.User">
-        insert into recipe.user_account(user_id, password)
+        insert into recipe.account(user_id, password)
         values (#{userId}, #{password})
     </insert>
 
@@ -72,7 +72,7 @@
                u.create_time,
                u.profile_photo
         from recipe.user u
-                 left join recipe.user_account ua on u.user_id = ua.user_id
+                 left join recipe.account ua on u.user_id = ua.user_id
         where u.email = #{email};
     </select>
 
@@ -90,7 +90,7 @@
                u.create_time,
                u.profile_photo
         from recipe.user u
-                 left join recipe.user_account ua on u.user_id = ua.user_id
+                 left join recipe.account ua on u.user_id = ua.user_id
         where u.user_id = #{userId}
     </select>
 

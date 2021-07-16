@@ -15,6 +15,9 @@ public enum ResponseCode {
     PASSWORD_REGEX_ERROR(603, "password is not valid"),
     EMAIL_OR_PASSWORD_ERROR(604, "email or password incorrect"),
     EMAIL_VERIFY_ERROR(605, "email verify error"),
+    COLLECTION_ID_NOT_FOUND(609, "collection does not exist"),
+    RECIPE_ID_NOT_FOUND(610, "recipe does not exist"),
+    USER_IS_NOT_A_SUBSCRIBER(611, "user is not a subscriber"),
 
 
     // 801 -  middleware error

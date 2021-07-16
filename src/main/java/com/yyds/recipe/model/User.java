@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -22,5 +24,23 @@ public class User implements Serializable {
     private String birthdate;
     private String createTime;
     private String profilePhoto;
+    private List<String> subscribes;
+    private HashMap<String, Collection> collections;
     private String salt;
+
+    public void addCollection(Collection collection) {
+        collections.put(collection.getCollectionId(), collection);
+    }
+
+    public void removeCollection(String collectionId) {
+        collections.remove(collectionId);
+    }
+
+    public Collection findCollectionById(String collectionId) {
+        return collections.get(collectionId);
+    }
+
+    public boolean isSubscribedTo(String creator) {
+        return subscribes.contains(creator);
+    }
 }

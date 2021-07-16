@@ -10,9 +10,6 @@ import com.yyds.recipe.utils.BcryptPasswordUtil;
 import com.yyds.recipe.utils.JwtUtil;
 import com.yyds.recipe.utils.ResponseUtil;
 import com.yyds.recipe.utils.UUIDGenerator;
-import com.yyds.recipe.vo.ErrorCode;
-import com.yyds.recipe.vo.ServiceVO;
-import com.yyds.recipe.vo.SuccessCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -231,7 +228,7 @@ public class UserServiceImpl implements UserService {
         User checkedUser = userMapper.getUserByUserId(user.getUserId());
         if (checkedUser != null) {
             redisTemplate.delete(token);
-            return ResponseUtil.getResponse(ResponseCode.EMAIL_ALREADY_VERIFIED, null, null);
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_VERIFY_ERROR, null, null);
         }
 
         try {
