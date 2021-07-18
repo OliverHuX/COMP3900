@@ -4,6 +4,7 @@ import com.yyds.recipe.exception.AuthorizationException;
 import com.yyds.recipe.exception.MySqlErrorException;
 import com.yyds.recipe.exception.response.ResponseCode;
 import com.yyds.recipe.mapper.UserMapper;
+import com.yyds.recipe.model.Follow;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
 import com.yyds.recipe.utils.BcryptPasswordUtil;
@@ -249,4 +250,65 @@ public class UserServiceImpl implements UserService {
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
 
     }
+
+    @Override
+    public ResponseEntity<?> followUser(Follow follow) {
+        String userId = follow.getUserId();
+        User checkedUser = userMapper.getUserByUserId(userId);
+        if (checkedUser == null) {
+            throw new AuthorizationException();
+        }
+
+        String followId = follow.getFollowId();
+        User checkedFollow = userMapper.getUserByUserId(followId);
+        if (checkedFollow == null) {
+            return ResponseUtil.getResponse(ResponseCode.FOLLOW_USER_NOT_EXIST, null, null);
+        }
+
+        try {
+            userMapper.followUser(userId, followId);
+        } catch (Exception e) {
+            throw new MySqlErrorException();
+        }
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
+    }
+
+    @Override
+    public ResponseEntity<?> unfollowUser(Follow unfollow) {
+        String userId = unfollow.getUserId();
+        User checkedUser = userMapper.getUserByUserId(userId);
+        if (checkedUser == null) {
+            throw new AuthorizationException();
+        }
+
+        String followId = unfollow.getFollowId();
+        User checkedFollow = userMapper.getUserByUserId(followId);
+        if (checkedFollow == null) {
+            return ResponseUtil.getResponse(ResponseCode.FOLLOW_USER_NOT_EXIST, null, null);
+        }
+
+        try {
+            userMapper.unfollowUser(userId, followId);
+        } catch (Exception e) {
+            throw new MySqlErrorException();
+        }
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
+    }
+
+    @Override
+    public ResponseEntity<?> devRegister(User user) {
+
+        String userId = UUIDGenerator.createUserId();
+        user.setUserId(userId);
+        user.setCreateTime(String.valueOf(System.currentTimeMillis()));
+        try {
+            userMapper.saveUser(user);
+            userMapper.saveUserAccount(user);
+        } catch (Exception e) {
+            throw new MySqlErrorException();
+        }
+
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
+    }
+
 }

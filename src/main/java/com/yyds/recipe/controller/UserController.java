@@ -1,6 +1,7 @@
 package com.yyds.recipe.controller;
 
 
+import com.yyds.recipe.model.Follow;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
 import lombok.AllArgsConstructor;
@@ -62,10 +63,25 @@ public class UserController {
         return userService.emailVerify(token);
     }
 
+    @RequestMapping(value = "/user/follow")
+    public ResponseEntity<?> followUser(@RequestBody Follow followReq) {
+        return userService.followUser(followReq);
+    }
+
+    @RequestMapping(value = "user/unfollow")
+    public ResponseEntity<?> unfollowUser(@RequestBody Follow unfollowReq) {
+        return userService.unfollowUser(unfollowReq);
+    }
+
     @RequestMapping(value = "test", method = RequestMethod.GET)
     public ResponseEntity<?> testEverything() {
+
         return ResponseEntity.ok("Hello world!");
     }
 
+    @RequestMapping(value = "/dev/register", method = RequestMethod.POST)
+    public ResponseEntity<?> devRegister(@RequestBody User user) {
+        return userService.devRegister(user);
+    }
 }
 
