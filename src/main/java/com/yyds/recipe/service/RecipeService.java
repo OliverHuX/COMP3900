@@ -6,11 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface RecipeService {
-    ResponseEntity<?> postRecipe(String userId,  MultipartFile[] uploadPhotos, Recipe recipe);
+    ResponseEntity<?> postRecipe(String userId, MultipartFile[] uploadPhotos, Recipe recipe);
 
-    ResponseEntity<?> likeRecipe(String recipeId);
+    ResponseEntity<?> likeRecipe(String userId, Recipe recipe);
 
-    ResponseEntity<?> unlikeRecipe(String recipeId);
+    ResponseEntity<?> unlikeRecipe(String userId, Recipe recipe);
 
     ResponseEntity<?> commentRecipe(String viewerUserId, String recipeId, String comment);
 

@@ -25,14 +25,14 @@ public class RecipeController {
         return recipeService.postRecipe(userId, uploadPhotos, recipe);
     }
 
-    @RequestMapping(value = "/recipe/like", method = RequestMethod.POST)
-    public ResponseEntity<?> likeRecipe(@RequestBody String recipeId) {
-        return recipeService.likeRecipe(recipeId);
+    @RequestMapping(value = "/{userId}/recipe/like", method = RequestMethod.POST)
+    public ResponseEntity<?> likeRecipe(@PathVariable(value = "userId") String userId, @RequestBody Recipe recipe) {
+        return recipeService.likeRecipe(userId, recipe);
     }
 
-    @RequestMapping(value = "/recipe/unlike", method = RequestMethod.POST)
-    public ResponseEntity<?> unlikeRecipe(@RequestBody String recipeId) {
-        return recipeService.unlikeRecipe(recipeId);
+    @RequestMapping(value = "/{userId}/recipe/unlike", method = RequestMethod.POST)
+    public ResponseEntity<?> unlikeRecipe(@PathVariable(value = "userId") String userId, @RequestBody Recipe recipe) {
+        return recipeService.unlikeRecipe(userId, recipe);
     }
 
 
