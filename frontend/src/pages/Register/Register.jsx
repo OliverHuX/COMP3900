@@ -11,7 +11,6 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import { myStyles } from './Register.style';
 import FetchFunc from '../../components/fetchFunc';
-import { StyledHeader } from '../../components/StyledHeader';
 import { TextPopup } from '../../components/TextPopup';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -62,7 +61,6 @@ export default function Register () {
   return (
     <React.Fragment>
       <CssBaseline />
-      <StyledHeader/>
       <main>
         <Container component="main" maxWidth="xs" className={classes.backg}>
           <CssBaseline />

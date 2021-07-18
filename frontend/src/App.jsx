@@ -11,8 +11,7 @@ import Login from './pages/Login/Login'
 import Home from './pages/Home/index'
 import Footer from './components/footer';
 export default function App () {
-  return (
-    <Router>
+  return <Router>
       <div className='container_backg'>
         <Switch>
           
@@ -22,7 +21,7 @@ export default function App () {
             </div>
           </Route>
 
-          <Route path="/home" exact>        
+          <Route path="/home">        
               <Home />       
           </Route>
 
@@ -35,6 +34,5 @@ export default function App () {
         </Switch>
         <Footer/>
       </div>
-    </Router>
-  )
+    </Router>;
 }
