@@ -40,6 +40,11 @@ public class RecipeController {
         return recipeService.setPrivacyRecipe(recipe);
     }
 
+    @RequestMapping(value = "/recipe/recipe_list")
+    public ResponseEntity<?> getRecipeList(@RequestParam(value = "pageNum") int pageNum, @RequestParam(value = "pageSize") int pageSize) {
+        return recipeService.getAllPrivacyRecipes(pageNum, pageSize);
+    }
+
 
     @AllArgsConstructor
     @NoArgsConstructor

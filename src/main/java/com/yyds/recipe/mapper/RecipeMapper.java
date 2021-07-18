@@ -22,6 +22,8 @@ public interface RecipeMapper {
 
     Recipe getRecipeById(String recipeId);
 
+    List<Recipe> getRecipeList();
+
     @Update("update recipe likes set likes = #{likes}, where recipeId = #{recipeId}")
     void updateRecipeLikes(@Param(value = "recipeId") String recipeId, @Param(value = "likes") int likes);
 

@@ -73,5 +73,22 @@
         where recipe_id = #{recipeId}
     </update>
 
+    <select id="getRecipeList" resultMap="RecipeResultMap">
+        select r.recipe_id,
+               r.title,
+               r.introduction,
+               r.ingredients,
+               r.method,
+               r.create_time,
+               r.time_duration,
+               r.user_id,
+               r.is_privacy,
+               count(1) likes
+        from recipe.recipe r
+                 left join recipe.like l on r.recipe_id = l.recipe_id
+        where r.is_privacy = 0
+        group by r.recipe_id;
+    </select>
+
 
 </mapper>

@@ -1,5 +1,7 @@
 package com.yyds.recipe.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.yyds.recipe.exception.AuthorizationException;
 import com.yyds.recipe.exception.MySqlErrorException;
 import com.yyds.recipe.exception.response.ResponseCode;
@@ -28,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 @EnableTransactionManagement
@@ -149,6 +152,17 @@ public class RecipeServiceImpl implements RecipeService {
         }
 
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
+    }
+
+    @Override
+    public ResponseEntity<?> getAllPrivacyRecipes(int pageNum, int pageSize) {
+        PageHelper.startPage(pageNum, pageSize, true);
+        List<Recipe> recipeList = recipeMapper.getRecipeList();
+        PageInfo<Recipe> recipePageInfo = new PageInfo<>(recipeList);
+        HashMap<String, Object> resultMap = new HashMap<>();
+        resultMap.put("recipe lists", recipeList);
+        resultMap.put("total", recipePageInfo.getTotal());
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, resultMap);
     }
 
     @Override
