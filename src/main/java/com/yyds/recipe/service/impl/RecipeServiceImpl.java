@@ -15,6 +15,7 @@ import com.yyds.recipe.utils.ResponseUtil;
 import com.yyds.recipe.utils.UUIDGenerator;
 import com.yyds.recipe.vo.ServiceVO;
 import com.yyds.recipe.vo.SuccessCode;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -268,21 +269,24 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<?> setPrivacyRecipe(Recipe recipe, Boolean privacy) {
+    public ResponseEntity<?> setPrivacyRecipe(Recipe recipe) {
 
-        ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipe.getRecipeId());
-        if (recipeError != null) {
-            return recipeError;
+
+        String recipeId = recipe.getRecipeId();
+
+        Recipe checkedRecipe = recipeMapper.getRecipeById(recipeId);
+        if (checkedRecipe == null) {
+            return ResponseUtil.getResponse(ResponseCode.RECIPE_ID_NOT_FOUND, null, null);
         }
 
-        // if (recipeMapper.getRecipeById(recipe.getRecipeId()).isPrivacy().equals(privacy)) {
-        //     return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
-        // }
+        if (!StringUtils.equals(recipe.getUserId(), checkedRecipe.getUserId())) {
+            throw new AuthorizationException();
+        }
 
         try {
-            recipeMapper.updatePrivacy(recipe.getRecipeId(), privacy);
+            recipeMapper.updatePrivacy(recipeId, recipe.getIsPrivacy());
         } catch (Exception e) {
-            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
+            throw new MySqlErrorException();
         }
 
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);

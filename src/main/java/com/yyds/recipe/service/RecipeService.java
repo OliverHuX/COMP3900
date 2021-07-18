@@ -22,7 +22,7 @@ public interface RecipeService {
 
     ResponseEntity<?> cancelSubscribeRecipe(User viewer, Recipe recipe);
 
-    ResponseEntity<?> setPrivacyRecipe(Recipe recipe, Boolean privacy);
+    ResponseEntity<?> setPrivacyRecipe(Recipe recipe);
 
     ResponseEntity<?> collectRecipe(String viewerUserId, String collectionId, String recipeId);
 }

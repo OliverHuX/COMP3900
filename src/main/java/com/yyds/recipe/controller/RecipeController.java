@@ -35,6 +35,11 @@ public class RecipeController {
         return recipeService.unlikeRecipe(userId, recipe);
     }
 
+    @RequestMapping(value = "/recipe/privacy")
+    public ResponseEntity<?> setRecipePrivacy(@RequestBody Recipe recipe) {
+        return recipeService.setPrivacyRecipe(recipe);
+    }
+
 
     @AllArgsConstructor
     @NoArgsConstructor
