@@ -14,7 +14,7 @@ public class FollowController {
     @Autowired
     private FollowService followService;
 
-    @RequestMapping(value = "/{userId}/follow/")
+    @RequestMapping(value = "/{userId}/follow")
     public ResponseEntity<?> followUser(@PathVariable("userId") String userId, @RequestBody String followId) {
 
         return followService.followUser(userId, followId);
