@@ -30,4 +30,14 @@
         insert into recipe.like(recipe_id, user_id)
         values (#{recipeId}, #{userId})
     </insert>
+
+    <delete id="unlikeRecipe">
+        delete
+        from recipe.like
+        where user_id = #{userId}
+          and recipe_id = #{recipeId}
+
+    </delete>
+
+
 </mapper>

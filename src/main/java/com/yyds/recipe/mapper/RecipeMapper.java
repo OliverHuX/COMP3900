@@ -18,6 +18,8 @@ public interface RecipeMapper {
 
     void likeRecipe(String userId, String recipeId);
 
+    void unlikeRecipe(String userId, String recipeId);
+
     @Select("select * from user where recipeId = #{recipeId}")
     Recipe getRecipeById(String recipeId);
 

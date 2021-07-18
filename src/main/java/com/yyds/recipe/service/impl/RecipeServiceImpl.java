@@ -127,19 +127,24 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<?> unlikeRecipe(String recipeId) {
+    public ResponseEntity<?> unlikeRecipe(String userId, Recipe recipe) {
 
-        ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipeId);
-        if (recipeError != null) {
-            return recipeError;
+        User checkedUser = userMapper.getUserByUserId(userId);
+        if (checkedUser == null) {
+            throw new AuthorizationException();
         }
 
-        Recipe recipe = recipeMapper.getRecipeById(recipeId);
-        recipe.setLikes(recipe.getLikes() - 1);
+        String recipeId = recipe.getRecipeId();
+
+        Recipe checkRecipe = recipeMapper.getRecipeById(recipeId);
+        if (checkRecipe == null) {
+            return ResponseUtil.getResponse(ResponseCode.RECIPE_ID_NOT_FOUND, null, null);
+        }
+
         try {
-            recipeMapper.updateRecipeLikes(recipeId, recipe.getLikes());
+            recipeMapper.unlikeRecipe(userId, recipeId);
         } catch (Exception e) {
-            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
+            throw new MySqlErrorException();
         }
 
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
