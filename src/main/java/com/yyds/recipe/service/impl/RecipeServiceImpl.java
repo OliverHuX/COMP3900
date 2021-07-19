@@ -12,6 +12,7 @@ import com.yyds.recipe.model.Collection;
 import com.yyds.recipe.model.Recipe;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.RecipeService;
+import com.yyds.recipe.utils.JwtUtil;
 import com.yyds.recipe.utils.MinioUtil;
 import com.yyds.recipe.utils.ResponseUtil;
 import com.yyds.recipe.utils.UUIDGenerator;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -167,6 +169,32 @@ public class RecipeServiceImpl implements RecipeService {
         PageInfo<Recipe> recipePageInfo = new PageInfo<>(recipeList);
         HashMap<String, Object> resultMap = new HashMap<>();
         resultMap.put("recipe lists", recipeList);
+        resultMap.put("total", recipePageInfo.getTotal());
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, resultMap);
+    }
+
+    @Override
+    public ResponseEntity<?> getMyRecipes(int pageNum, int pageSize, HttpServletRequest request) {
+        String token = request.getHeader("token");
+        if (StringUtils.isEmpty(token)) {
+            throw new AuthorizationException();
+        }
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        User checkedUser = userMapper.getUserByUserId(userId);
+        if (checkedUser == null) {
+            throw new AuthorizationException();
+        }
+        if (pageNum <= 0) {
+            pageNum = 1;
+        }
+        if (pageSize >= 9) {
+            pageSize = 9;
+        }
+        PageHelper.startPage(pageNum, pageSize, true);
+        List<Recipe> myRecipeList = recipeMapper.getMyRecipeList(userId);
+        PageInfo<Recipe> recipePageInfo = new PageInfo<>(myRecipeList);
+        HashMap<String, Object> resultMap = new HashMap<>();
+        resultMap.put("recipe lists", myRecipeList);
         resultMap.put("total", recipePageInfo.getTotal());
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, resultMap);
     }

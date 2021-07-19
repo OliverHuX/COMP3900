@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 
 @RestController
@@ -35,7 +36,7 @@ public class RecipeController {
         return recipeService.unlikeRecipe(userId, recipe);
     }
 
-    @RequestMapping(value = "/recipe/privacy")
+    @RequestMapping(value = "/recipe/privacy", method = RequestMethod.GET)
     public ResponseEntity<?> setRecipePrivacy(@RequestBody Recipe recipe) {
         return recipeService.setPrivacyRecipe(recipe);
     }
@@ -43,6 +44,11 @@ public class RecipeController {
     @RequestMapping(value = "/recipe/recipe_list")
     public ResponseEntity<?> getRecipeList(@RequestParam(value = "pageNum", required = false) int pageNum, @RequestParam(value = "pageSize", required = false) int pageSize) {
         return recipeService.getAllPublicRecipes(pageNum, pageSize);
+    }
+
+    @RequestMapping(value = "/recipe/my_recipe", method = RequestMethod.GET)
+    public ResponseEntity<?> getMyRecipeList(@RequestParam(value = "pageNum", required = false) int pageNum, @RequestParam(value = "pageSize", required = false) int pageSize, HttpServletRequest request) {
+        return recipeService.getMyRecipes(pageNum, pageSize, request);
     }
 
 
