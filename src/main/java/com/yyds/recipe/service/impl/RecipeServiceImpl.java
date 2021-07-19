@@ -155,7 +155,13 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<?> getAllPrivacyRecipes(int pageNum, int pageSize) {
+    public ResponseEntity<?> getAllPublicRecipes(int pageNum, int pageSize) {
+        if (pageNum <= 0) {
+            pageNum = 1;
+        }
+        if (pageSize >= 9) {
+            pageSize = 9;
+        }
         PageHelper.startPage(pageNum, pageSize, true);
         List<Recipe> recipeList = recipeMapper.getRecipeList();
         PageInfo<Recipe> recipePageInfo = new PageInfo<>(recipeList);

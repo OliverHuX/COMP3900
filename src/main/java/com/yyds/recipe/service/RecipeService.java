@@ -12,7 +12,7 @@ public interface RecipeService {
 
     ResponseEntity<?> unlikeRecipe(String userId, Recipe recipe);
 
-    ResponseEntity<?> getAllPrivacyRecipes(int pageNum, int pageSize);
+    ResponseEntity<?> getAllPublicRecipes(int pageNum, int pageSize);
 
     ResponseEntity<?> commentRecipe(String viewerUserId, String recipeId, String comment);
 

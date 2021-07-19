@@ -41,8 +41,8 @@ public class RecipeController {
     }
 
     @RequestMapping(value = "/recipe/recipe_list")
-    public ResponseEntity<?> getRecipeList(@RequestParam(value = "pageNum") int pageNum, @RequestParam(value = "pageSize") int pageSize) {
-        return recipeService.getAllPrivacyRecipes(pageNum, pageSize);
+    public ResponseEntity<?> getRecipeList(@RequestParam(value = "pageNum", required = false) int pageNum, @RequestParam(value = "pageSize", required = false) int pageSize) {
+        return recipeService.getAllPublicRecipes(pageNum, pageSize);
     }
 
 
