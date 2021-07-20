@@ -5,6 +5,18 @@
 
 <mapper namespace="com.yyds.recipe.mapper.RecipeMapper">
 
+    <resultMap id="RecipeResultMap" type="com.yyds.recipe.model.Recipe">
+        <result column="recipe_id" property="recipeId" jdbcType="VARCHAR"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="introduction" property="introduction" jdbcType="VARCHAR"/>
+        <result column="ingredients" property="ingredients" jdbcType="VARCHAR"/>
+        <result column="method" property="method" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="VARCHAR"/>
+        <result column="time_duration" property="timeDuration" jdbcType="INTEGER"/>
+        <result column="user_id" property="userId" jdbcType="VARCHAR"/>
+        <result column="is_privacy" property="isPrivacy" jdbcType="INTEGER"/>
+    </resultMap>
+
     <insert id="saveRecipe" parameterType="com.yyds.recipe.model.Recipe">
         insert into recipe.recipe(recipe_id,
                                   title,
@@ -12,7 +24,7 @@
                                   ingredients,
                                   method,
                                   create_time,
-                                  timeDuration,
+                                  time_duration,
                                   user_id)
         values (#{recipeId}, #{title}, #{introduction}, #{ingredients}, #{method}, #{createTime}, #{timeDuration},
                 #{userId})
@@ -25,4 +37,75 @@
             (#{recipeId,jdbcType=VARCHAR},#{photo, jdbcType=VARCHAR})
         </foreach>
     </insert>
+
+    <insert id="likeRecipe">
+        insert into recipe.like(recipe_id, user_id)
+        values (#{recipeId}, #{userId})
+    </insert>
+
+    <delete id="unlikeRecipe">
+        delete
+        from recipe.like
+        where user_id = #{userId}
+          and recipe_id = #{recipeId}
+
+    </delete>
+
+    <select id="getRecipeById" parameterType="java.lang.String" resultMap="RecipeResultMap">
+        select r.recipe_id,
+               r.title,
+               r.introduction,
+               r.ingredients,
+               r.method,
+               r.create_time,
+               r.time_duration,
+               r.user_id,
+               r.is_privacy
+        from recipe.recipe r
+        where recipe_id = #{recipeId}
+    </select>
+
+    <update id="updatePrivacy">
+        update recipe.recipe
+        <set>
+            is_privacy = #{isPrivacy}
+        </set>
+        where recipe_id = #{recipeId}
+    </update>
+
+    <select id="getRecipeList" resultMap="RecipeResultMap">
+        select r.recipe_id,
+               r.title,
+               r.introduction,
+               r.ingredients,
+               r.method,
+               r.create_time,
+               r.time_duration,
+               r.user_id,
+               r.is_privacy,
+               count(1) likes
+        from recipe.recipe r
+                 left join recipe.like l on r.recipe_id = l.recipe_id
+        where r.is_privacy = 0
+        group by r.recipe_id;
+    </select>
+
+    <select id="getMyRecipeList" resultMap="RecipeResultMap">
+        select r.recipe_id,
+               r.title,
+               r.introduction,
+               r.ingredients,
+               r.method,
+               r.create_time,
+               r.time_duration,
+               r.user_id,
+               r.is_privacy,
+               count(1) likes
+        from recipe.recipe r
+                 left join recipe.like l on r.recipe_id = l.recipe_id
+        where r.user_id = #{userId}
+        group by r.recipe_id;
+    </select>
+
+
 </mapper>

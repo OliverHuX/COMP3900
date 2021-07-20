@@ -16,8 +16,15 @@ public interface RecipeMapper {
 
     void savePhotos(String recipeId, List<String> uploadPhotos);
 
-    @Select("select * from user where recipeId = #{recipeId}")
+    void likeRecipe(String userId, String recipeId);
+
+    void unlikeRecipe(String userId, String recipeId);
+
     Recipe getRecipeById(String recipeId);
+
+    List<Recipe> getRecipeList();
+
+    List<Recipe> getMyRecipeList(String userId);
 
     @Update("update recipe likes set likes = #{likes}, where recipeId = #{recipeId}")
     void updateRecipeLikes(@Param(value = "recipeId") String recipeId, @Param(value = "likes") int likes);
@@ -30,9 +37,8 @@ public interface RecipeMapper {
     void updateSubscribe(@Param(value = "userId") String userId,
                          @Param(value = "recipeId") List<String> recipeId);
 
-    @Update("update recipe privacy set privacy = #{privacy}, where recipeId = #{recipeId})")
-    void updatePrivacy(@Param(value = "recipeId") String recipeId,
-                       @Param(value = "privacy") Boolean privacy);
+
+    void updatePrivacy(String recipeId, int isPrivacy);
 
     @Update("update user subscribe set subscribe = #{recipeId}, where userId = #{userId})")
     void deleteSubscribe(@Param(value = "userId") String userId,

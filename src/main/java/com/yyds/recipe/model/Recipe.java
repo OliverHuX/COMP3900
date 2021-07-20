@@ -30,7 +30,7 @@ public class Recipe implements Serializable {
     private int likes;
     private String userId;
     private String createTime;
-    private boolean isPrivacy;
+    private int isPrivacy;
 
     public void addComment(String userId, String comment) {
         comments.put(userId, comment);

@@ -18,6 +18,7 @@ public enum ResponseCode {
     COLLECTION_ID_NOT_FOUND(609, "collection does not exist"),
     RECIPE_ID_NOT_FOUND(610, "recipe does not exist"),
     USER_IS_NOT_A_SUBSCRIBER(611, "user is not a subscriber"),
+    FOLLOW_USER_NOT_EXIST(622, "follow user not exist"),
 
 
     // 801 -  middleware error

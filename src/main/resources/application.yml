@@ -60,9 +60,14 @@ mybatis:
   configuration:
     log-impl: org.apache.ibatis.logging.log4j2.Log4j2Impl
 
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+
 # Minio
 minio:
-  endpoint: http://localhost:9000
+  endpoint: http://120.77.180.200:9000
   accessKey: minioadmin
   secretKey: minioadmin
   bucket:

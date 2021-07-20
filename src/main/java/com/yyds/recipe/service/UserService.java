@@ -1,5 +1,6 @@
 package com.yyds.recipe.service;
 
+import com.yyds.recipe.model.Follow;
 import com.yyds.recipe.model.User;
 import org.springframework.http.ResponseEntity;
 
@@ -19,4 +20,10 @@ public interface UserService {
     ResponseEntity<?> editPassword(String oldPassword, String newPassword, String userId);
 
     ResponseEntity<?> emailVerify(String token);
+
+    ResponseEntity<?> followUser(Follow follow);
+
+    ResponseEntity<?> unfollowUser(Follow unfollowReq);
+
+    ResponseEntity<?> devRegister(User user);
 }

@@ -43,4 +43,7 @@ public interface UserMapper {
     void updateCollections(@Param(value = "userId") String userId, @Param(value = "collections") HashMap<String,
                 Collection> collections);
 
+    void followUser(String followingId, String followId);
+
+    void unfollowUser(String followingId, String followId);
 }

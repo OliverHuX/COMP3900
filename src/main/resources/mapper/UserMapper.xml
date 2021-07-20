@@ -94,4 +94,16 @@
         where u.user_id = #{userId}
     </select>
 
+    <insert id="followUser">
+        insert into recipe.follow(following_user_id, follow_user_id)
+        values (#{followingId}, #{followId});
+    </insert>
+
+    <delete id="unfollowUser">
+        delete
+        from recipe.follow
+        where following_user_id = #{followingId}
+          and follow_user_id = #{followId}
+    </delete>
+
 </mapper>
