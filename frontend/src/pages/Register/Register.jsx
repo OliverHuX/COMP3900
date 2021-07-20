@@ -34,10 +34,8 @@ function signup (firstName, lastName, gender, nickName, birthDate, email, passwo
   result.then(data => {
     console.log(data.status);
     if (data.status === 200) {
-      data.json().then(res => {
-        console.log(res);
-        history.push('./wait')
-      })
+      console.log(data);
+      history.push('./wait')
     }
   })
 }
