@@ -16,8 +16,12 @@ const { TextArea } = Input;
 const { Meta } = Card;
 const Home = () => {
     const token = localStorage.getItem('token')
-    const [fileList, setFileList] = useState([])
+    const [fileList, setFileList] = useState()
     const [isModalVisible, setIsModalVisible] = useState(false);
+
+    //var imagedata = document.querySelector('input[type ="file"]').files[0];
+
+    
 
     const showModal = () => {
         setIsModalVisible(true);
@@ -61,15 +65,17 @@ const Home = () => {
           });
 
         formData.append('jsonData',jsonData );
-        formData.append('uploadPhotos', fileList);
+        formData.append('uploadPhotos', fileList[0]);
         console.log(formData.get('uploadPhotos'))
+        console.log(formData.get('jsonData'))
         axios.post(
             'http://localhost:8080/recipe/postRecipe',
             formData,
             {
                 headers: {
                     "Authorization": token,
-                    "Content-type": "multipart/form-data",
+                    "Content-Type": "multipart/form-data",
+                    "Accept": "application/json","type": "formData"
                 },                    
             }
         )
