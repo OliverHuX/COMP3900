@@ -170,9 +170,9 @@ const Home = () => {
                     </Form.Item>
                     <Form.Item style={ { marginTop: 20 } } wrapperCol={ { offset: 6, span: 8 } }>
                         <Button
-                        type="primary"
-                        htmlType="submit"
-                        onClic={ handleClick }
+                            type="primary"
+                            htmlType="submit"
+                            onClick={ handleClick }
                         >
                             submit
                         </Button>
