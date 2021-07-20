@@ -52,13 +52,17 @@ const Home = () => {
     const handleClick = () => {
         console.log('here')
         var formData = new FormData();
-        formData.append('title', '12345');
-        formData.append('ingredients', '12345')
-        formData.append('method', '12345');
-        formData.append('introduction', '12345');
-        formData.append('tags', '12345');
-        formData.append('files', fileList);
-        console.log(formData)
+
+        const jsonData = JSON.stringify({
+            title: 'test title',
+            introduction: '12131',
+            ingredients: '1321321',
+            method: '2321321',
+          });
+
+        formData.append('jsonData',jsonData );
+        formData.append('uploadPhotos', fileList);
+        console.log(formData.get('uploadPhotos'))
         axios.post(
             'http://localhost:8080/recipe/postRecipe',
             formData,
