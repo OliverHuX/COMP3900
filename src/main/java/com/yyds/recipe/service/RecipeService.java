@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 public interface RecipeService {
     ResponseEntity<?> postRecipe(HttpServletRequest request, MultipartFile[] uploadPhotos, Recipe recipe);
 
-    ResponseEntity<?> likeRecipe(String userId, Recipe recipe);
+    ResponseEntity<?> likeRecipe(HttpServletRequest request, Recipe recipe);
 
-    ResponseEntity<?> unlikeRecipe(String userId, Recipe recipe);
+    ResponseEntity<?> unlikeRecipe(HttpServletRequest request, Recipe recipe);
 
     ResponseEntity<?> getAllPublicRecipes(int pageNum, int pageSize);
 

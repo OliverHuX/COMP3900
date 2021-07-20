@@ -25,6 +25,7 @@ public class Recipe implements Serializable {
     private String cover;
     private List<String> recipePhotos;
     private List<String> recipeVideos;
+    private List<String> base64photoList;
     // TODO: delete it !!!
     private HashMap<String, String> comments;
     private int likes;

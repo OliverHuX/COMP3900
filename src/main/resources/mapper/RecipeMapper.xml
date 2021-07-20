@@ -107,5 +107,11 @@
         group by r.recipe_id;
     </select>
 
+    <select id="getFileNameListByRecipeId" resultType="java.lang.String">
+        select file_name
+        from recipe.photo
+        where recipe_id = #{recipeId}
+    </select>
+
 
 </mapper>
