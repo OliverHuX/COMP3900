@@ -1,13 +1,19 @@
 package com.yyds.recipe.utils;
 
-import java.util.HashMap;
+import com.yyds.recipe.exception.response.ResponseCode;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
+
 import java.util.Map;
 
 public class ResponseUtil {
-    public static Map<String, Object> getResponse() {
-        Map<String, Object> rsp = new HashMap<>(2);
-        rsp.put("code", 0);
-        rsp.put("error message", "success");
-        return rsp;
+    public static ResponseEntity<?> getResponse(ResponseCode status, @Nullable HttpHeaders headers, @Nullable Map<String, Object> body) {
+        return ResponseEntity
+                .status(status.getCode())
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(body);
     }
 }
