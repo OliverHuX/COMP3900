@@ -1,17 +1,22 @@
 import React, { useState } from 'react'
 import './index.css'
-import { Layout, Modal, Row, Col, Card, Button, Input, Form, Upload, Select } from 'antd';
+import { Layout, Modal, Row, Col, Card, Button, Input, Form, Upload, Select, message } from 'antd';
 import { UpCircleOutlined, FieldTimeOutlined, HeartOutlined, StarOutlined, UploadOutlined } from '@ant-design/icons';
 import FoodList from '../../components/FoodList';
 import StyledHeader from '../../components/StyledHeader'
 import ChineseFood from '../../components/ChineseFood'
 import { Switch, Route } from 'react-router-dom';
 import Main from '../Main';
+import axios from 'axios';
+
+
 const { Content } = Layout;
 const { Option } = Select;
 const { TextArea } = Input;
 const { Meta } = Card;
 const Home = () => {
+    const token = localStorage.getItem('token')
+    const [fileList, setFileList] = useState([])
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     const showModal = () => {
@@ -37,6 +42,40 @@ const Home = () => {
     function handleChange(value) {
         console.log(`selected ${value}`);
     }
+    const onChange = (e) => {
+        // setFileList(newFileList);
+        // console.log(fileList)
+        console.log(e.target.files)
+        setFileList(e.target.files)
+        console.log(fileList)
+    };
+    const handleClick = () => {
+        var formData = new FormData();
+        formData.append('title', '12345');
+        formData.append('ingredients', '12345')
+        formData.append('method', '12345');
+        formData.append('introduction', '12345');
+        formData.append('tags', '12345');
+        formData.append('files', fileList);
+        console.log(formData)
+        axios.post(
+            'http://localhost:8080/recipe/postRecipe',
+            formData,
+            {
+                headers: {
+                    "Authorization": token,
+                    "Content-type": "multipart/form-data",
+                },                    
+            }
+        )
+        .then(res => {
+            console.log(`Success` + res.data);
+        })
+        .catch(err => {
+            console.log(err);
+        })
+    }
+
     return <Layout className="layout">
         <UpCircleOutlined className='upload' onClick={ showModal } />
         <StyledHeader />
@@ -68,9 +107,24 @@ const Home = () => {
                         name="Upload"
                         valuePropName="fileList"
                     >
-                        <Upload name="logo" action="/upload.do" listType="picture">
-                            <Button icon={ <UploadOutlined /> }>Click to upload</Button>
-                        </Upload>
+                        {/* <Upload
+                            // fileList={fileList}
+                            // onChange={ onChange }
+                            // name="logo"
+                            // action="/upload.do"
+                            // listType="picture"
+                            {...props}
+                        > */}
+                        <div>
+                            <input
+                                // icon={ <UploadOutlined /> }
+                                onChange = { onChange }
+                                type='file'
+                                multiple='True'
+                            />
+                                {/* Click to upload */}
+                        </div>
+                        {/* </Upload> */}
                     </Form.Item>
                     <Form.Item
                         label="recipe title"
@@ -115,7 +169,11 @@ const Home = () => {
                         <TextArea ></TextArea>
                     </Form.Item>
                     <Form.Item style={ { marginTop: 20 } } wrapperCol={ { offset: 6, span: 8 } }>
-                        <Button type="primary" htmlType="submit">
+                        <Button
+                        type="primary"
+                        htmlType="submit"
+                        onClic={ handleClick }
+                        >
                             submit
                         </Button>
                     </Form.Item>
