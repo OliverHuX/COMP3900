@@ -150,7 +150,7 @@ public class UserServiceImpl implements UserService {
 
         LinkedHashMap<String, Object> body = new LinkedHashMap<>();
         body.put("userId", user.getUserId());
-        // body.put("token", token);
+        body.put("token", token);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("token", token);
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, httpHeaders, body);

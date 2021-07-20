@@ -8,10 +8,12 @@ import com.yyds.recipe.service.TagService;
 import com.yyds.recipe.utils.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 
+@Service
 public class TagServiceImpl implements TagService {
 
     @Autowired
