@@ -26,7 +26,7 @@ public interface RecipeService {
 
     ResponseEntity<?> cancelSubscribeRecipe(User viewer, Recipe recipe);
 
-    ResponseEntity<?> setPrivacyRecipe(Recipe recipe);
+    ResponseEntity<?> setPrivacyRecipe(HttpServletRequest request, Recipe recipe);
 
     ResponseEntity<?> collectRecipe(String viewerUserId, String collectionId, String recipeId);
 

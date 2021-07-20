@@ -318,9 +318,8 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<?> setPrivacyRecipe(Recipe recipe) {
-
-
+    public ResponseEntity<?> setPrivacyRecipe(HttpServletRequest request, Recipe recipe) {
+        User user = checkedUser(request);
         String recipeId = recipe.getRecipeId();
 
         Recipe checkedRecipe = recipeMapper.getRecipeById(recipeId);
@@ -328,7 +327,7 @@ public class RecipeServiceImpl implements RecipeService {
             return ResponseUtil.getResponse(ResponseCode.RECIPE_ID_NOT_FOUND, null, null);
         }
 
-        if (!StringUtils.equals(recipe.getUserId(), checkedRecipe.getUserId())) {
+        if (!StringUtils.equals(user.getUserId(), checkedRecipe.getUserId())) {
             throw new AuthorizationException();
         }
 
