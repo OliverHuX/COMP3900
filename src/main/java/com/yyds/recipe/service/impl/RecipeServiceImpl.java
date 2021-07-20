@@ -105,12 +105,8 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<?> likeRecipe(String userId, Recipe recipe) {
-
-        User checkedUser = userMapper.getUserByUserId(userId);
-        if (checkedUser == null) {
-            throw new AuthorizationException();
-        }
+    public ResponseEntity<?> likeRecipe(HttpServletRequest request, Recipe recipe) {
+        User user = checkedUser(request);
 
         String recipeId = recipe.getRecipeId();
 
@@ -120,7 +116,7 @@ public class RecipeServiceImpl implements RecipeService {
         }
 
         try {
-            recipeMapper.likeRecipe(userId, recipeId);
+            recipeMapper.likeRecipe(user.getUserId(), recipeId);
         } catch (Exception e) {
             throw new MySqlErrorException();
         }
@@ -129,13 +125,9 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<?> unlikeRecipe(String userId, Recipe recipe) {
+    public ResponseEntity<?> unlikeRecipe(HttpServletRequest request, Recipe recipe) {
 
-        User checkedUser = userMapper.getUserByUserId(userId);
-        if (checkedUser == null) {
-            throw new AuthorizationException();
-        }
-
+        User user = checkedUser(request);
         String recipeId = recipe.getRecipeId();
 
         Recipe checkRecipe = recipeMapper.getRecipeById(recipeId);
@@ -144,7 +136,7 @@ public class RecipeServiceImpl implements RecipeService {
         }
 
         try {
-            recipeMapper.unlikeRecipe(userId, recipeId);
+            recipeMapper.unlikeRecipe(user.getUserId(), recipeId);
         } catch (Exception e) {
             throw new MySqlErrorException();
         }
@@ -171,15 +163,7 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public ResponseEntity<?> getMyRecipes(int pageNum, int pageSize, HttpServletRequest request) {
-        String token = request.getHeader("token");
-        if (StringUtils.isEmpty(token)) {
-            throw new AuthorizationException();
-        }
-        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
-        User checkedUser = userMapper.getUserByUserId(userId);
-        if (checkedUser == null) {
-            throw new AuthorizationException();
-        }
+        User user = checkedUser(request);
         if (pageNum <= 0) {
             pageNum = 1;
         }
@@ -187,7 +171,7 @@ public class RecipeServiceImpl implements RecipeService {
             pageSize = 9;
         }
         PageHelper.startPage(pageNum, pageSize, true);
-        List<Recipe> myRecipeList = recipeMapper.getMyRecipeList(userId);
+        List<Recipe> myRecipeList = recipeMapper.getMyRecipeList(user.getUserId());
         PageInfo<Recipe> recipePageInfo = new PageInfo<>(myRecipeList);
         HashMap<String, Object> resultMap = new HashMap<>();
         resultMap.put("recipe lists", myRecipeList);
@@ -313,10 +297,15 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<?> setPrivacyRecipe(Recipe recipe) {
+    public ResponseEntity<?> setPrivacyRecipe(HttpServletRequest request, Recipe recipe) {
 
+        User user = checkedUser(request);
 
         String recipeId = recipe.getRecipeId();
+
+        if (!StringUtils.equals(recipe.getRecipeId(), user.getUserId())) {
+            throw new AuthorizationException();
+        }
 
         Recipe checkedRecipe = recipeMapper.getRecipeById(recipeId);
         if (checkedRecipe == null) {

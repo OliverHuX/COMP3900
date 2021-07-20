@@ -26,19 +26,19 @@ public class RecipeController {
         return recipeService.postRecipe(request, uploadPhotos, recipe);
     }
 
-    @RequestMapping(value = "/{userId}/recipe/like", method = RequestMethod.POST)
-    public ResponseEntity<?> likeRecipe(@PathVariable(value = "userId") String userId, @RequestBody Recipe recipe) {
-        return recipeService.likeRecipe(userId, recipe);
+    @RequestMapping(value = "/recipe/like", method = RequestMethod.POST)
+    public ResponseEntity<?> likeRecipe(HttpServletRequest request, @RequestBody Recipe recipe) {
+        return recipeService.likeRecipe(request, recipe);
     }
 
-    @RequestMapping(value = "/{userId}/recipe/unlike", method = RequestMethod.POST)
-    public ResponseEntity<?> unlikeRecipe(@PathVariable(value = "userId") String userId, @RequestBody Recipe recipe) {
-        return recipeService.unlikeRecipe(userId, recipe);
+    @RequestMapping(value = "/recipe/unlike", method = RequestMethod.POST)
+    public ResponseEntity<?> unlikeRecipe(HttpServletRequest request, @RequestBody Recipe recipe) {
+        return recipeService.unlikeRecipe(request, recipe);
     }
 
     @RequestMapping(value = "/recipe/privacy", method = RequestMethod.GET)
-    public ResponseEntity<?> setRecipePrivacy(@RequestBody Recipe recipe) {
-        return recipeService.setPrivacyRecipe(recipe);
+    public ResponseEntity<?> setRecipePrivacy(HttpServletRequest request, @RequestBody Recipe recipe) {
+        return recipeService.setPrivacyRecipe(request, recipe);
     }
 
     @RequestMapping(value = "/recipe/recipe_list")
