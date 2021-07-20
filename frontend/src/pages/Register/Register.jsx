@@ -17,7 +17,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 
-function signup (firstName, lastName, gender, nickName, birthDate, email, password) {
+function signup (firstName, lastName, gender, nickName, birthDate, email, password, history) {
   // console.log('incomplete' + email + password);
   const payload = JSON.stringify({
     firstName: firstName,
@@ -34,7 +34,8 @@ function signup (firstName, lastName, gender, nickName, birthDate, email, passwo
     console.log(data.status);
     if (data.status === 200) {
       data.json().then(res => {
-        console.log(res.token);
+        console.log(res);
+        history.push('./wait')
       })
     }
   })
@@ -183,7 +184,7 @@ export default function Register () {
                 variant="contained"
                 color="primary"
                 className={classes.submit}
-                onClick={() => signup(firstName, lastName, gender, nickName, birthDate, emailInputs, passWord)}
+                onClick={() => signup(firstName, lastName, gender, nickName, birthDate, emailInputs, passWord, history)}
               >
                 Sign Up
               </Button>
