@@ -28,9 +28,14 @@ function signin(email, password, history) {
   const result = FetchFunc('login', 'POST', null, payload);
   console.log(result)
   result.then((data) => {
-    data.json().then(res => {
-      console.log(res)
-    })
+    console.log(data.status);
+    if (data.status === 200) {
+      data.json().then(res => {
+        console.log(res.token);
+        localStorage.setItem('token', result.token);
+        history.push('./home')
+      })
+    }
     // if (data.code === 200) {
     //   data.json().then(res => {
     //     console.log(res)
