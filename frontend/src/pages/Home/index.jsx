@@ -50,6 +50,7 @@ const Home = () => {
         console.log(fileList)
     };
     const handleClick = () => {
+        console.log('here')
         var formData = new FormData();
         formData.append('title', '12345');
         formData.append('ingredients', '12345')
@@ -172,7 +173,7 @@ const Home = () => {
                         <Button
                             type="primary"
                             htmlType="submit"
-                            onClick={ handleClick }
+                            onClick={() => handleClick() }
                         >
                             submit
                         </Button>
