@@ -16,19 +16,28 @@ public interface RecipeService {
 
     ResponseEntity<?> getAllPublicRecipes(int pageNum, int pageSize);
 
+    // TODO:
     ResponseEntity<?> commentRecipe(String viewerUserId, String recipeId, String comment);
 
+    // TODO:
     ResponseEntity<?> deleteComment(String viewerUserId, String recipeId);
 
+    // TODO:
     ResponseEntity<?> summaryRecipe(Recipe recipe);
 
+    // TODO:
     ResponseEntity<?> subscribeRecipe(User viewer, Recipe recipe);
 
+
+    // TODO:
     ResponseEntity<?> cancelSubscribeRecipe(User viewer, Recipe recipe);
 
     ResponseEntity<?> setPrivacyRecipe(HttpServletRequest request, Recipe recipe);
 
+    // TODO:
     ResponseEntity<?> collectRecipe(String viewerUserId, String collectionId, String recipeId);
 
+
+    // TODO:
     ResponseEntity<?> getMyRecipes(int pageNum, int pageSize, HttpServletRequest request);
 }
