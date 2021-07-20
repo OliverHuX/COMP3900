@@ -31,7 +31,12 @@ function signup (firstName, lastName, gender, nickName, birthDate, email, passwo
   console.log(payload)
   const result = FetchFunc('register', 'POST', null, payload);
   result.then(data => {
-    console.log(data);
+    console.log(data.status);
+    if (data.status === 200) {
+      data.json().then(res => {
+        console.log(res.token);
+      })
+    }
   })
 }
 
