@@ -17,8 +17,8 @@ import StyledHeader from '../../components/StyledHeader'
 import { TextPopup } from '../../components/TextPopup';
 
 function signin(email, password, history) {
-  history.push('./home')   // 跳过登录， 测试
-  return;         // 跳过登录 测试
+  // history.push('./home')   // 跳过登录， 测试
+  // return;         // 跳过登录 测试
   // console.log('incomplete' + email + password);
   // const path = 'login'
   const payload = JSON.stringify({
@@ -27,18 +27,22 @@ function signin(email, password, history) {
   });
   const result = FetchFunc('login', 'POST', null, payload);
   console.log(result)
-  result.then(data => {
-    if (data.code === 200) {
-      data.json().then(res => {
-        console.log(res)
-        console.log(res.data)
-        // console.log(res.err)
-        if (res.code === 0) {
-          history.push('./home')
-        }
-      })
-    }
+  result.then((data) => {
+    // data.then(res => {
+    console.log(data)
+    // })
+    // if (data.code === 200) {
+    //   data.json().then(res => {
+    //     console.log(res)
+    //     console.log(res.data)
+    //     // console.log(res.err)
+    //     if (res.code === 0) {
+    //       history.push('./home')
+    //     }
+    //   })
+    // }
   })
+  .catch(err => console.error('Caught error: ', err))
 
 }
 
