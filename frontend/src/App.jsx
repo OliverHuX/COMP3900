@@ -10,6 +10,8 @@ import Register from './pages/Register/Register';
 import Login from './pages/Login/Login'
 import Home from './pages/Home/index'
 import Footer from './components/footer';
+import Wait from './pages/Wait/Wait';
+
 export default function App () {
   return <Router>
       <div className='container_backg'>
@@ -21,7 +23,7 @@ export default function App () {
             </div>
           </Route>
 
-          <Route path="/home">        
+          <Route path="/home" exact>        
               <Home />       
           </Route>
 
@@ -29,6 +31,10 @@ export default function App () {
             <div className='back-Img'>
               <Register />
             </div>
+          </Route>
+
+          <Route path="/wait" exact>
+            <Wait />
           </Route>
 
         </Switch>
