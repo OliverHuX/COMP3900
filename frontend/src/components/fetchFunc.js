@@ -3,6 +3,7 @@ export default async function FetchFunc (path, method, token, body) {
     method: method,
     headers: {
       'Content-Type': 'application/json',
+      Authorization: token,
     },
     body: body
   })
