@@ -61,16 +61,12 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
-    public ResponseEntity<?> postRecipe(String userId, MultipartFile[] uploadPhotos, Recipe recipe) {
-
-        if (userMapper.getUserByUserId(userId) == null) {
-            throw new AuthorizationException();
-        }
-
+    public ResponseEntity<?> postRecipe(HttpServletRequest request, MultipartFile[] uploadPhotos, Recipe recipe) {
+        User user = checkedUser(request);
         String recipeId = UUIDGenerator.createRecipeId();
         recipe.setRecipeId(recipeId);
         recipe.setCreateTime(String.valueOf(System.currentTimeMillis()));
-        recipe.setUserId(userId);
+        recipe.setUserId(user.getUserId());
 
         // insert into recipe table
         try {
@@ -375,5 +371,18 @@ public class RecipeServiceImpl implements RecipeService {
 
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
 
+    }
+
+    private User checkedUser(HttpServletRequest request) {
+        String token = request.getHeader("token");
+        if (StringUtils.isEmpty(token)) {
+            throw new AuthorizationException();
+        }
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        User checkedUser = userMapper.getUserByUserId(userId);
+        if (checkedUser == null) {
+            throw new AuthorizationException();
+        }
+        return checkedUser;
     }
 }

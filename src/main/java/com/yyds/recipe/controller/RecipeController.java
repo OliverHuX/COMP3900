@@ -19,11 +19,11 @@ public class RecipeController {
     @Autowired
     private RecipeService recipeService;
 
-    @RequestMapping(value = "/{userId}/postRecipe", method = RequestMethod.POST)
-    public ResponseEntity<?> postRecipe(@PathVariable(value = "userId") String userId,
+    @RequestMapping(value = "/recipe/postRecipe", method = RequestMethod.POST)
+    public ResponseEntity<?> postRecipe(HttpServletRequest request,
                                         @RequestPart(value = "uploadPhotos") MultipartFile[] uploadPhotos,
                                         @RequestPart(value = "jsonData") Recipe recipe) {
-        return recipeService.postRecipe(userId, uploadPhotos, recipe);
+        return recipeService.postRecipe(request, uploadPhotos, recipe);
     }
 
     @RequestMapping(value = "/{userId}/recipe/like", method = RequestMethod.POST)

@@ -150,7 +150,7 @@ public class UserServiceImpl implements UserService {
 
         LinkedHashMap<String, Object> body = new LinkedHashMap<>();
         body.put("userId", user.getUserId());
-        body.put("token", token);
+        // body.put("token", token);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("token", token);
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, httpHeaders, body);
@@ -301,6 +301,7 @@ public class UserServiceImpl implements UserService {
         String userId = UUIDGenerator.createUserId();
         user.setUserId(userId);
         user.setCreateTime(String.valueOf(System.currentTimeMillis()));
+        user.setPassword(BcryptPasswordUtil.encodePassword(user.getPassword()));
         try {
             userMapper.saveUser(user);
             userMapper.saveUserAccount(user);
