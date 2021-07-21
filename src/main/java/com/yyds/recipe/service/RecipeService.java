@@ -31,4 +31,6 @@ public interface RecipeService {
     ResponseEntity<?> collectRecipe(String viewerUserId, String collectionId, String recipeId);
 
     ResponseEntity<?> getMyRecipes(int pageNum, int pageSize, HttpServletRequest request);
+
+    ResponseEntity<?> testPost(HttpServletRequest request, MultipartFile[] uploadPhotos, Recipe recipe);
 }

@@ -16,8 +16,6 @@ import com.yyds.recipe.utils.JwtUtil;
 import com.yyds.recipe.utils.MinioUtil;
 import com.yyds.recipe.utils.ResponseUtil;
 import com.yyds.recipe.utils.UUIDGenerator;
-import com.yyds.recipe.vo.ServiceVO;
-import com.yyds.recipe.vo.SuccessCode;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -388,5 +386,50 @@ public class RecipeServiceImpl implements RecipeService {
             throw new AuthorizationException();
         }
         return checkedUser;
+    }
+
+    @Override
+    public ResponseEntity<?> testPost(HttpServletRequest request, MultipartFile[] uploadPhotos, Recipe recipe) {
+        // User user = checkedUser(request);
+        User user = userMapper.getUserByUserId("8bd7102547dd4f3f9feda9e811544c97");
+        String recipeId = UUIDGenerator.createRecipeId();
+        recipe.setRecipeId(recipeId);
+        recipe.setCreateTime(String.valueOf(System.currentTimeMillis()));
+        recipe.setUserId(user.getUserId());
+
+        // insert into recipe table
+        try {
+            recipeMapper.saveRecipe(recipe);
+        } catch (Exception e) {
+            throw new MySqlErrorException();
+        }
+
+        recipe.setRecipePhotos(new ArrayList<>());
+        for (MultipartFile uploadPhoto : uploadPhotos) {
+            String originalFilename = uploadPhoto.getOriginalFilename();
+            if (originalFilename == null) {
+                continue;
+            }
+            String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+            String contentType = uploadPhoto.getContentType();
+            InputStream inputStream = null;
+            try {
+                inputStream = uploadPhoto.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            String photoName = UUIDGenerator.generateUUID() + suffix;
+            minioUtil.putObject(recipePhotoBucketName, photoName, contentType, inputStream);
+            recipe.getRecipePhotos().add(photoName);
+        }
+
+        // insert into photo table
+        try {
+            recipeMapper.savePhotos(recipeId, recipe.getRecipePhotos());
+        } catch (Exception e) {
+            throw new MySqlErrorException();
+        }
+
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 }

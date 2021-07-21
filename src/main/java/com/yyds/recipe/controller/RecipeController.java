@@ -102,4 +102,12 @@ public class RecipeController {
     public ResponseEntity<?> collectRecipe(@RequestBody collectRecipeReq req) {
         return recipeService.collectRecipe(req.getViewerUserId(), req.getCollectionId(), req.getRecipeId());
     }
+
+    // TODO: just for test need to be deleted
+    @RequestMapping(value = "/recipe/testPost", method = RequestMethod.POST)
+    public ResponseEntity<?> testPostRecipe(HttpServletRequest request,
+                                        @RequestPart(value = "uploadPhotos") MultipartFile[] uploadPhotos,
+                                        @RequestPart(value = "jsonData") Recipe recipe) {
+        return recipeService.testPost(request, uploadPhotos, recipe);
+    }
 }
