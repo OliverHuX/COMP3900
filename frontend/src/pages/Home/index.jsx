@@ -85,7 +85,7 @@ const Home = () => {
             formData,
             {
                 headers: {
-                    "Authorization": token,
+                    "token": token, //Authorization
                     "Content-Type": "multipart/form-data",
                     "type": "formData"
                 },                    
