@@ -8,6 +8,7 @@ import ChineseFood from '../../components/ChineseFood'
 import { Switch, Route } from 'react-router-dom';
 import Main from '../Main';
 import axios from 'axios';
+// import FormData from 'form-data';
 
 
 const { Content } = Layout;
@@ -16,7 +17,7 @@ const { TextArea } = Input;
 const { Meta } = Card;
 const Home = () => {
     const token = localStorage.getItem('token')
-    const [fileList, setFileList] = useState([])
+    const [fileList, setFileList] = useState()
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     const showModal = () => {
@@ -50,15 +51,20 @@ const Home = () => {
         console.log(fileList)
     };
     const handleClick = () => {
-        console.log('here')
+        console.log(fileList['length'])
+        var FormData = require('form-data');
         var formData = new FormData();
         formData.append('title', '12345');
         formData.append('ingredients', '12345')
         formData.append('method', '12345');
         formData.append('introduction', '12345');
         formData.append('tags', '12345');
+        console.log(formData.getHeaders())
+        // for (var i = 0; i < fileList['length']; i++) {
+        //     formData.append(i, fileList[i]);
+        // }
         formData.append('files', fileList);
-        console.log(formData)
+        console.log(formData.get('files'))
         axios.post(
             'http://localhost:8080/recipe/postRecipe',
             formData,
