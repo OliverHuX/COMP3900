@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 public interface RecipeService {
     ResponseEntity<?> postRecipe(HttpServletRequest request, MultipartFile[] uploadPhotos, Recipe recipe);
 
-    ResponseEntity<?> likeRecipe(String userId, Recipe recipe);
+    ResponseEntity<?> likeRecipe(HttpServletRequest request, Recipe recipe);
 
-    ResponseEntity<?> unlikeRecipe(String userId, Recipe recipe);
+    ResponseEntity<?> unlikeRecipe(HttpServletRequest request, Recipe recipe);
 
     ResponseEntity<?> getAllPublicRecipes(int pageNum, int pageSize);
 
@@ -26,9 +26,11 @@ public interface RecipeService {
 
     ResponseEntity<?> cancelSubscribeRecipe(User viewer, Recipe recipe);
 
-    ResponseEntity<?> setPrivacyRecipe(Recipe recipe);
+    ResponseEntity<?> setPrivacyRecipe(HttpServletRequest request, Recipe recipe);
 
     ResponseEntity<?> collectRecipe(String viewerUserId, String collectionId, String recipeId);
 
     ResponseEntity<?> getMyRecipes(int pageNum, int pageSize, HttpServletRequest request);
+
+    ResponseEntity<?> testPost(HttpServletRequest request, MultipartFile[] uploadPhotos, Recipe recipe);
 }

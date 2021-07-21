@@ -1,6 +1,7 @@
 package com.yyds.recipe.mapper;
 
 import com.yyds.recipe.model.Recipe;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.HashMap;
 import java.util.List;
 
-@Repository
+@Mapper
 public interface RecipeMapper {
 
     void saveRecipe(Recipe recipe);
@@ -25,6 +26,8 @@ public interface RecipeMapper {
     List<Recipe> getRecipeList();
 
     List<Recipe> getMyRecipeList(String userId);
+
+    List<String> getFileNameListByRecipeId(String recipeId);
 
     @Update("update recipe likes set likes = #{likes}, where recipeId = #{recipeId}")
     void updateRecipeLikes(@Param(value = "recipeId") String recipeId, @Param(value = "likes") int likes);

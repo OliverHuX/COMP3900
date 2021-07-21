@@ -16,8 +16,7 @@ import com.yyds.recipe.utils.JwtUtil;
 import com.yyds.recipe.utils.MinioUtil;
 import com.yyds.recipe.utils.ResponseUtil;
 import com.yyds.recipe.utils.UUIDGenerator;
-import com.yyds.recipe.vo.ServiceVO;
-import com.yyds.recipe.vo.SuccessCode;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,10 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @EnableTransactionManagement
 @Service
@@ -105,12 +101,9 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<?> likeRecipe(String userId, Recipe recipe) {
+    public ResponseEntity<?> likeRecipe(HttpServletRequest request, Recipe recipe) {
 
-        User checkedUser = userMapper.getUserByUserId(userId);
-        if (checkedUser == null) {
-            throw new AuthorizationException();
-        }
+        User user = checkedUser(request);
 
         String recipeId = recipe.getRecipeId();
 
@@ -120,7 +113,7 @@ public class RecipeServiceImpl implements RecipeService {
         }
 
         try {
-            recipeMapper.likeRecipe(userId, recipeId);
+            recipeMapper.likeRecipe(user.getUserId(), recipeId);
         } catch (Exception e) {
             throw new MySqlErrorException();
         }
@@ -129,12 +122,9 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<?> unlikeRecipe(String userId, Recipe recipe) {
+    public ResponseEntity<?> unlikeRecipe(HttpServletRequest request, Recipe recipe) {
 
-        User checkedUser = userMapper.getUserByUserId(userId);
-        if (checkedUser == null) {
-            throw new AuthorizationException();
-        }
+        User user = checkedUser(request);
 
         String recipeId = recipe.getRecipeId();
 
@@ -144,7 +134,7 @@ public class RecipeServiceImpl implements RecipeService {
         }
 
         try {
-            recipeMapper.unlikeRecipe(userId, recipeId);
+            recipeMapper.unlikeRecipe(user.getUserId(), recipeId);
         } catch (Exception e) {
             throw new MySqlErrorException();
         }
@@ -171,15 +161,7 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public ResponseEntity<?> getMyRecipes(int pageNum, int pageSize, HttpServletRequest request) {
-        String token = request.getHeader("token");
-        if (StringUtils.isEmpty(token)) {
-            throw new AuthorizationException();
-        }
-        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
-        User checkedUser = userMapper.getUserByUserId(userId);
-        if (checkedUser == null) {
-            throw new AuthorizationException();
-        }
+        User user = checkedUser(request);
         if (pageNum <= 0) {
             pageNum = 1;
         }
@@ -187,7 +169,28 @@ public class RecipeServiceImpl implements RecipeService {
             pageSize = 9;
         }
         PageHelper.startPage(pageNum, pageSize, true);
-        List<Recipe> myRecipeList = recipeMapper.getMyRecipeList(userId);
+        List<Recipe> myRecipeList = recipeMapper.getMyRecipeList(user.getUserId());
+        for (Recipe recipe : myRecipeList) {
+            recipe.setRecipePhotos(new ArrayList<>());
+            List<String> recipePhotos = recipe.getRecipePhotos();
+            String recipeId = recipe.getRecipeId();
+            List<String> fileNameList = recipeMapper.getFileNameListByRecipeId(recipeId);
+            recipePhotos.addAll(fileNameList);
+
+            List<String> base64Strings = new ArrayList<>();
+            for (String file : fileNameList) {
+                InputStream inputStream = minioUtil.getObject(recipePhotoBucketName, file);
+                byte[] bytes = new byte[0];
+                try {
+                    bytes = IOUtils.toByteArray(inputStream);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                String s = Base64.getEncoder().encodeToString(bytes);
+                base64Strings.add(s);
+            }
+            recipe.setBase64photoList(base64Strings);
+        }
         PageInfo<Recipe> recipePageInfo = new PageInfo<>(myRecipeList);
         HashMap<String, Object> resultMap = new HashMap<>();
         resultMap.put("recipe lists", myRecipeList);
@@ -313,9 +316,8 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<?> setPrivacyRecipe(Recipe recipe) {
-
-
+    public ResponseEntity<?> setPrivacyRecipe(HttpServletRequest request, Recipe recipe) {
+        User user = checkedUser(request);
         String recipeId = recipe.getRecipeId();
 
         Recipe checkedRecipe = recipeMapper.getRecipeById(recipeId);
@@ -323,7 +325,7 @@ public class RecipeServiceImpl implements RecipeService {
             return ResponseUtil.getResponse(ResponseCode.RECIPE_ID_NOT_FOUND, null, null);
         }
 
-        if (!StringUtils.equals(recipe.getUserId(), checkedRecipe.getUserId())) {
+        if (!StringUtils.equals(user.getUserId(), checkedRecipe.getUserId())) {
             throw new AuthorizationException();
         }
 
@@ -384,5 +386,50 @@ public class RecipeServiceImpl implements RecipeService {
             throw new AuthorizationException();
         }
         return checkedUser;
+    }
+
+    @Override
+    public ResponseEntity<?> testPost(HttpServletRequest request, MultipartFile[] uploadPhotos, Recipe recipe) {
+        // User user = checkedUser(request);
+        User user = userMapper.getUserByUserId("8bd7102547dd4f3f9feda9e811544c97");
+        String recipeId = UUIDGenerator.createRecipeId();
+        recipe.setRecipeId(recipeId);
+        recipe.setCreateTime(String.valueOf(System.currentTimeMillis()));
+        recipe.setUserId(user.getUserId());
+
+        // insert into recipe table
+        try {
+            recipeMapper.saveRecipe(recipe);
+        } catch (Exception e) {
+            throw new MySqlErrorException();
+        }
+
+        recipe.setRecipePhotos(new ArrayList<>());
+        for (MultipartFile uploadPhoto : uploadPhotos) {
+            String originalFilename = uploadPhoto.getOriginalFilename();
+            if (originalFilename == null) {
+                continue;
+            }
+            String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+            String contentType = uploadPhoto.getContentType();
+            InputStream inputStream = null;
+            try {
+                inputStream = uploadPhoto.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            String photoName = UUIDGenerator.generateUUID() + suffix;
+            minioUtil.putObject(recipePhotoBucketName, photoName, contentType, inputStream);
+            recipe.getRecipePhotos().add(photoName);
+        }
+
+        // insert into photo table
+        try {
+            recipeMapper.savePhotos(recipeId, recipe.getRecipePhotos());
+        } catch (Exception e) {
+            throw new MySqlErrorException();
+        }
+
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 }
