@@ -8,7 +8,7 @@ import ChineseFood from '../../components/ChineseFood'
 import { Switch, Route } from 'react-router-dom';
 import Main from '../Main';
 import axios from 'axios';
-// import FormData from 'form-data';
+const FormData = require('form-data')
 
 
 const { Content } = Layout;
@@ -19,6 +19,10 @@ const Home = () => {
     const token = localStorage.getItem('token')
     const [fileList, setFileList] = useState()
     const [isModalVisible, setIsModalVisible] = useState(false);
+
+    //var imagedata = document.querySelector('input[type ="file"]').files[0];
+
+    
 
     const showModal = () => {
         setIsModalVisible(true);
@@ -54,24 +58,36 @@ const Home = () => {
         console.log(fileList['length'])
         var FormData = require('form-data');
         var formData = new FormData();
-        formData.append('title', '12345');
-        formData.append('ingredients', '12345')
-        formData.append('method', '12345');
-        formData.append('introduction', '12345');
-        formData.append('tags', '12345');
-        console.log(formData.getHeaders())
-        // for (var i = 0; i < fileList['length']; i++) {
-        //     formData.append(i, fileList[i]);
-        // }
-        formData.append('files', fileList);
-        console.log(formData.get('files'))
+
+        // const jsonData = JSON.stringify({
+        //     title: 'test title',
+        //     introduction: '12131',
+        //     ingredients: '1321321',
+        //     method: '2321321',
+        //   });
+        formData.append('uploadPhotos', fileList[0]);
+        // formData.append('jsonData',jsonData );
+       
+      formData.append('jsonData',new Blob ([JSON.stringify({
+            title: 'test title',
+            introduction: '12131',
+            ingredients: '1321321',
+            method: '2321321',
+          })], {type:"application/json"}));
+
+        formData.forEach((value, key) => {
+            console.log(`key ${key}: value ${value}`);
+       })
+       console.log(formData.get('uploadPhotos'))
+       console.log(formData.get('jsonData'))
         axios.post(
             'http://localhost:8080/recipe/postRecipe',
             formData,
             {
                 headers: {
                     "Authorization": token,
-                    "Content-type": "multipart/form-data",
+                    "Content-Type": "multipart/form-data",
+                    "type": "formData"
                 },                    
             }
         )
@@ -96,7 +112,7 @@ const Home = () => {
                         <FoodList />
                     </Route>
                     <Route path='/home/chinesefood' exact>
-                        <ChineseFood />
+                        <ChineseFood /> 
                     </Route>
                 </Switch>
 

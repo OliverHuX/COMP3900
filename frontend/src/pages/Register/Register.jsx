@@ -16,6 +16,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
+import StyledHeader from '../../components/StyledHeader'
 
 function signup (firstName, lastName, gender, nickName, birthDate, email, password, history) {
   // console.log('incomplete' + email + password);
@@ -66,6 +67,7 @@ export default function Register () {
     <React.Fragment>
       <CssBaseline />
       <main>
+      <StyledHeader/>
         <Container component="main" maxWidth="xs" className={classes.backg}>
           <CssBaseline />
           <div className={classes.paper}>
