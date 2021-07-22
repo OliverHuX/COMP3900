@@ -463,4 +463,25 @@ public class RecipeServiceImpl implements RecipeService {
 
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
+
+    @Override
+    public ResponseEntity<?> getAllRecipes(String viewerUserId, int pageNum, int pageSize) {
+        if (recipeMapper.isAdmin(viewerUserId) != 1) {
+            return ResponseUtil.getResponse(ResponseCode.FOLLOW_USER_NOT_EXIST, null, null);
+        }
+
+        if (pageNum <= 0) {
+            pageNum = 1;
+        }
+        if (pageSize >= 9) {
+            pageSize = 9;
+        }
+        PageHelper.startPage(pageNum, pageSize, true);
+        List<Recipe> recipeList = recipeMapper.getAllRecipeList();
+        PageInfo<Recipe> recipePageInfo = new PageInfo<>(recipeList);
+        HashMap<String, Object> resultMap = new HashMap<>();
+        resultMap.put("recipe lists", recipeList);
+        resultMap.put("total", recipePageInfo.getTotal());
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, resultMap);
+    }
 }
