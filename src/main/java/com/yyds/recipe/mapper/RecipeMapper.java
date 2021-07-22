@@ -53,4 +53,6 @@ public interface RecipeMapper {
     int isAdmin(@Param(value = "userId") String userId);
 
     void removeLikeByRecipeId(String recipeId);
+
+    void removePhotoByRecipeId(String recipeId);
 }
