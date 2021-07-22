@@ -432,4 +432,35 @@ public class RecipeServiceImpl implements RecipeService {
 
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
+
+    @Override
+    public ResponseEntity<?> deleteRecipe(String viewerUserId, String recipeId) {
+        if (recipeMapper.isAdmin(viewerUserId) != 1) {
+            return ResponseUtil.getResponse(ResponseCode.FOLLOW_USER_NOT_EXIST, null, null);
+        }
+
+        ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipeId);
+        if (recipeError != null) {
+            return recipeError;
+        }
+
+        try {
+            recipeMapper.removeLikeByRecipeId(recipeId);
+            recipeMapper.removePhotoByRecipeId(recipeId);
+            recipeMapper.removeVideoByRecipeId(recipeId);
+        } catch (Exception e) {
+            throw new MySqlErrorException();
+        }
+
+        Recipe recipe = recipeMapper.getRecipeById(recipeId);
+        recipe.deleteComment(viewerUserId);
+
+        try {
+            recipeMapper.removeRecipe(recipeId);
+        } catch (Exception e) {
+            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
+        }
+
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
+    }
 }
