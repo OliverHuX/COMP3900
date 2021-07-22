@@ -1,10 +1,7 @@
 package com.yyds.recipe.mapper;
 
 import com.yyds.recipe.model.Recipe;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -52,6 +49,7 @@ public interface RecipeMapper {
     @Select("select count(user_id) from recipe.admin, where user_id = #{userId}")
     int isAdmin(@Param(value = "userId") String userId);
 
+    @Delete("delete from recipe.like, where recipe_id = #{recipeId}")
     void removeLikeByRecipeId(String recipeId);
 
     void removePhotoByRecipeId(String recipeId);
