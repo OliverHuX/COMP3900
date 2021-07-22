@@ -49,4 +49,6 @@ public interface RecipeMapper {
     void deleteSubscribe(@Param(value = "userId") String userId,
                          @Param(value = "recipeId") List<String> recipeId);
 
+    @Select("select count(user_id) from recipe.admin, where user_id = #{userId}")
+    int isAdmin(@Param(value = "userId") String userId);
 }
