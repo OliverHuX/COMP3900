@@ -115,4 +115,9 @@ public class RecipeController {
                                         @RequestPart(value = "jsonData") Recipe recipe) {
         return recipeService.testPost(request, uploadPhotos, recipe);
     }
+
+    @RequestMapping(value = "/recipe/deleteRecipe", method = RequestMethod.POST)
+    public ResponseEntity<?> deleteRecipe(@RequestBody commentRecipeReq req) {
+        return recipeService.deleteRecipe(req.getViewerUserId(), req.getRecipeId());
+    }
 }
