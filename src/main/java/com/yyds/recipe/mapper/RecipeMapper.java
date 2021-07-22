@@ -52,6 +52,7 @@ public interface RecipeMapper {
     @Delete("delete from recipe.like, where recipe_id = #{recipeId}")
     void removeLikeByRecipeId(String recipeId);
 
+    @Delete("delete from recipe.photo, where recipe_id = #{recipeId}")
     void removePhotoByRecipeId(String recipeId);
 
     void removeVideoByRecipeId(String recipeId);
