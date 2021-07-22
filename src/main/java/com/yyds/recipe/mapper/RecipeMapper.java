@@ -25,6 +25,8 @@ public interface RecipeMapper {
 
     List<Recipe> getRecipeList();
 
+    List<Recipe> getAllRecipeList();
+
     List<Recipe> getMyRecipeList(String userId);
 
     List<String> getFileNameListByRecipeId(String recipeId);
