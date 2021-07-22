@@ -55,4 +55,6 @@ public interface RecipeMapper {
     void removeLikeByRecipeId(String recipeId);
 
     void removePhotoByRecipeId(String recipeId);
+
+    void removeVideoByRecipeId(String recipeId);
 }
