@@ -51,4 +51,6 @@ public interface RecipeMapper {
 
     @Select("select count(user_id) from recipe.admin, where user_id = #{userId}")
     int isAdmin(@Param(value = "userId") String userId);
+
+    void removeLikeByRecipeId(String recipeId);
 }
