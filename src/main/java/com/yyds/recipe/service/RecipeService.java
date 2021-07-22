@@ -33,4 +33,6 @@ public interface RecipeService {
     ResponseEntity<?> getMyRecipes(int pageNum, int pageSize, HttpServletRequest request);
 
     ResponseEntity<?> testPost(HttpServletRequest request, MultipartFile[] uploadPhotos, Recipe recipe);
+
+    ResponseEntity<?> deleteRecipe(String viewerUserId, String recipeId);
 }
