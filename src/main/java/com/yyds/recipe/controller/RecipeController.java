@@ -36,7 +36,7 @@ public class RecipeController {
         return recipeService.unlikeRecipe(request, recipe);
     }
 
-    @RequestMapping(value = "/recipe/set_privacy", method = RequestMethod.GET)
+    @RequestMapping(value = "/recipe/set_privacy", method = RequestMethod.POST)
     public ResponseEntity<?> setRecipePrivacy(HttpServletRequest request, @RequestBody Recipe recipe) {
         return recipeService.setPrivacyRecipe(request, recipe);
     }
