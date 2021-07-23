@@ -37,4 +37,6 @@ public interface RecipeService {
     ResponseEntity<?> deleteRecipe(String viewerUserId, String recipeId);
 
     ResponseEntity<?> getAllRecipes(String viewerUserId, int pageNum, int pageSize);
+
+    ResponseEntity<?> testPrivacyRecipe(Recipe recipe);
 }
