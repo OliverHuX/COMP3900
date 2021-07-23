@@ -47,8 +47,8 @@ public class RecipeController {
     }
 
     @RequestMapping(value = "/recipe/recipe_all_list")
-    public ResponseEntity<?> getAllRecipeList(@RequestBody commentRecipeReq req, @RequestParam(value = "pageNum", required = false) int pageNum, @RequestParam(value = "pageSize", required = false) int pageSize) {
-        return recipeService.getAllRecipes(req.getViewerUserId(), pageNum, pageSize);
+    public ResponseEntity<?> getAllRecipeList(@RequestParam(value = "userId", required = false) String userId, @RequestParam(value = "pageNum", required = false) int pageNum, @RequestParam(value = "pageSize", required = false) int pageSize) {
+        return recipeService.getAllRecipes(userId, pageNum, pageSize);
     }
 
     @RequestMapping(value = "/recipe/my_recipe", method = RequestMethod.GET)
