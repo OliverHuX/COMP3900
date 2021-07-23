@@ -46,18 +46,18 @@ public interface RecipeMapper {
     void deleteSubscribe(@Param(value = "userId") String userId,
                          @Param(value = "recipeId") List<String> recipeId);
 
-    @Select("select count(user_id) from recipe.admin, where user_id = #{userId}")
+    @Select("select count(user_id) from recipe.admin where user_id = #{userId}")
     int isAdmin(@Param(value = "userId") String userId);
 
-    @Delete("delete from recipe.like, where recipe_id = #{recipeId}")
+    @Delete("delete from recipe.like where recipe_id = #{recipeId}")
     void removeLikeByRecipeId(String recipeId);
 
-    @Delete("delete from recipe.photo, where recipe_id = #{recipeId}")
+    @Delete("delete from recipe.photo where recipe_id = #{recipeId}")
     void removePhotoByRecipeId(String recipeId);
 
-    @Delete("delete from recipe.video, where recipe_id = #{recipeId}")
+    @Delete("delete from recipe.video where recipe_id = #{recipeId}")
     void removeVideoByRecipeId(String recipeId);
 
-    @Delete("delete from recipe.recipe, where recipe_id = #{recipeId}")
+    @Delete("delete from recipe.recipe where recipe_id = #{recipeId}")
     void removeRecipe(String recipeId);
 }
