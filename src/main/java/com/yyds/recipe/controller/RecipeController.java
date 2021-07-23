@@ -116,6 +116,12 @@ public class RecipeController {
         return recipeService.testPost(request, uploadPhotos, recipe);
     }
 
+    // TODO: just for test need to be deleted
+    @RequestMapping(value = "/recipe/test_privacy", method = RequestMethod.POST)
+    public ResponseEntity<?> testRecipePrivacy(@RequestBody Recipe recipe) {
+        return recipeService.testPrivacyRecipe(recipe);
+    }
+
     @RequestMapping(value = "/recipe/deleteRecipe", method = RequestMethod.POST)
     public ResponseEntity<?> deleteRecipe(@RequestBody commentRecipeReq req) {
         return recipeService.deleteRecipe(req.getViewerUserId(), req.getRecipeId());
