@@ -484,4 +484,22 @@ public class RecipeServiceImpl implements RecipeService {
         resultMap.put("total", recipePageInfo.getTotal());
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, resultMap);
     }
+
+    @Override
+    public ResponseEntity<?> testPrivacyRecipe(Recipe recipe) {
+        String recipeId = recipe.getRecipeId();
+
+        Recipe checkedRecipe = recipeMapper.getRecipeById(recipeId);
+        if (checkedRecipe == null) {
+            return ResponseUtil.getResponse(ResponseCode.RECIPE_ID_NOT_FOUND, null, null);
+        }
+
+        try {
+            recipeMapper.updatePrivacy(recipeId, recipe.getIsPrivacy());
+        } catch (Exception e) {
+            throw new MySqlErrorException();
+        }
+
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
+    }
 }
