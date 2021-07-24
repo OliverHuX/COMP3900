@@ -58,5 +58,13 @@
 .foodlist{
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    /* justify-content: space-between; */
+}
+/* .foodlist::after {
+    content: '';
+    flex: auto;   
+} */
+.subtitle{
+    text-align: center;
+    margin: 20px auto;
 }

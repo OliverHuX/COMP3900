@@ -5,6 +5,7 @@ import { UpCircleOutlined, FieldTimeOutlined, HeartOutlined, StarOutlined, Uploa
 import FoodList from '../../components/FoodList';
 import StyledHeader from '../../components/StyledHeader'
 import ChineseFood from '../../components/ChineseFood'
+import RecipeDetail from '../RecipeDetail'
 import { Switch, Route } from 'react-router-dom';
 import Main from '../Main';
 import axios from 'axios';
@@ -55,7 +56,8 @@ const Home = () => {
         console.log(fileList)
     };
     const handleClick = () => {
-        console.log('here')
+        console.log(fileList['length'])
+        var FormData = require('form-data');
         var formData = new FormData();
 
         // const jsonData = JSON.stringify({
@@ -84,7 +86,7 @@ const Home = () => {
             formData,
             {
                 headers: {
-                    "Authorization": token,
+                    "token": token, //Authorization
                     "Content-Type": "multipart/form-data",
                     "type": "formData"
                 },                    
@@ -112,6 +114,9 @@ const Home = () => {
                     </Route>
                     <Route path='/home/chinesefood' exact>
                         <ChineseFood /> 
+                    </Route>
+                    <Route path='/home/recipedetail' exact>
+                        <RecipeDetail /> 
                     </Route>
                 </Switch>
 

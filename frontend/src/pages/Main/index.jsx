@@ -4,6 +4,11 @@ import {Link} from 'react-router-dom'
 import {  FieldTimeOutlined, HeartOutlined, StarOutlined } from '@ant-design/icons';
 import FoodList from '../../components/FoodList';
 const { Meta } = Card;
+const data = [
+    {img:'/assets/img/recipe1.png', name:'AAA',dec:'AAAsimple decoration',time:'15',rate:2},
+    {img:'/assets/img/recipe2.png', name:'BBB',dec:'BBBsimple decoration',time:'20',rate:3},
+    {img:'/assets/img/recipe3.png', name:'CCC',dec:'CCCsimple decoration',time:'25',rate:5},
+]
 const Main = () => {
     return (<div>
             <Row>
@@ -12,7 +17,7 @@ const Main = () => {
                     <div className='deco'>
                         <h2>Recipe Name</h2>
                         <p>simple decoration simple decoration</p>
-                        <a className='gomore'>Get The Recipe</a>
+                        <Link to='/home/recipedetail' className='gomore'>Get The Recipe</Link>
                     </div>
                 </Col>
                 <Col span={ 10 } offset={1}>
@@ -84,8 +89,10 @@ const Main = () => {
                     </div>
                 </Col>
             </Row>
-            <FoodList />
-            <FoodList />
+            <h2 className='subtitle'>Title One Easy Dinners</h2>
+            <FoodList data = {data}/>
+            <h2 className='subtitle'>Title Two Easy Dinners</h2>
+            <FoodList data = {data}/>
         </div>
     )
 }

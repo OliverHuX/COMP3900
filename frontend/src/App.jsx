@@ -23,7 +23,7 @@ export default function App () {
             </div>
           </Route>
 
-          <Route path="/home" exact>        
+          <Route path="/home" >        
               <Home />       
           </Route>
 
