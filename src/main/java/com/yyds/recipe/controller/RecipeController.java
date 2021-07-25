@@ -125,6 +125,16 @@ public class RecipeController {
         return recipeService.testPrivacyRecipe(recipe);
     }
 
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    public static class RecipeReq {
+        @NotNull
+        private String viewerUserId;
+        @NotNull
+        private String recipeId;
+    }
+
     @RequestMapping(value = "/recipe/deleteRecipe", method = RequestMethod.POST)
     public ResponseEntity<?> deleteRecipe(@RequestBody commentRecipeReq req) {
         return recipeService.deleteRecipe(req.getViewerUserId(), req.getRecipeId());
