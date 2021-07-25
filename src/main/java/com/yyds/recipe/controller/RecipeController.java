@@ -84,6 +84,8 @@ public class RecipeController {
         private String viewerUserId;
         @NotNull
         private String recipeId;
+        @NotNull
+        private Integer commentId;
     }
 
     @RequestMapping(value = "/recipe/deleteComment", method = RequestMethod.POST)
