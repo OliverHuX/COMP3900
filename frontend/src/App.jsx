@@ -11,9 +11,11 @@ import Login from './pages/Login/Login'
 import Home from './pages/Home/index'
 import Footer from './components/footer';
 import Wait from './pages/Wait/Wait';
+import StyledHeader from './components/StyledHeader'
 
 export default function App () {
   return <Router>
+      {/* <StyledHeader /> */}
       <div className='container_backg'>
         <Switch>
           

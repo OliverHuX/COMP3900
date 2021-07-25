@@ -6,6 +6,7 @@ import FoodList from '../../components/FoodList';
 import StyledHeader from '../../components/StyledHeader'
 import ChineseFood from '../../components/ChineseFood'
 import RecipeDetail from '../RecipeDetail'
+import Profile from '../../components/Profile';
 import { Switch, Route } from 'react-router-dom';
 import Main from '../Main';
 import axios from 'axios';
@@ -117,6 +118,9 @@ const Home = () => {
                     </Route>
                     <Route path='/home/recipedetail' exact>
                         <RecipeDetail /> 
+                    </Route>
+                    <Route path='/home/profile' exact>
+                        <Profile />
                     </Route>
                 </Switch>
 

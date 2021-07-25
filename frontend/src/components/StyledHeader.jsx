@@ -30,7 +30,8 @@ const StyledHeader = () => {
     const menu2 = (
         <Menu>
             <Menu.Item>
-                <a>Password change</a>
+              <Link to='/home/profile'>Customise Profile</Link>
+                {/* <a>Customise Profile</a> */}
             </Menu.Item>
             <Menu.Item>
                 <a>My Recipe</a>
