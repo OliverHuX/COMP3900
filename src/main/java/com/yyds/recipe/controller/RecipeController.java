@@ -89,8 +89,8 @@ public class RecipeController {
     }
 
     @RequestMapping(value = "/recipe/deleteComment", method = RequestMethod.POST)
-    public ResponseEntity<?> deleteComment(@RequestBody commentRecipeReq req) {
-        return recipeService.deleteComment(req.getViewerUserId(), req.getRecipeId());
+    public ResponseEntity<?> deleteComment(@RequestBody deleteCommentReq req) {
+        return recipeService.deleteComment(req.getViewerUserId(), req.getRecipeId(), req.getCommentId());
     }
 
 
