@@ -249,6 +249,7 @@ public class RecipeServiceImpl implements RecipeService {
         try {
             recipeMapper.deleteComments(recipeId, commentId);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
         }
 
