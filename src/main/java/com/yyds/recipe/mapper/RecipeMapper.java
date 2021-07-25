@@ -1,5 +1,6 @@
 package com.yyds.recipe.mapper;
 
+import com.yyds.recipe.model.Comment;
 import com.yyds.recipe.model.Recipe;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
@@ -35,7 +36,13 @@ public interface RecipeMapper {
     void updateRecipeComments(@Param(value = "recipeId") String recipeId,
                               @Param(value = "comments") HashMap<String, String> comments);
 
-    @Update("update user subscribe set subscribe = #{recipeId}, where userId = #{userId})")
+    void saveComment(Comment comment);
+
+    @Delete("delete from recipe.comment where recipe_id = #{recipeId} and comment_id = #{commentId}")
+    void deleteComments(@Param(value = "recipeId") String recipeId,
+                        @Param(value = "commentId") Integer commentId);
+
+    @Insert("insert into recipe.subscribe (recipe_id, user_id) values (#{recipeId}, #{userId})")
     void updateSubscribe(@Param(value = "userId") String userId,
                          @Param(value = "recipeId") List<String> recipeId);
 
