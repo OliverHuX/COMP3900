@@ -227,6 +227,7 @@ public class RecipeServiceImpl implements RecipeService {
             //System.out.println(comment);
             recipeMapper.saveComment(comment);
         } catch (Exception e) {
+            //e.printStackTrace();
             return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
         }
 
