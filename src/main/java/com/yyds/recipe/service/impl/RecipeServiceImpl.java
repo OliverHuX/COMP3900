@@ -211,7 +211,7 @@ public class RecipeServiceImpl implements RecipeService {
             return userError;
         }
 
-        ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipeId);
+        ResponseEntity<?> recipeError = helper.verifyRecipeExist(comment.getRecipeId());
         if (recipeError != null) {
             return recipeError;
         }
