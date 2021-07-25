@@ -49,7 +49,7 @@ public interface RecipeMapper {
 
     void updatePrivacy(String recipeId, int isPrivacy);
 
-    @Update("update user subscribe set subscribe = #{recipeId}, where userId = #{userId})")
+    @Delete("delete from recipe.subscribe where recipe_id = #{recipeId} and user_id = #{userId}")
     void deleteSubscribe(@Param(value = "userId") String userId,
                          @Param(value = "recipeId") List<String> recipeId);
 
