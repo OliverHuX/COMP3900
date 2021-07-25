@@ -36,7 +36,7 @@ public class Helper {
         return null;
     }
 
-    public  ResponseEntity<?> verifyUserExist(String userId) {
+    public ResponseEntity<?> verifyUserExist(String userId) {
 
         if (userId == null) {
             // return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
@@ -53,7 +53,7 @@ public class Helper {
         return null;
     }
 
-    public  ResponseEntity<?> verifyCollectionExist(String collectionId) {
+    public ResponseEntity<?> verifyCollectionExist(String collectionId) {
 
         if (collectionId == null) {
             return ResponseUtil.getResponse(ResponseCode.COLLECTION_ID_NOT_FOUND, null, null);
@@ -67,5 +67,4 @@ public class Helper {
 
         return null;
     }
-
 }
