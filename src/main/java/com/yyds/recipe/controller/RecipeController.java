@@ -136,7 +136,7 @@ public class RecipeController {
     }
 
     @RequestMapping(value = "/recipe/deleteRecipe", method = RequestMethod.POST)
-    public ResponseEntity<?> deleteRecipe(@RequestBody commentRecipeReq req) {
+    public ResponseEntity<?> deleteRecipe(@RequestBody RecipeReq req) {
         return recipeService.deleteRecipe(req.getViewerUserId(), req.getRecipeId());
     }
 }
