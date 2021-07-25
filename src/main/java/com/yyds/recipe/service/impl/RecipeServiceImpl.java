@@ -200,7 +200,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<?> commentRecipe(String viewerUserId, String recipeId, String comment) {
+    public ResponseEntity<?> commentRecipe(Comment comment) {
 
         ResponseEntity<?> userError = helper.verifyUserExist(viewerUserId);
         if (userError != null) {
