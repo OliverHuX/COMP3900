@@ -223,7 +223,9 @@ public class RecipeServiceImpl implements RecipeService {
         //recipe.addComment(viewerUserId, comment);
 
         try {
-            recipeMapper.updateRecipeComments(recipeId, recipe.getComments());
+            //recipeMapper.updateRecipeComments(recipeId, recipe.getComments());
+            //System.out.println(comment);
+            recipeMapper.saveComment(comment);
         } catch (Exception e) {
             return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
         }
