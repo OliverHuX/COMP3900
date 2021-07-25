@@ -1,5 +1,6 @@
 package com.yyds.recipe.controller;
 
+import com.yyds.recipe.model.Comment;
 import com.yyds.recipe.model.Recipe;
 import com.yyds.recipe.service.RecipeService;
 import lombok.AllArgsConstructor;
