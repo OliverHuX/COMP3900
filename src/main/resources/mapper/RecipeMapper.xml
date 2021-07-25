@@ -139,5 +139,13 @@
         where recipe_id = #{recipeId}
     </select>
 
+    <insert id="saveComment" parameterType="com.yyds.recipe.model.Comment">
+        insert into recipe.comment(recipe_id,
+                                   comment,
+                                   comment_user_id,
+                                   create_time,
+                                   update_time)
+        values (#{recipeId}, #{comment}, #{commentUserId}, #{createTime}, #{updateTime})
+    </insert>
 
 </mapper>
