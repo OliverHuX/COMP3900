@@ -17,6 +17,16 @@
         <result column="is_privacy" property="isPrivacy" jdbcType="INTEGER"/>
     </resultMap>
 
+    <resultMap id="CommentResultMap" type="com.yyds.recipe.model.Comment">
+        <result column="comment_id" property="commentId" jdbcType="INTEGER"/>
+        <result column="recipe_id" property="recipeId" jdbcType="VARCHAR"/>
+        <result column="comment" property="comment" jdbcType="VARCHAR"/>
+        <result column="like" property="like" jdbcType="INTEGER"/>
+        <result column="comment_user_id" property="commentUserId" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="VARCHAR"/>
+    </resultMap>
+
     <insert id="saveRecipe" parameterType="com.yyds.recipe.model.Recipe">
         insert into recipe.recipe(recipe_id,
                                   title,
