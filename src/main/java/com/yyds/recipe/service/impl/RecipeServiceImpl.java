@@ -202,7 +202,11 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public ResponseEntity<?> commentRecipe(Comment comment) {
 
-        ResponseEntity<?> userError = helper.verifyUserExist(viewerUserId);
+        if (comment == null) {
+            return ResponseUtil.getResponse(ResponseCode.PARAMETER_ERROR, null, null);
+        }
+
+        ResponseEntity<?> userError = helper.verifyUserExist(comment.getCommentUserId());
         if (userError != null) {
             return userError;
         }
