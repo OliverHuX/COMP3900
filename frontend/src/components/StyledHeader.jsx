@@ -34,6 +34,10 @@ const StyledHeader = () => {
                 {/* <a>Customise Profile</a> */}
             </Menu.Item>
             <Menu.Item>
+              <Link to='/home/password'>Change Password</Link>
+                {/* <a>Customise Profile</a> */}
+            </Menu.Item>
+            <Menu.Item>
                 <a>My Recipe</a>
             </Menu.Item>
             <Menu.Item>

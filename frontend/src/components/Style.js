@@ -30,6 +30,9 @@ const useStyles = makeStyles((theme) => ({
     submit: {
         margin: theme.spacing(3, 1, 2, 0.8),
     },
+    done: {
+        margin: theme.spacing(3, 0, 2),
+    },
 }));
 
 export { useStyles }

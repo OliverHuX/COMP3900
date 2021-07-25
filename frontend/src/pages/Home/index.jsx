@@ -7,6 +7,7 @@ import StyledHeader from '../../components/StyledHeader'
 import ChineseFood from '../../components/ChineseFood'
 import RecipeDetail from '../RecipeDetail'
 import Profile from '../../components/Profile';
+import Password from '../../components/Password'
 import { Switch, Route } from 'react-router-dom';
 import Main from '../Main';
 import axios from 'axios';
@@ -121,6 +122,9 @@ const Home = () => {
                     </Route>
                     <Route path='/home/profile' exact>
                         <Profile />
+                    </Route>
+                    <Route path='/home/password' exact>
+                        <Password />
                     </Route>
                 </Switch>
 
