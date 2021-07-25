@@ -18,7 +18,7 @@ public interface RecipeService {
 
     ResponseEntity<?> commentRecipe(Comment comment);
 
-    ResponseEntity<?> deleteComment(String viewerUserId, String recipeId);
+    ResponseEntity<?> deleteComment(String viewerUserId, String recipeId, Integer commentId);
 
     ResponseEntity<?> summaryRecipe(Recipe recipe);
 
