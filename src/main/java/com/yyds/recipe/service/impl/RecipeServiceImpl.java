@@ -246,9 +246,6 @@ public class RecipeServiceImpl implements RecipeService {
             return recipeError;
         }
 
-        Recipe recipe = recipeMapper.getRecipeById(recipeId);
-        recipe.deleteComment(viewerUserId);
-
         try {
             recipeMapper.updateRecipeComments(recipeId, recipe.getComments());
         } catch (Exception e) {
