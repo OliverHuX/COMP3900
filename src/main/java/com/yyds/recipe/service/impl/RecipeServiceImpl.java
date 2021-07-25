@@ -235,8 +235,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<?> deleteComment(String viewerUserId, String recipeId) {
-
+    public ResponseEntity<?> deleteComment(String viewerUserId, String recipeId, Integer commentId) {
         ResponseEntity<?> userError = helper.verifyUserExist(viewerUserId);
         if (userError != null) {
             return userError;
