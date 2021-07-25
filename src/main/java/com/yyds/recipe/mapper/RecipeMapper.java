@@ -28,10 +28,10 @@ public interface RecipeMapper {
 
     List<String> getFileNameListByRecipeId(String recipeId);
 
-    @Update("update recipe likes set likes = #{likes}, where recipeId = #{recipeId}")
+    @Update("update recipe.likes set likes = #{likes}, where recipe_id = #{recipeId}")
     void updateRecipeLikes(@Param(value = "recipeId") String recipeId, @Param(value = "likes") int likes);
 
-    @Update("update recipe comments set comments = #{comments}, where recipeId = #{recipeId}")
+    @Update("update recipe.comments set comments = #{comments}, where recipe_id = #{recipeId}")
     void updateRecipeComments(@Param(value = "recipeId") String recipeId,
                               @Param(value = "comments") HashMap<String, String> comments);
 
