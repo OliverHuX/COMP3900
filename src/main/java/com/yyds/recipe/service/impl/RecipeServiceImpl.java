@@ -452,6 +452,7 @@ public class RecipeServiceImpl implements RecipeService {
             recipeMapper.removeLikeByRecipeId(recipeId);
             recipeMapper.removePhotoByRecipeId(recipeId);
             recipeMapper.removeVideoByRecipeId(recipeId);
+            recipeMapper.removeCommentByRecipeId(recipeId);
         } catch (Exception e) {
             throw new MySqlErrorException();
         }
