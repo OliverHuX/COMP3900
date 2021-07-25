@@ -9,6 +9,7 @@ import com.yyds.recipe.mapper.CollectionMapper;
 import com.yyds.recipe.mapper.RecipeMapper;
 import com.yyds.recipe.mapper.UserMapper;
 import com.yyds.recipe.model.Collection;
+import com.yyds.recipe.model.Comment;
 import com.yyds.recipe.model.Recipe;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.RecipeService;
