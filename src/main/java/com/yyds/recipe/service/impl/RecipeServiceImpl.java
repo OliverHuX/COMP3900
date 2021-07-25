@@ -457,9 +457,6 @@ public class RecipeServiceImpl implements RecipeService {
             throw new MySqlErrorException();
         }
 
-        Recipe recipe = recipeMapper.getRecipeById(recipeId);
-        recipe.deleteComment(viewerUserId);
-
         try {
             recipeMapper.removeRecipe(recipeId);
         } catch (Exception e) {
