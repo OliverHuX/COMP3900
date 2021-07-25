@@ -216,12 +216,11 @@ public class RecipeServiceImpl implements RecipeService {
             return recipeError;
         }
 
-        if (comment == null) {
-            return ResponseUtil.getResponse(ResponseCode.PARAMETER_ERROR, null, null);
-        }
-
-        Recipe recipe = recipeMapper.getRecipeById(recipeId);
-        recipe.addComment(viewerUserId, comment);
+        String time = String.valueOf(System.currentTimeMillis());
+        comment.setCreateTime(time);
+        comment.setUpdateTime(time);
+        //Recipe recipe = recipeMapper.getRecipeById(recipeId);
+        //recipe.addComment(viewerUserId, comment);
 
         try {
             recipeMapper.updateRecipeComments(recipeId, recipe.getComments());
