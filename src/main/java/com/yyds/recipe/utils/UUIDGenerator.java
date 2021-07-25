@@ -11,6 +11,10 @@ public class UUIDGenerator {
         return UUID.randomUUID().toString().replace("-", "");
     }
 
+    public static String createCommentId() {
+        return UUID.randomUUID().toString().replace("-", "");
+    }
+
     public static String createCollectionId() {
         return UUID.randomUUID().toString().replace("-", "");
     }
