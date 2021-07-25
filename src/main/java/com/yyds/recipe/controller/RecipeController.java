@@ -71,8 +71,8 @@ public class RecipeController {
     }
 
     @RequestMapping(value = "/recipe/comment", method = RequestMethod.POST)
-    public ResponseEntity<?> commentRecipe(@RequestBody commentRecipeReq req) {
-        return recipeService.commentRecipe(req.getViewerUserId(), req.getRecipeId(), req.getComment());
+    public ResponseEntity<?> commentRecipe(@RequestBody Comment comment) {
+        return recipeService.commentRecipe(comment);
     }
 
 
