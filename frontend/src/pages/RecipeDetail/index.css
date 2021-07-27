@@ -7,12 +7,13 @@
 .imgbox{
     width: 400px;
     height: 400px;
+    margin-bottom: 20px;
     overflow: hidden;
 }
 .imgbox img{
     width: 100%;
 }
-.imgshow button{
+.imgshow .save{
     padding: 10px 30px!important;
     height: auto!important;
 }
