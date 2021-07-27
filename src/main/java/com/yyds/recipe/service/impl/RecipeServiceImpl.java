@@ -152,6 +152,15 @@ public class RecipeServiceImpl implements RecipeService {
         }
         PageHelper.startPage(pageNum, pageSize, true);
         List<Recipe> recipeList = recipeMapper.getRecipeList();
+        for (Recipe recipe : recipeList) {
+            List<String> recipePhotos = new ArrayList<>();
+            List<String> fileNameList = recipeMapper.getFileNameListByRecipeId(recipe.getRecipeId());
+            for (String fileName : fileNameList) {
+                String fileUrl = minioUtil.presignedGetObject(recipePhotoBucketName, fileName, 7);
+                recipePhotos.add(fileUrl);
+            }
+            recipe.setRecipePhotos(recipePhotos);
+        }
         PageInfo<Recipe> recipePageInfo = new PageInfo<>(recipeList);
         HashMap<String, Object> resultMap = new HashMap<>();
         resultMap.put("recipe lists", recipeList);
