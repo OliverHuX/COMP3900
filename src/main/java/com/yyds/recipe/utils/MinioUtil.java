@@ -151,9 +151,10 @@ public class MinioUtil {
                 throw new Exception();
             }
             return minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder()
+                    .method(Method.GET)
                     .bucket(bucketName)
                     .object(objectName)
-                    .expiry(expires)
+                    // .expiry(expires)
                     .build()
             );
         }
