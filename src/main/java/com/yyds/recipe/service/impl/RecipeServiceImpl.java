@@ -171,25 +171,13 @@ public class RecipeServiceImpl implements RecipeService {
         PageHelper.startPage(pageNum, pageSize, true);
         List<Recipe> myRecipeList = recipeMapper.getMyRecipeList(user.getUserId());
         for (Recipe recipe : myRecipeList) {
-            recipe.setRecipePhotos(new ArrayList<>());
-            List<String> recipePhotos = recipe.getRecipePhotos();
-            String recipeId = recipe.getRecipeId();
-            List<String> fileNameList = recipeMapper.getFileNameListByRecipeId(recipeId);
-            recipePhotos.addAll(fileNameList);
-
-            List<String> base64Strings = new ArrayList<>();
-            for (String file : fileNameList) {
-                InputStream inputStream = minioUtil.getObject(recipePhotoBucketName, file);
-                byte[] bytes = new byte[0];
-                try {
-                    bytes = IOUtils.toByteArray(inputStream);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                String s = Base64.getEncoder().encodeToString(bytes);
-                base64Strings.add(s);
+            List<String> recipePhotos = new ArrayList<>();
+            List<String> fileNameList = recipeMapper.getFileNameListByRecipeId(recipe.getRecipeId());
+            for (String fileName : fileNameList) {
+                String fileUrl = minioUtil.presignedGetObject(recipePhotoBucketName, fileName, 7);
+                recipePhotos.add(fileUrl);
             }
-            recipe.setBase64photoList(base64Strings);
+            recipe.setRecipePhotos(recipePhotos);
         }
         PageInfo<Recipe> recipePageInfo = new PageInfo<>(myRecipeList);
         HashMap<String, Object> resultMap = new HashMap<>();
