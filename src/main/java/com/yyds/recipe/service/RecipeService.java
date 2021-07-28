@@ -40,4 +40,6 @@ public interface RecipeService {
 
     // TODO:
     ResponseEntity<?> getMyRecipes(int pageNum, int pageSize, HttpServletRequest request);
+
+    ResponseEntity<?> testPost(HttpServletRequest request, MultipartFile[] uploadPhotos, Recipe recipe);
 }

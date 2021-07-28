@@ -16,8 +16,7 @@ import com.yyds.recipe.utils.JwtUtil;
 import com.yyds.recipe.utils.MinioUtil;
 import com.yyds.recipe.utils.ResponseUtil;
 import com.yyds.recipe.utils.UUIDGenerator;
-import com.yyds.recipe.vo.ServiceVO;
-import com.yyds.recipe.vo.SuccessCode;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,10 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @EnableTransactionManagement
 @Service
@@ -106,6 +102,7 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public ResponseEntity<?> likeRecipe(HttpServletRequest request, Recipe recipe) {
+
         User user = checkedUser(request);
 
         String recipeId = recipe.getRecipeId();
@@ -128,6 +125,7 @@ public class RecipeServiceImpl implements RecipeService {
     public ResponseEntity<?> unlikeRecipe(HttpServletRequest request, Recipe recipe) {
 
         User user = checkedUser(request);
+
         String recipeId = recipe.getRecipeId();
 
         Recipe checkRecipe = recipeMapper.getRecipeById(recipeId);
@@ -154,6 +152,15 @@ public class RecipeServiceImpl implements RecipeService {
         }
         PageHelper.startPage(pageNum, pageSize, true);
         List<Recipe> recipeList = recipeMapper.getRecipeList();
+        for (Recipe recipe : recipeList) {
+            List<String> recipePhotos = new ArrayList<>();
+            List<String> fileNameList = recipeMapper.getFileNameListByRecipeId(recipe.getRecipeId());
+            for (String fileName : fileNameList) {
+                String fileUrl = minioUtil.presignedGetObject(recipePhotoBucketName, fileName, 7);
+                recipePhotos.add(fileUrl);
+            }
+            recipe.setRecipePhotos(recipePhotos);
+        }
         PageInfo<Recipe> recipePageInfo = new PageInfo<>(recipeList);
         HashMap<String, Object> resultMap = new HashMap<>();
         resultMap.put("recipe lists", recipeList);
@@ -172,6 +179,15 @@ public class RecipeServiceImpl implements RecipeService {
         }
         PageHelper.startPage(pageNum, pageSize, true);
         List<Recipe> myRecipeList = recipeMapper.getMyRecipeList(user.getUserId());
+        for (Recipe recipe : myRecipeList) {
+            List<String> recipePhotos = new ArrayList<>();
+            List<String> fileNameList = recipeMapper.getFileNameListByRecipeId(recipe.getRecipeId());
+            for (String fileName : fileNameList) {
+                String fileUrl = minioUtil.presignedGetObject(recipePhotoBucketName, fileName, 7);
+                recipePhotos.add(fileUrl);
+            }
+            recipe.setRecipePhotos(recipePhotos);
+        }
         PageInfo<Recipe> recipePageInfo = new PageInfo<>(myRecipeList);
         HashMap<String, Object> resultMap = new HashMap<>();
         resultMap.put("recipe lists", myRecipeList);
@@ -298,21 +314,15 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public ResponseEntity<?> setPrivacyRecipe(HttpServletRequest request, Recipe recipe) {
-
         User user = checkedUser(request);
-
         String recipeId = recipe.getRecipeId();
-
-        if (!StringUtils.equals(recipe.getRecipeId(), user.getUserId())) {
-            throw new AuthorizationException();
-        }
 
         Recipe checkedRecipe = recipeMapper.getRecipeById(recipeId);
         if (checkedRecipe == null) {
             return ResponseUtil.getResponse(ResponseCode.RECIPE_ID_NOT_FOUND, null, null);
         }
 
-        if (!StringUtils.equals(recipe.getUserId(), checkedRecipe.getUserId())) {
+        if (!StringUtils.equals(user.getUserId(), checkedRecipe.getUserId())) {
             throw new AuthorizationException();
         }
 
@@ -373,5 +383,50 @@ public class RecipeServiceImpl implements RecipeService {
             throw new AuthorizationException();
         }
         return checkedUser;
+    }
+
+    @Override
+    public ResponseEntity<?> testPost(HttpServletRequest request, MultipartFile[] uploadPhotos, Recipe recipe) {
+        // User user = checkedUser(request);
+        User user = userMapper.getUserByUserId("8bd7102547dd4f3f9feda9e811544c97");
+        String recipeId = UUIDGenerator.createRecipeId();
+        recipe.setRecipeId(recipeId);
+        recipe.setCreateTime(String.valueOf(System.currentTimeMillis()));
+        recipe.setUserId(user.getUserId());
+
+        // insert into recipe table
+        try {
+            recipeMapper.saveRecipe(recipe);
+        } catch (Exception e) {
+            throw new MySqlErrorException();
+        }
+
+        recipe.setRecipePhotos(new ArrayList<>());
+        for (MultipartFile uploadPhoto : uploadPhotos) {
+            String originalFilename = uploadPhoto.getOriginalFilename();
+            if (originalFilename == null) {
+                continue;
+            }
+            String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+            String contentType = uploadPhoto.getContentType();
+            InputStream inputStream = null;
+            try {
+                inputStream = uploadPhoto.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            String photoName = UUIDGenerator.generateUUID() + suffix;
+            minioUtil.putObject(recipePhotoBucketName, photoName, contentType, inputStream);
+            recipe.getRecipePhotos().add(photoName);
+        }
+
+        // insert into photo table
+        try {
+            recipeMapper.savePhotos(recipeId, recipe.getRecipePhotos());
+        } catch (Exception e) {
+            throw new MySqlErrorException();
+        }
+
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 }

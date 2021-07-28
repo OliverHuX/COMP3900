@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,8 +38,8 @@ public class UserController {
     }
 
     @RequestMapping(value = "/editProfile", method = RequestMethod.POST)
-    public ResponseEntity<?> editProfile(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
-        return userService.editUser(user, request, response);
+    public ResponseEntity<?> editProfile(@RequestPart(value = "proflePhoto") MultipartFile profilePhoto, @RequestPart(value = "jsonData") User user, HttpServletRequest request, HttpServletResponse response) {
+        return userService.editUser(profilePhoto, user, request, response);
     }
 
     @AllArgsConstructor

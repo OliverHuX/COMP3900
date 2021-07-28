@@ -36,7 +36,7 @@ public class RecipeController {
         return recipeService.unlikeRecipe(request, recipe);
     }
 
-    @RequestMapping(value = "/recipe/privacy", method = RequestMethod.GET)
+    @RequestMapping(value = "/recipe/set_privacy", method = RequestMethod.GET)
     public ResponseEntity<?> setRecipePrivacy(HttpServletRequest request, @RequestBody Recipe recipe) {
         return recipeService.setPrivacyRecipe(request, recipe);
     }
@@ -101,5 +101,13 @@ public class RecipeController {
     @RequestMapping(value = "/recipe/collectRecipe", method = RequestMethod.POST)
     public ResponseEntity<?> collectRecipe(@RequestBody collectRecipeReq req) {
         return recipeService.collectRecipe(req.getViewerUserId(), req.getCollectionId(), req.getRecipeId());
+    }
+
+    // TODO: just for test need to be deleted
+    @RequestMapping(value = "/recipe/testPost", method = RequestMethod.POST)
+    public ResponseEntity<?> testPostRecipe(HttpServletRequest request,
+                                        @RequestPart(value = "uploadPhotos") MultipartFile[] uploadPhotos,
+                                        @RequestPart(value = "jsonData") Recipe recipe) {
+        return recipeService.testPost(request, uploadPhotos, recipe);
     }
 }
