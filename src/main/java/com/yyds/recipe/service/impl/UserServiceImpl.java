@@ -7,10 +7,7 @@ import com.yyds.recipe.mapper.UserMapper;
 import com.yyds.recipe.model.Follow;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
-import com.yyds.recipe.utils.BcryptPasswordUtil;
-import com.yyds.recipe.utils.JwtUtil;
-import com.yyds.recipe.utils.ResponseUtil;
-import com.yyds.recipe.utils.UUIDGenerator;
+import com.yyds.recipe.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -22,10 +19,13 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.HashMap;
@@ -46,8 +46,14 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private JavaMailSender mailSender;
 
+    @Autowired
+    private MinioUtil minioUtil;
+
     @Value("${spring.mail.username}")
     private String mailSenderAddress;
+
+    @Value("${spring.minio.profile.photo}")
+    private String profilePhotoBucketName;
 
     private static final String PASSWORD_REGEX_PATTERN = "^(?![0-9]+$)(?![a-z]+$)(?![A-Z]+$)(?!([^(0-9a-zA-Z)])+$).{6,20}$";
     private static final int PASSWORD_LENGTH = 6;
@@ -166,7 +172,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> editUser(User user, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> editUser(MultipartFile profilePhoto, User user, HttpServletRequest request, HttpServletResponse response) {
 
         if (userMapper.getUserByUserId(user.getUserId()) == null) {
             throw new AuthorizationException();
@@ -174,6 +180,21 @@ public class UserServiceImpl implements UserService {
 
         if (user.getUserId() == null || (user.getGender() != null && (user.getGender() > 2 || user.getGender() < 0))) {
             return ResponseUtil.getResponse(ResponseCode.PARAMETER_ERROR, null, null);
+        }
+
+        if (profilePhoto != null) {
+            String originalFilename = profilePhoto.getOriginalFilename();
+            String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+            String contentType = profilePhoto.getContentType();
+            InputStream inputStream = null;
+            try {
+                inputStream = profilePhoto.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            String photoName = UUIDGenerator.generateUUID() + suffix;
+            minioUtil.putObject(profilePhotoBucketName, photoName, contentType, inputStream);
+            user.setProfilePhoto(photoName);
         }
 
         try {
