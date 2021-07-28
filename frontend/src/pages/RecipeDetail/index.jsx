@@ -27,7 +27,7 @@ const RecipeDetail = () => {
     return <div className='recipedetail'>
         <div className='imgshow'>
             <div className='imgbox'>
-                <Carousel autoplay arrows={true}>
+                <Carousel autoplay effect="fade" arrows={true}>
                     <div>
                         <img src="/assets/img/recipe1.png" alt="" />
                     </div>
