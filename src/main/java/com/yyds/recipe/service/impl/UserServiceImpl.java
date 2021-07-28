@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
     @Value("${spring.mail.username}")
     private String mailSenderAddress;
 
-    @Value("${spring.minio.profile.photo}")
+    @Value("${minio.bucket.profile.photo}")
     private String profilePhotoBucketName;
 
     private static final String PASSWORD_REGEX_PATTERN = "^(?![0-9]+$)(?![a-z]+$)(?![A-Z]+$)(?!([^(0-9a-zA-Z)])+$).{6,20}$";
