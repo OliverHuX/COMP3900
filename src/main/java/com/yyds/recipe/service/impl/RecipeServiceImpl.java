@@ -64,13 +64,6 @@ public class RecipeServiceImpl implements RecipeService {
         recipe.setCreateTime(String.valueOf(System.currentTimeMillis()));
         recipe.setUserId(user.getUserId());
 
-        // insert into recipe table
-        try {
-            recipeMapper.saveRecipe(recipe);
-        } catch (Exception e) {
-            throw new MySqlErrorException();
-        }
-
         recipe.setRecipePhotos(new ArrayList<>());
         for (MultipartFile uploadPhoto : uploadPhotos) {
             String originalFilename = uploadPhoto.getOriginalFilename();
@@ -88,6 +81,15 @@ public class RecipeServiceImpl implements RecipeService {
             String photoName = UUIDGenerator.generateUUID() + suffix;
             minioUtil.putObject(recipePhotoBucketName, photoName, contentType, inputStream);
             recipe.getRecipePhotos().add(photoName);
+        }
+
+        // insert into recipe table
+        List<Integer> tagList = recipe.getTags();
+        try {
+            recipeMapper.saveRecipe(recipe);
+            recipeMapper.saveTagRecipe(recipeId, tagList);
+        } catch (Exception e) {
+            throw new MySqlErrorException();
         }
 
         // insert into photo table

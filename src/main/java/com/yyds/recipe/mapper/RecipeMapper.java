@@ -29,6 +29,8 @@ public interface RecipeMapper {
 
     List<String> getFileNameListByRecipeId(String recipeId);
 
+    void saveTagRecipe(String recipeId, List<Integer> tags);
+
     @Update("update recipe likes set likes = #{likes}, where recipeId = #{recipeId}")
     void updateRecipeLikes(@Param(value = "recipeId") String recipeId, @Param(value = "likes") int likes);
 

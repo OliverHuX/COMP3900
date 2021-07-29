@@ -113,5 +113,12 @@
         where recipe_id = #{recipeId}
     </select>
 
+    <insert id="saveTagRecipe">
+        insert into tag_recipe(recipe_id, tag_id)
+        values
+        <foreach collection="tags" item="tagId" separator=",">
+            (#{recipeId,jdbcType=VARCHAR}, #{tagId, jdbcType=INTEGER})
+        </foreach>
+    </insert>
 
 </mapper>

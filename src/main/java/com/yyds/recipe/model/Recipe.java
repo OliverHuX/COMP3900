@@ -20,7 +20,7 @@ public class Recipe implements Serializable {
     private String title;
     private String ingredients;
     private String method;
-    private List<String> tags;
+    private List<Integer> tags;
     private int timeDuration;
     private List<String> recipePhotos;
     private List<String> recipeVideos;
