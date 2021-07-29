@@ -162,6 +162,8 @@ public class RecipeServiceImpl implements RecipeService {
                 recipePhotos.add(fileUrl);
             }
             recipe.setRecipePhotos(recipePhotos);
+            List<String> resultTags = recipeMapper.getTagListByRecipeId(recipe.getRecipeId());
+            recipe.setResultTags(resultTags);
         }
         PageInfo<Recipe> recipePageInfo = new PageInfo<>(recipeList);
         HashMap<String, Object> resultMap = new HashMap<>();

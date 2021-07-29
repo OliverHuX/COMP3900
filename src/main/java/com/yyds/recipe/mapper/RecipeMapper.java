@@ -49,4 +49,5 @@ public interface RecipeMapper {
     void deleteSubscribe(@Param(value = "userId") String userId,
                          @Param(value = "recipeId") List<String> recipeId);
 
+    List<String> getTagListByRecipeId(String recipeId);
 }
