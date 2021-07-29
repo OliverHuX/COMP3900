@@ -75,18 +75,27 @@
 
     <select id="getRecipeList" resultMap="RecipeResultMap">
         select r.recipe_id,
-               r.title,
-               r.introduction,
-               r.ingredients,
-               r.method,
-               r.create_time,
-               r.time_duration,
-               r.user_id,
-               r.is_privacy,
-               count(1) likes
+        r.title,
+        r.introduction,
+        r.ingredients,
+        r.method,
+        r.create_time,
+        r.time_duration,
+        r.user_id,
+        r.is_privacy,
+        count(1) likes
         from recipe.recipe r
-                 left join recipe.like l on r.recipe_id = l.recipe_id
-        where r.is_privacy = 0
+        left join recipe.like l on r.recipe_id = l.recipe_id
+        left join recipe.tag_recipe tr on tr.recipe_id = r.recipe_id
+        <where>
+            r.is_privacy = 0
+            <if test="list != null">
+                and tr.tag_name in
+                <foreach collection="list" item="tagName" open="(" close=")" separator=",">
+                    #{tagName}
+                </foreach>
+            </if>
+        </where>
         group by r.recipe_id;
     </select>
 
