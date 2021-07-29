@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,8 +38,8 @@ public class UserController {
     }
 
     @RequestMapping(value = "/editProfile", method = RequestMethod.POST)
-    public ResponseEntity<?> editProfile(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
-        return userService.editUser(user, request, response);
+    public ResponseEntity<?> editProfile(@RequestPart(value = "proflePhoto") MultipartFile profilePhoto, @RequestPart(value = "jsonData") User user, HttpServletRequest request, HttpServletResponse response) {
+        return userService.editUser(profilePhoto, user, request, response);
     }
 
     @AllArgsConstructor
@@ -63,21 +64,16 @@ public class UserController {
         return userService.emailVerify(token);
     }
 
-    @RequestMapping(value = "/user/follow")
+    @RequestMapping(value = "/user/follow", method = RequestMethod.POST)
     public ResponseEntity<?> followUser(@RequestBody Follow followReq) {
         return userService.followUser(followReq);
     }
 
-    @RequestMapping(value = "user/unfollow")
+    @RequestMapping(value = "user/unfollow", method = RequestMethod.POST)
     public ResponseEntity<?> unfollowUser(@RequestBody Follow unfollowReq) {
         return userService.unfollowUser(unfollowReq);
     }
 
-    @RequestMapping(value = "test", method = RequestMethod.GET)
-    public ResponseEntity<?> testEverything() {
-
-        return ResponseEntity.ok("Hello world!");
-    }
 
     @RequestMapping(value = "/dev/register", method = RequestMethod.POST)
     public ResponseEntity<?> devRegister(@RequestBody User user) {

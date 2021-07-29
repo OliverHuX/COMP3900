@@ -75,18 +75,33 @@
 
     <select id="getRecipeList" resultMap="RecipeResultMap">
         select r.recipe_id,
-               r.title,
-               r.introduction,
-               r.ingredients,
-               r.method,
-               r.create_time,
-               r.time_duration,
-               r.user_id,
-               r.is_privacy,
-               count(1) likes
+        r.title,
+        r.introduction,
+        r.ingredients,
+        r.method,
+        r.create_time,
+        r.time_duration,
+        r.user_id,
+        r.is_privacy,
+        count(1) likes
         from recipe.recipe r
-                 left join recipe.like l on r.recipe_id = l.recipe_id
-        where r.is_privacy = 0
+        left join recipe.like l on r.recipe_id = l.recipe_id
+        left join recipe.tag_recipe tr on tr.recipe_id = r.recipe_id
+        <where>
+            r.is_privacy = 0
+            <if test="tagList != null">
+                and tr.tag_name in
+                <foreach collection="tagList" item="tagName" open="(" close=")" separator=",">
+                    #{tagName}
+                </foreach>
+            </if>
+            <if test="searchContent != null">
+                and (r.title like concat('%', #{searchContent,jdbcType=VARCHAR}, '%') or r.introduction like concat('%',
+                #{searchContent,jdbcType=VARCHAR}, '%') or r.ingredients like concat('%',
+                #{searchContent,jdbcType=VARCHAR}, '%') or r.method like concat('%', #{searchContent,jdbcType=VARCHAR},
+                '%'))
+            </if>
+        </where>
         group by r.recipe_id;
     </select>
 
@@ -113,5 +128,19 @@
         where recipe_id = #{recipeId}
     </select>
 
+    <insert id="saveTagRecipe">
+        insert into tag_recipe(recipe_id, tag_name)
+        values
+        <foreach collection="tags" item="tagName" separator=",">
+            (#{recipeId,jdbcType=VARCHAR}, #{tagName, jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+    <select id="getTagListByRecipeId" parameterType="java.lang.String" resultType="java.lang.String">
+        select tl.name
+        from recipe.tag_recipe tr
+                 left join recipe.tag_list tl on tr.tag_name = tl.name
+        where tr.recipe_id = #{recipeId}
+    </select>
 
 </mapper>

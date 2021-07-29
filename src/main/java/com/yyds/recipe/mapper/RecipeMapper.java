@@ -23,11 +23,13 @@ public interface RecipeMapper {
 
     Recipe getRecipeById(String recipeId);
 
-    List<Recipe> getRecipeList();
+    List<Recipe> getRecipeList(List<String> tagList, String searchContent);
 
     List<Recipe> getMyRecipeList(String userId);
 
     List<String> getFileNameListByRecipeId(String recipeId);
+
+    void saveTagRecipe(String recipeId, List<String> tags);
 
     @Update("update recipe likes set likes = #{likes}, where recipeId = #{recipeId}")
     void updateRecipeLikes(@Param(value = "recipeId") String recipeId, @Param(value = "likes") int likes);
@@ -47,4 +49,5 @@ public interface RecipeMapper {
     void deleteSubscribe(@Param(value = "userId") String userId,
                          @Param(value = "recipeId") List<String> recipeId);
 
+    List<String> getTagListByRecipeId(String recipeId);
 }

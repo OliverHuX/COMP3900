@@ -22,7 +22,6 @@ public class Recipe implements Serializable {
     private String method;
     private List<String> tags;
     private int timeDuration;
-    private String cover;
     private List<String> recipePhotos;
     private List<String> recipeVideos;
     // TODO: delete it !!!
