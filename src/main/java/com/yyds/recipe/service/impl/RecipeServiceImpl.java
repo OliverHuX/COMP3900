@@ -64,13 +64,6 @@ public class RecipeServiceImpl implements RecipeService {
         recipe.setCreateTime(String.valueOf(System.currentTimeMillis()));
         recipe.setUserId(user.getUserId());
 
-        // insert into recipe table
-        try {
-            recipeMapper.saveRecipe(recipe);
-        } catch (Exception e) {
-            throw new MySqlErrorException();
-        }
-
         recipe.setRecipePhotos(new ArrayList<>());
         for (MultipartFile uploadPhoto : uploadPhotos) {
             String originalFilename = uploadPhoto.getOriginalFilename();
@@ -88,6 +81,15 @@ public class RecipeServiceImpl implements RecipeService {
             String photoName = UUIDGenerator.generateUUID() + suffix;
             minioUtil.putObject(recipePhotoBucketName, photoName, contentType, inputStream);
             recipe.getRecipePhotos().add(photoName);
+        }
+
+        // insert into recipe table
+        List<String> tagList = recipe.getTags();
+        try {
+            recipeMapper.saveRecipe(recipe);
+            recipeMapper.saveTagRecipe(recipeId, tagList);
+        } catch (Exception e) {
+            throw new MySqlErrorException();
         }
 
         // insert into photo table
@@ -143,7 +145,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<?> getAllPublicRecipes(int pageNum, int pageSize) {
+    public ResponseEntity<?> getAllPublicRecipes(String searchContent, String searchTags, int pageNum, int pageSize) {
         if (pageNum <= 0) {
             pageNum = 1;
         }
@@ -151,7 +153,14 @@ public class RecipeServiceImpl implements RecipeService {
             pageSize = 9;
         }
         PageHelper.startPage(pageNum, pageSize, true);
-        List<Recipe> recipeList = recipeMapper.getRecipeList();
+        if (searchTags != null) {
+
+        }
+        List<String> searchTagList = null;
+        if (searchTags != null) {
+            searchTagList = Arrays.asList(searchTags.split(","));
+        }
+        List<Recipe> recipeList = recipeMapper.getRecipeList(searchTagList, searchContent);
         for (Recipe recipe : recipeList) {
             List<String> recipePhotos = new ArrayList<>();
             List<String> fileNameList = recipeMapper.getFileNameListByRecipeId(recipe.getRecipeId());
@@ -160,6 +169,8 @@ public class RecipeServiceImpl implements RecipeService {
                 recipePhotos.add(fileUrl);
             }
             recipe.setRecipePhotos(recipePhotos);
+            List<String> tags = recipeMapper.getTagListByRecipeId(recipe.getRecipeId());
+            recipe.setTags(tags);
         }
         PageInfo<Recipe> recipePageInfo = new PageInfo<>(recipeList);
         HashMap<String, Object> resultMap = new HashMap<>();
@@ -187,6 +198,8 @@ public class RecipeServiceImpl implements RecipeService {
                 recipePhotos.add(fileUrl);
             }
             recipe.setRecipePhotos(recipePhotos);
+            List<String> tags = recipeMapper.getTagListByRecipeId(recipe.getRecipeId());
+            recipe.setTags(tags);
         }
         PageInfo<Recipe> recipePageInfo = new PageInfo<>(myRecipeList);
         HashMap<String, Object> resultMap = new HashMap<>();

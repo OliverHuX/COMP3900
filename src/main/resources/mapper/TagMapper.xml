@@ -7,6 +7,6 @@
 
     <select id="getTagsList" resultType="com.yyds.recipe.model.Tag">
         select t.id, t.name
-        from recipe.tag t;
+        from recipe.tag_list t;
     </select>
 </mapper>

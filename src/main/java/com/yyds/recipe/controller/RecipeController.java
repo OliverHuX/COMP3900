@@ -42,8 +42,8 @@ public class RecipeController {
     }
 
     @RequestMapping(value = "/recipe/recipe_list")
-    public ResponseEntity<?> getRecipeList(@RequestParam(value = "pageNum", required = false) int pageNum, @RequestParam(value = "pageSize", required = false) int pageSize) {
-        return recipeService.getAllPublicRecipes(pageNum, pageSize);
+    public ResponseEntity<?> getRecipeList(@RequestParam(value = "search", required = false) String search, @RequestParam(value = "tag", required = false) String tags, @RequestParam(value = "pageNum", required = false) int pageNum, @RequestParam(value = "pageSize", required = false) int pageSize) {
+        return recipeService.getAllPublicRecipes(search, tags, pageNum, pageSize);
     }
 
     @RequestMapping(value = "/recipe/my_recipe", method = RequestMethod.GET)
@@ -106,8 +106,8 @@ public class RecipeController {
     // TODO: just for test need to be deleted
     @RequestMapping(value = "/recipe/testPost", method = RequestMethod.POST)
     public ResponseEntity<?> testPostRecipe(HttpServletRequest request,
-                                        @RequestPart(value = "uploadPhotos") MultipartFile[] uploadPhotos,
-                                        @RequestPart(value = "jsonData") Recipe recipe) {
+                                            @RequestPart(value = "uploadPhotos") MultipartFile[] uploadPhotos,
+                                            @RequestPart(value = "jsonData") Recipe recipe) {
         return recipeService.testPost(request, uploadPhotos, recipe);
     }
 }

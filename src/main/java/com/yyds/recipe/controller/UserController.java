@@ -64,21 +64,16 @@ public class UserController {
         return userService.emailVerify(token);
     }
 
-    @RequestMapping(value = "/user/follow")
+    @RequestMapping(value = "/user/follow", method = RequestMethod.POST)
     public ResponseEntity<?> followUser(@RequestBody Follow followReq) {
         return userService.followUser(followReq);
     }
 
-    @RequestMapping(value = "user/unfollow")
+    @RequestMapping(value = "user/unfollow", method = RequestMethod.POST)
     public ResponseEntity<?> unfollowUser(@RequestBody Follow unfollowReq) {
         return userService.unfollowUser(unfollowReq);
     }
 
-    @RequestMapping(value = "test", method = RequestMethod.GET)
-    public ResponseEntity<?> testEverything() {
-
-        return ResponseEntity.ok("Hello world!");
-    }
 
     @RequestMapping(value = "/dev/register", method = RequestMethod.POST)
     public ResponseEntity<?> devRegister(@RequestBody User user) {
