@@ -84,7 +84,7 @@ public class RecipeServiceImpl implements RecipeService {
         }
 
         // insert into recipe table
-        List<Integer> tagList = recipe.getTags();
+        List<String> tagList = recipe.getTags();
         try {
             recipeMapper.saveRecipe(recipe);
             recipeMapper.saveTagRecipe(recipeId, tagList);
@@ -162,8 +162,8 @@ public class RecipeServiceImpl implements RecipeService {
                 recipePhotos.add(fileUrl);
             }
             recipe.setRecipePhotos(recipePhotos);
-            List<String> resultTags = recipeMapper.getTagListByRecipeId(recipe.getRecipeId());
-            recipe.setResultTags(resultTags);
+            List<String> tags = recipeMapper.getTagListByRecipeId(recipe.getRecipeId());
+            recipe.setTags(tags);
         }
         PageInfo<Recipe> recipePageInfo = new PageInfo<>(recipeList);
         HashMap<String, Object> resultMap = new HashMap<>();
@@ -191,6 +191,8 @@ public class RecipeServiceImpl implements RecipeService {
                 recipePhotos.add(fileUrl);
             }
             recipe.setRecipePhotos(recipePhotos);
+            List<String> tags = recipeMapper.getTagListByRecipeId(recipe.getRecipeId());
+            recipe.setTags(tags);
         }
         PageInfo<Recipe> recipePageInfo = new PageInfo<>(myRecipeList);
         HashMap<String, Object> resultMap = new HashMap<>();

@@ -114,17 +114,17 @@
     </select>
 
     <insert id="saveTagRecipe">
-        insert into tag_recipe(recipe_id, tag_id)
+        insert into tag_recipe(recipe_id, tag_name)
         values
-        <foreach collection="tags" item="tagId" separator=",">
-            (#{recipeId,jdbcType=VARCHAR}, #{tagId, jdbcType=INTEGER})
+        <foreach collection="tags" item="tagName" separator=",">
+            (#{recipeId,jdbcType=VARCHAR}, #{tagName, jdbcType=VARCHAR})
         </foreach>
     </insert>
 
     <select id="getTagListByRecipeId" parameterType="java.lang.String" resultType="java.lang.String">
         select tl.name
         from recipe.tag_recipe tr
-                 left join recipe.tag_list tl on tr.tag_id = tl.id
+                 left join recipe.tag_list tl on tr.tag_name = tl.name
         where tr.recipe_id = #{recipeId}
     </select>
 
