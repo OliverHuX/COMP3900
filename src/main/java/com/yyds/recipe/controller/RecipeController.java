@@ -42,8 +42,8 @@ public class RecipeController {
     }
 
     @RequestMapping(value = "/recipe/recipe_list")
-    public ResponseEntity<?> getRecipeList(@RequestParam(value = "tag", required = false) String tags, @RequestParam(value = "pageNum", required = false) int pageNum, @RequestParam(value = "pageSize", required = false) int pageSize) {
-        return recipeService.getAllPublicRecipes(tags, pageNum, pageSize);
+    public ResponseEntity<?> getRecipeList(@RequestParam(value = "search", required = false) String search, @RequestParam(value = "tag", required = false) String tags, @RequestParam(value = "pageNum", required = false) int pageNum, @RequestParam(value = "pageSize", required = false) int pageSize) {
+        return recipeService.getAllPublicRecipes(search, tags, pageNum, pageSize);
     }
 
     @RequestMapping(value = "/recipe/my_recipe", method = RequestMethod.GET)

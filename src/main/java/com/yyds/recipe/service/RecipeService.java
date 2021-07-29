@@ -14,7 +14,7 @@ public interface RecipeService {
 
     ResponseEntity<?> unlikeRecipe(HttpServletRequest request, Recipe recipe);
 
-    ResponseEntity<?> getAllPublicRecipes(String tags, int pageNum, int pageSize);
+    ResponseEntity<?> getAllPublicRecipes(String search, String tags, int pageNum, int pageSize);
 
     // TODO:
     ResponseEntity<?> commentRecipe(String viewerUserId, String recipeId, String comment);

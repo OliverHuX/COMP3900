@@ -89,11 +89,17 @@
         left join recipe.tag_recipe tr on tr.recipe_id = r.recipe_id
         <where>
             r.is_privacy = 0
-            <if test="list != null">
+            <if test="tagList != null">
                 and tr.tag_name in
-                <foreach collection="list" item="tagName" open="(" close=")" separator=",">
+                <foreach collection="tagList" item="tagName" open="(" close=")" separator=",">
                     #{tagName}
                 </foreach>
+            </if>
+            <if test="searchContent != null">
+                and (r.title like concat('%', #{searchContent,jdbcType=VARCHAR}, '%') or r.introduction like concat('%',
+                #{searchContent,jdbcType=VARCHAR}, '%') or r.ingredients like concat('%',
+                #{searchContent,jdbcType=VARCHAR}, '%') or r.method like concat('%', #{searchContent,jdbcType=VARCHAR},
+                '%'))
             </if>
         </where>
         group by r.recipe_id;

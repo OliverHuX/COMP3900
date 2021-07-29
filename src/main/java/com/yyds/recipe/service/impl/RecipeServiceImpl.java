@@ -145,7 +145,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<?> getAllPublicRecipes(String searchTags, int pageNum, int pageSize) {
+    public ResponseEntity<?> getAllPublicRecipes(String searchContent, String searchTags, int pageNum, int pageSize) {
         if (pageNum <= 0) {
             pageNum = 1;
         }
@@ -153,8 +153,14 @@ public class RecipeServiceImpl implements RecipeService {
             pageSize = 9;
         }
         PageHelper.startPage(pageNum, pageSize, true);
-        List<String> searchTagList = Arrays.asList(searchTags.split(","));
-        List<Recipe> recipeList = recipeMapper.getRecipeList(searchTagList);
+        if (searchTags != null) {
+
+        }
+        List<String> searchTagList = null;
+        if (searchTags != null) {
+            searchTagList = Arrays.asList(searchTags.split(","));
+        }
+        List<Recipe> recipeList = recipeMapper.getRecipeList(searchTagList, searchContent);
         for (Recipe recipe : recipeList) {
             List<String> recipePhotos = new ArrayList<>();
             List<String> fileNameList = recipeMapper.getFileNameListByRecipeId(recipe.getRecipeId());
