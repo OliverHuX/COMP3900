@@ -51,6 +51,11 @@ public class RecipeController {
         return recipeService.getMyRecipes(pageNum, pageSize, request);
     }
 
+    @RequestMapping(value = "/recipe/rate", method = RequestMethod.POST)
+    public ResponseEntity<?> rateRecipe(@RequestBody Recipe recipe, HttpServletRequest request) {
+        return recipeService.rateRecipe(recipe, request);
+    }
+
 
     @AllArgsConstructor
     @NoArgsConstructor

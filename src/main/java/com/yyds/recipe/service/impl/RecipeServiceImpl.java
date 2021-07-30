@@ -442,4 +442,30 @@ public class RecipeServiceImpl implements RecipeService {
 
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
+
+    @Override
+    public ResponseEntity<?> rateRecipe(Recipe recipe, HttpServletRequest request) {
+        String token = request.getHeader("token");
+        if (StringUtils.isEmpty(token)) {
+            throw new AuthorizationException();
+        }
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        String recipeId = recipe.getRecipeId();
+        if (recipeMapper.getRecipeById(recipeId) == null) {
+            return ResponseUtil.getResponse(ResponseCode.RECIPE_ID_NOT_FOUND, null, null);
+        }
+        try {
+            int count = recipeMapper.getCountBySpecificRate(recipeId, userId);
+            if (count > 0) {
+                recipeMapper.updateRate(recipeId, userId, recipe.getRate());
+            } else {
+                recipeMapper.rateRecipe(recipeId, userId, recipe.getRate());
+            }
+        } catch (Exception e) {
+            throw new MySqlErrorException();
+        }
+
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
+
+    }
 }
