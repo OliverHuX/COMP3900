@@ -38,7 +38,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/editProfile", method = RequestMethod.POST)
-    public ResponseEntity<?> editProfile(@RequestPart(value = "proflePhoto") MultipartFile profilePhoto, @RequestPart(value = "jsonData") User user, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> editProfile(@RequestPart(value = "profilePhoto") MultipartFile profilePhoto, @RequestPart(value = "jsonData") User user, HttpServletRequest request, HttpServletResponse response) {
         return userService.editUser(profilePhoto, user, request, response);
     }
 
@@ -56,7 +56,7 @@ public class UserController {
 
     @RequestMapping(value = "/editPassword", method = RequestMethod.POST)
     public ResponseEntity<?> editPassword(@RequestBody editPasswordReq req, HttpServletRequest request, HttpServletResponse response) {
-        return userService.editPassword(req.getOldPassword(), req.getNewPassword(), req.userId);
+        return userService.editPassword(req.getOldPassword(), req.getNewPassword(), request, response);
     }
 
     @RequestMapping(value = "/emailVerify/{token}", method = RequestMethod.GET)

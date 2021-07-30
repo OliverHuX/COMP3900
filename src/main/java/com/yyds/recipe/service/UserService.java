@@ -18,7 +18,7 @@ public interface UserService {
 
     ResponseEntity<?> editUser(MultipartFile profilePhoto, User user, HttpServletRequest request, HttpServletResponse response);
 
-    ResponseEntity<?> editPassword(String oldPassword, String newPassword, String userId);
+    ResponseEntity<?> editPassword(String oldPassword, String newPassword, HttpServletRequest request, HttpServletResponse response);
 
     ResponseEntity<?> emailVerify(String token);
 

@@ -8,6 +8,7 @@ import com.yyds.recipe.model.Follow;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
 import com.yyds.recipe.utils.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -207,8 +208,15 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public ResponseEntity<?> editPassword(String oldPassword, String newPassword, String userId) {
+    public ResponseEntity<?> editPassword(String oldPassword, String newPassword, HttpServletRequest request, HttpServletResponse response) {
 
+        String token = request.getHeader("token");
+
+        if (StringUtils.isEmpty(token)) {
+            throw new AuthorizationException();
+        }
+
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
         if (userMapper.getUserByUserId(userId) == null) {
             throw new AuthorizationException();
         }
