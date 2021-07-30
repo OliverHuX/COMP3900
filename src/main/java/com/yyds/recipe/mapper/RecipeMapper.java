@@ -1,5 +1,6 @@
 package com.yyds.recipe.mapper;
 
+import com.yyds.recipe.model.Comment;
 import com.yyds.recipe.model.Recipe;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -54,4 +55,6 @@ public interface RecipeMapper {
     void rateRecipe(String recipeId, String userId, Double rate);
 
     void updateRate(String recipeId, String userId, Double rate);
+
+    void postComment(Comment comment);
 }
