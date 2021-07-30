@@ -20,7 +20,7 @@ public class RecipeController {
     public ResponseEntity<?> postRecipe(HttpServletRequest request,
                                         @RequestPart(value = "uploadPhotos") MultipartFile[] uploadPhotos,
                                         @RequestPart(value = "jsonData") Recipe recipe,
-                                        @RequestPart(value = "uploadVideos", required = false) MutipartFile[] uploadVideo) {
+                                        @RequestPart(value = "uploadVideos", required = false) MultipartFile[] uploadVideo) {
         return recipeService.postRecipe(request, uploadPhotos, recipe);
     }
 
