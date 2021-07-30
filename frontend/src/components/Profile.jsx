@@ -11,13 +11,24 @@ import Input from '@material-ui/core/Input';
 import Grid from '@material-ui/core/Grid';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import FetchFunc from './fetchFunc';
 
 // function handleChange(e) {
 //     setNickName(e.target)
 // }
 
 function update(nickName, gender, BOD) {
-    console.log('nickname is ' + nickName + ' gender is ' + gender + ' BOD is ' + BOD)
+    console.log('nickname is ' + nickName + ' gender is ' + gender + ' BOD is ' + BOD);
+    const result = FetchFunc();
+    result.then(data => {
+        if(data.status === 200) {
+            data.json().then(res => {
+
+            })
+        }
+    })
+    .catch(err => console.error('Caught error: ', err))
+
 }
 
 export default function Profile () {

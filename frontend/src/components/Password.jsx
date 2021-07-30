@@ -11,12 +11,24 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Input from '@material-ui/core/Input';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
+import FetchFunc from './fetchFunc';
 
 function update(passWordOld, passWordNew, passWordConf) {
     console.log('old is ' + passWordOld + ' new is ' + passWordNew + ' confirm is ' + passWordConf)
     if (passWordNew !== passWordConf) {
         alert('make sure new password is same as confirmation')
+    } else {
+        const result = FetchFunc();
+        result.then(data => {
+            if (data.status === 200) {
+                data.json().then(res => {
+
+                })
+            }
+        })
+        .catch(err => console.error('Caught error: ', err))
     }
+
 }
 
 export default function Profile () {
