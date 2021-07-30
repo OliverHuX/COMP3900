@@ -188,8 +188,8 @@
     </update>
 
     <insert id="postComment" parameterType="com.yyds.recipe.model.Comment">
-        insert into comment(recipe_id, comment, comment_user_id, create_time, update_time)
-        values (#{recipeId}, #{content}, #{creatorId}, #{createTime}, #{updateTime})
+        insert into comment(comment_id, recipe_id, comment, comment_user_id, create_time, update_time)
+        values (#{commentId}, #{recipeId}, #{content}, #{creatorId}, #{createTime}, #{updateTime})
     </insert>
 
 </mapper>
