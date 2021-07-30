@@ -21,7 +21,7 @@ public class RecipeController {
                                         @RequestPart(value = "uploadPhotos") MultipartFile[] uploadPhotos,
                                         @RequestPart(value = "jsonData") Recipe recipe,
                                         @RequestPart(value = "uploadVideos", required = false) MultipartFile[] uploadVideo) {
-        return recipeService.postRecipe(request, uploadPhotos, recipe);
+        return recipeService.postRecipe(request, uploadPhotos, recipe, uploadVideo);
     }
 
     @RequestMapping(value = "/recipe/like", method = RequestMethod.POST)
