@@ -8,10 +8,13 @@ import ChineseFood from '../../components/ChineseFood'
 import RecipeDetail from '../RecipeDetail'
 import Profile from '../../components/Profile';
 import Password from '../../components/Password'
+
+import FetchFunc from '../../components/fetchFunc';
 import { Switch, Route } from 'react-router-dom';
 import Main from '../Main';
 import axios from 'axios';
 const FormData = require('form-data')
+
 
 
 const { Content } = Layout;
@@ -19,15 +22,40 @@ const { Option } = Select;
 const { TextArea } = Input;
 const { Meta } = Card;
 const Home = () => {
+
+    //表单数据收集
+    const tag_result = FetchFunc('tags/tag_list', 'GET', null, null);
+    console.log(tag_result)
+    tag_result.then((data) => {
+      console.log(data);
+      if (data.status === 200) {
+        data.json().then(res => {
+          console.log(res.token);
+          localStorage.setItem('token', tag_result.token);
+        })
+      }
+      // if (data.code === 200) {
+      //   data.json().then(res => {
+      //     console.log(res)
+      //     console.log(res.data)
+      //     // console.log(res.err)
+      //     if (res.code === 0) {
+      //       history.push('./home')
+      //     }
+      //   })
+      // }
+    })
+    .catch(err => console.error('Caught error: ', err))
+    
     const token = localStorage.getItem('token')
-
     const [isModalVisible, setIsModalVisible] = useState(false);
-
     const [fileList, setFileList] = useState() 
     const [title, setTitleInputs] = React.useState('');
     const [introduction, setIntroductionInputs] = React.useState('');
-    const [ingredients, setIngredientsMsg] = React.useState('');
+    const [ingredients, setIngredientsInputs] = React.useState('');
     const [method, setMethodInputs] = React.useState('');
+
+    const [timeDuration, setTimeDurationInputs] = React.useState('');
 
     //var imagedata = document.querySelector('input[type ="file"]').files[0];
 
@@ -48,10 +76,10 @@ const Home = () => {
         setIsModalVisible(false);
 
     };
-    const children = [];
-    for (let i = 10; i < 15; i++) {
-        children.push(<Option key={ i.toString(36) + i }>{ i.toString(36) + i }</Option>);
-    }
+    // const children = [];
+    // for (let i = 10; i < 15; i++) {
+    //     children.push(<Option key={ i.toString(36) + i }>{ i.toString(36) + i }</Option>);
+    // }
 
     function handleChange(value) {
         console.log(`selected ${value}`);
@@ -81,21 +109,24 @@ const Home = () => {
             formData.append('uploadPhotos', fileList[i]);
         }
 
-        // formData.append('uploadPhotos', fileList[0]);
+        //formData.append('uploadPhotos', fileList[0]);
         
        
         formData.append('jsonData',new Blob ([JSON.stringify({
-            title: 'test title',
-            introduction: '12131',
-            ingredients: '1321321',
-            method: '2321321',
+            title: title,
+            introduction: introduction,
+            ingredients: ingredients,
+            method: method,
+            tags:['Baking','Barbecue'],
+            timeDuration: timeDuration
+
           })], {type:"application/json"}));
 
-        formData.forEach((value, key) => {
-            console.log(`key ${key}: value ${value}`);
-       })
-       console.log(formData.get('uploadPhotos'))
-       console.log(formData.get('jsonData'))
+    //     formData.forEach((value, key) => {
+    //         console.log(`key ${key}: value ${value}`);
+    //    })
+    //    console.log(formData.get('uploadPhotos'))
+    //    console.log(formData.get('jsonData'))
         axios.post(
             'http://localhost:8080/recipe/postRecipe',
             formData,
@@ -185,44 +216,62 @@ const Home = () => {
                         name="title"
                         hasFeedback
                         rules={ [{ required: true, message: 'need input recipe title!' }] }
-                        onChange={ handleChange }
+                        onChange={ (e) => setTitleInputs(e.target.value) }
                     >
                         <Input />
                     </Form.Item>
                     <Form.Item
-                        label="tag"
+                        label="Select a tag!"
                         name="tag"
                         hasFeedback
                         rules={ [{ required: true, message: 'need input tags!' }] }
                     >
                         <Select mode="tags" style={ { width: '100%' } } placeholder="Tags Mode" onChange={ handleChange }>
-                            { children }
+                            { tag_result}
                         </Select>
                     </Form.Item>
                     <Form.Item
-                        label="time use"
+                        label="Time use(mins)"
                         name="time"
                         hasFeedback
                         rules={ [{ required: true, message: 'need input time-use!' }] }
+                        onChange={ (e) => setTimeDurationInputs(e.target.value) }
                     >
                         <Input />
                     </Form.Item>
                     <Form.Item
-                        label="material"
-                        name="time"
+                        label="Introduction"
+                        name="Introduction"
                         hasFeedback
-                        rules={ [{ required: true, message: 'need input material!' }] }
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        label="decoration"
-                        name="time"
-                        hasFeedback
-                        rules={ [{ required: true, message: 'need input decoration!' }] }
+                        rules={ [{ required: true, message: 'need input Introduction!' }] }
+                        onChange={ (e) => setIntroductionInputs(e.target.value) }
+                        
                     >
                         <TextArea ></TextArea>
                     </Form.Item>
+                    <Form.Item
+                        label="Ingredients"
+                        name="Ingredients"
+                        hasFeedback
+                        rules={ [{ required: true, message: 'need input Ingredients!' }] }
+                        onChange={ (e) => setIngredientsInputs(e.target.value) }
+                    >
+                        
+                        
+                        <TextArea ></TextArea>
+                    </Form.Item>
+                    <Form.Item
+                        label="Method"
+                        name="Method"
+                        hasFeedback
+                        rules={ [{ required: true, message: 'need input Method!' }] }
+                        onChange={ (e) => setMethodInputs(e.target.value) }
+                    >
+                        
+                        
+                        <TextArea ></TextArea>
+                    </Form.Item>
+                    
                     <Form.Item style={ { marginTop: 20 } } wrapperCol={ { offset: 6, span: 8 } }>
                         <Button
                             type="primary"
