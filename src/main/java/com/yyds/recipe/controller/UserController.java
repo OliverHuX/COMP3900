@@ -38,7 +38,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/editProfile", method = RequestMethod.POST)
-    public ResponseEntity<?> editProfile(@RequestPart(value = "profilePhoto") MultipartFile profilePhoto, @RequestPart(value = "jsonData") User user, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> editProfile(@RequestPart(value = "profilePhoto", required = false) MultipartFile profilePhoto, @RequestPart(value = "jsonData") User user, HttpServletRequest request, HttpServletResponse response) {
         return userService.editUser(profilePhoto, user, request, response);
     }
 
