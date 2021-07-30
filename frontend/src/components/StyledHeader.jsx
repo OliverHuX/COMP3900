@@ -49,6 +49,10 @@ const StyledHeader = () => {
             </Menu.Item>
         </Menu>
     );
+
+
+
+    //                search 发送请求
     const onSearch = value => {
           console.log(value);
 
@@ -64,8 +68,7 @@ const StyledHeader = () => {
           console.log(data);
           if (data.status === 200) {
             data.json().then(res => {
-              console.log(res.token);
-              localStorage.setItem('token', result.token);
+              console.log('request success');
             })
           }
         })
