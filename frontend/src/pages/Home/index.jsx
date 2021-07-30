@@ -20,8 +20,14 @@ const { TextArea } = Input;
 const { Meta } = Card;
 const Home = () => {
     const token = localStorage.getItem('token')
-    const [fileList, setFileList] = useState()
+
     const [isModalVisible, setIsModalVisible] = useState(false);
+
+    const [fileList, setFileList] = useState() 
+    const [title, setTitleInputs] = React.useState('');
+    const [introduction, setIntroductionInputs] = React.useState('');
+    const [ingredients, setIngredientsMsg] = React.useState('');
+    const [method, setMethodInputs] = React.useState('');
 
     //var imagedata = document.querySelector('input[type ="file"]').files[0];
 
@@ -50,6 +56,9 @@ const Home = () => {
     function handleChange(value) {
         console.log(`selected ${value}`);
     }
+
+
+
     const onChange = (e) => {
         // setFileList(newFileList);
         // console.log(fileList)
@@ -107,21 +116,25 @@ const Home = () => {
     }
 
     return <Layout className="layout">
-        <UpCircleOutlined className='upload' onClick={ showModal } />
+        
         <StyledHeader />
         <div style={ { width: 1200, margin: '0 auto' } }>
             <Content style={ { padding: '0 50px' } }>
                 <Switch>
                     <Route path='/home' exact>
+                        <UpCircleOutlined className='upload' onClick={ showModal } />
                         <Main />
                     </Route>
                     <Route path='/home/foodlist' exact>
+                        <UpCircleOutlined className='upload' onClick={ showModal } />   
                         <FoodList />
                     </Route>
                     <Route path='/home/chinesefood' exact>
+                        <UpCircleOutlined className='upload' onClick={ showModal } />
                         <ChineseFood /> 
                     </Route>
                     <Route path='/home/recipedetail' exact>
+                        <UpCircleOutlined className='upload' onClick={ showModal } />
                         <RecipeDetail /> 
                     </Route>
                     <Route path='/home/profile' exact>
@@ -130,6 +143,8 @@ const Home = () => {
                     <Route path='/home/password' exact>
                         <Password />
                     </Route>
+
+                    
                 </Switch>
 
             </Content>
@@ -169,7 +184,8 @@ const Home = () => {
                         label="recipe title"
                         name="title"
                         hasFeedback
-                        rules={ [{ required: true, message: 'recipe title!' }] }
+                        rules={ [{ required: true, message: 'need input recipe title!' }] }
+                        onChange={ handleChange }
                     >
                         <Input />
                     </Form.Item>
@@ -177,7 +193,7 @@ const Home = () => {
                         label="tag"
                         name="tag"
                         hasFeedback
-                        rules={ [{ required: true, message: 'recipe title!' }] }
+                        rules={ [{ required: true, message: 'need input tags!' }] }
                     >
                         <Select mode="tags" style={ { width: '100%' } } placeholder="Tags Mode" onChange={ handleChange }>
                             { children }
@@ -195,7 +211,7 @@ const Home = () => {
                         label="material"
                         name="time"
                         hasFeedback
-                        rules={ [{ required: true, message: 'recipe title!' }] }
+                        rules={ [{ required: true, message: 'need input material!' }] }
                     >
                         <Input />
                     </Form.Item>
@@ -203,7 +219,7 @@ const Home = () => {
                         label="decoration"
                         name="time"
                         hasFeedback
-                        rules={ [{ required: true, message: 'recipe title!' }] }
+                        rules={ [{ required: true, message: 'need input decoration!' }] }
                     >
                         <TextArea ></TextArea>
                     </Form.Item>
