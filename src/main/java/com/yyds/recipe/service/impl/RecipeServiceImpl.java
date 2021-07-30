@@ -222,6 +222,12 @@ public class RecipeServiceImpl implements RecipeService {
         if (StringUtils.isEmpty(token)) {
             throw new AuthorizationException();
         }
+        comment.setCreatorId(JwtUtil.decodeToken(token).getClaim("userId").asString());
+        try {
+            recipeMapper.postComment(comment);
+        } catch (Exception e) {
+            throw new MySqlErrorException();
+        }
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
