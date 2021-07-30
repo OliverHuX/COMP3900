@@ -71,8 +71,10 @@ function getInfo(setNickName, setBOD, setEmail, setAvatar, setGender, setFirst, 
                 setNickName(res.userInfo.nickName);
                 setBOD(res.userInfo.birthdate);
                 setEmail(res.userInfo.email);
-                var url = URL.createObjectURL(res.userInfo.profilePhoto)
-                setAvatar(url)
+                if (res.userInfo.profilePhoto !== null) {
+                    var url = URL.createObjectURL(res.userInfo.profilePhoto)
+                    setAvatar(url)
+                }
                 setGender(res.userInfo.gender)
                 setFirst(res.userInfo.firstName)
                 setLast(res.userInfo.lastName)
@@ -86,7 +88,7 @@ export default function Profile () {
     const [nickName, setNickName] = React.useState('X');
     const [BOD, setBOD] = React.useState('2000-01-01');
     const [email, setEmail] = React.useState('12345678@gmail.com');
-    const [avatar, setAvatar] = React.useState(require("../test.jpg"));
+    const [avatar, setAvatar] = React.useState('');
     const [imgFile, setImgFile] = React.useState('');
     const [gender, setGender] = React.useState(Number(-1));
     const [firstName, setFirst] = React.useState('');
@@ -122,7 +124,7 @@ export default function Profile () {
 
     return (
         <Container className={classes.paper} maxWidth="xs">
-            <Avatar className={classes.large} src={avatar} />
+            <Avatar alt={nickName} className={classes.large} src={avatar} />
             <input
                 accept="image/*"
                 className={classes.input}
