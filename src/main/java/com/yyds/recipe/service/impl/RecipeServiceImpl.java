@@ -8,7 +8,6 @@ import com.yyds.recipe.exception.response.ResponseCode;
 import com.yyds.recipe.mapper.CollectionMapper;
 import com.yyds.recipe.mapper.RecipeMapper;
 import com.yyds.recipe.mapper.UserMapper;
-import com.yyds.recipe.model.Collection;
 import com.yyds.recipe.model.Comment;
 import com.yyds.recipe.model.Recipe;
 import com.yyds.recipe.model.User;
@@ -17,7 +16,6 @@ import com.yyds.recipe.utils.JwtUtil;
 import com.yyds.recipe.utils.MinioUtil;
 import com.yyds.recipe.utils.ResponseUtil;
 import com.yyds.recipe.utils.UUIDGenerator;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +28,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 @EnableTransactionManagement
 @Service
@@ -54,7 +55,6 @@ public class RecipeServiceImpl implements RecipeService {
     @Value("${minio.bucket.recipe.video}}")
     private String recipeVideoBucketName;
 
-    private Helper helper = new Helper();
 
     @Override
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
@@ -218,7 +218,6 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public ResponseEntity<?> commentRecipe(Comment comment, HttpServletRequest request) {
-
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
@@ -290,6 +289,5 @@ public class RecipeServiceImpl implements RecipeService {
         }
 
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
-
     }
 }

@@ -3,16 +3,12 @@ package com.yyds.recipe.controller;
 import com.yyds.recipe.model.Comment;
 import com.yyds.recipe.model.Recipe;
 import com.yyds.recipe.service.RecipeService;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotNull;
 
 @RestController
 public class RecipeController {

@@ -2,7 +2,6 @@ package com.yyds.recipe.service;
 
 import com.yyds.recipe.model.Comment;
 import com.yyds.recipe.model.Recipe;
-import com.yyds.recipe.model.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
