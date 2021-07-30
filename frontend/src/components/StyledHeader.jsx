@@ -18,7 +18,7 @@ function logout(token) {
   })
 }
 
-const StyledHeader = () => {
+const StyledHeader = (props) => {
     const menu = (
         <Menu>
             <Menu.Item>
@@ -58,7 +58,7 @@ const StyledHeader = () => {
                 <a>My collection</a>
             </Menu.Item>
             <Menu.Item>
-                <a>Upload Recipe</a>
+                <a onClick = {props.showModal}>Upload Recipe</a>
             </Menu.Item>
         </Menu>
     );

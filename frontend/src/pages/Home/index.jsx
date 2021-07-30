@@ -13,44 +13,32 @@ import FetchFunc from '../../components/fetchFunc';
 import { Switch, Route } from 'react-router-dom';
 import Main from '../Main';
 import axios from 'axios';
+
+
 const FormData = require('form-data')
-
-
-
 const { Content } = Layout;
 const { Option } = Select;
 const { TextArea } = Input;
 const { Meta } = Card;
-const Home = () => {
 
-    //表单数据收集
-    const tag_result = FetchFunc('tags/tag_list', 'GET', null, null);
-    console.log(tag_result)
-    tag_result.then((data) => {
-      console.log(data);
-      if (data.status === 200) {
-        data.json().then(res => {
-          console.log(res.token);
-          localStorage.setItem('token', tag_result.token);
-        })
-      }
-      // if (data.code === 200) {
-      //   data.json().then(res => {
-      //     console.log(res)
-      //     console.log(res.data)
-      //     // console.log(res.err)
-      //     if (res.code === 0) {
-      //       history.push('./home')
-      //     }
-      //   })
-      // }
-    })
-    .catch(err => console.error('Caught error: ', err))
+
+
+
+
+
+export default function Home  ()  {
+
     
+    //const tags_res = getTags()
+
+ 
+    //表单数据收集
     const token = localStorage.getItem('token')
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [fileList, setFileList] = useState() 
     const [title, setTitleInputs] = React.useState('');
+    const [tags_list, setTags_listInputs] = React.useState();
+    const [tags_select, setTags_select] = React.useState();
     const [introduction, setIntroductionInputs] = React.useState('');
     const [ingredients, setIngredientsInputs] = React.useState('');
     const [method, setMethodInputs] = React.useState('');
@@ -59,10 +47,31 @@ const Home = () => {
 
     //var imagedata = document.querySelector('input[type ="file"]').files[0];
 
-    
+    function getTags(setTagsInputs) {
+            const result = FetchFunc('tags/tag_list', 'GET', null, null);
+            var children = [];
+            result.then((data) => {
+            if (data.status === 200) {
+                data.json().then(res => {
+                    
+                    for (let i = 0 ; i < res.tags.length; i++) {
+                        children.push(<Option key={ res.tags[i] }>{ res.tags[i]  }</Option>);
+                    }
+                    //console.log(children)
+
+                    setTags_listInputs(children)
+                    
+                })
+            }
+            })
+            .catch(err => console.error('Caught error: ', err))
+
+
+    }
 
     const showModal = () => {
         setIsModalVisible(true);
+        getTags(setTags_listInputs)
     };
 
     const handleOk = () => {
@@ -76,12 +85,13 @@ const Home = () => {
         setIsModalVisible(false);
 
     };
-    // const children = [];
+    // var children = [];
     // for (let i = 10; i < 15; i++) {
     //     children.push(<Option key={ i.toString(36) + i }>{ i.toString(36) + i }</Option>);
     // }
 
     function handleChange(value) {
+        setTags_select(value);
         console.log(`selected ${value}`);
     }
 
@@ -95,7 +105,7 @@ const Home = () => {
         console.log(fileList)
     };
     const handleClick = () => {
-        console.log(fileList['length'])
+        
         var FormData = require('form-data');
         var formData = new FormData();
 
@@ -117,7 +127,7 @@ const Home = () => {
             introduction: introduction,
             ingredients: ingredients,
             method: method,
-            tags:['Baking','Barbecue'],
+            tags:tags_select,
             timeDuration: timeDuration
 
           })], {type:"application/json"}));
@@ -127,28 +137,30 @@ const Home = () => {
     //    })
     //    console.log(formData.get('uploadPhotos'))
     //    console.log(formData.get('jsonData'))
+    
+    
         axios.post(
-            'http://localhost:8080/recipe/postRecipe',
-            formData,
-            {
-                headers: {
-                    "token": token, //Authorization
-                    "Content-Type": "multipart/form-data",
-                    "type": "formData"
-                },                    
-            }
-        )
-        .then(res => {
-            console.log(`Success` + res.data);
-        })
-        .catch(err => {
-            console.log(err);
-        })
-    }
-
+                'http://localhost:8080/recipe/postRecipe',
+                formData,
+                {
+                    headers: {
+                        "token": token, //Authorization
+                        "Content-Type": "multipart/form-data",
+                        "type": "formData"
+                    },                    
+                }
+            )
+            .then(res => {
+                console.log(`Success` + res.data);
+            })
+            .catch(err => {
+                console.log(err);
+            })
+        }
+    
     return <Layout className="layout">
         
-        <StyledHeader />
+        <StyledHeader showModal={showModal} />
         <div style={ { width: 1200, margin: '0 auto' } }>
             <Content style={ { padding: '0 50px' } }>
                 <Switch>
@@ -225,9 +237,10 @@ const Home = () => {
                         name="tag"
                         hasFeedback
                         rules={ [{ required: true, message: 'need input tags!' }] }
+                             
                     >
-                        <Select mode="tags" style={ { width: '100%' } } placeholder="Tags Mode" onChange={ handleChange }>
-                            { tag_result}
+                        <Select mode="tags" style={ { width: '100%' } } placeholder="Tags Mode" onChange={ handleChange }> 
+                            {tags_list}
                         </Select>
                     </Form.Item>
                     <Form.Item
@@ -288,4 +301,4 @@ const Home = () => {
     </Layout>
 
 }
-export default Home;
+// export default Home;

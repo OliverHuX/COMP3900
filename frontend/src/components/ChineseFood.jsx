@@ -3,32 +3,30 @@ import FoodList from './FoodList'
 import FetchFunc from './fetchFunc';
 
 
-
-const result = FetchFunc('recipe/recipe_list?pageNum=1&pageSize=9', 'GET', null, null);
-console.log(result)
-result.then((data) => {
-  console.log(data);
-  if (data.status === 200) {
-    data.json().then(res => {
-      console.log(res.token);
-      localStorage.setItem('token', result.token);
+function getInfo() {
+    const result = FetchFunc('recipe/recipe_list?pageNum=1&pageSize=9', 'GET', null, null);
+    console.log(result)
+    result.then((data) => {
+      console.log(data);
+      if (data.status === 200) {
+        data.json().then(res => {
+          console.log(res.token);
+          localStorage.setItem('token', result.token);
+        })
+      }
+      // if (data.code === 200) {
+      //   data.json().then(res => {
+      //     console.log(res)
+      //     console.log(res.data)
+      //     // console.log(res.err)
+      //     if (res.code === 0) {
+      //       history.push('./home')
+      //     }
+      //   })
+      // }
     })
-  }
-  // if (data.code === 200) {
-  //   data.json().then(res => {
-  //     console.log(res)
-  //     console.log(res.data)
-  //     // console.log(res.err)
-  //     if (res.code === 0) {
-  //       history.push('./home')
-  //     }
-  //   })
-  // }
-})
-.catch(err => console.error('Caught error: ', err))
-
-
-
+    .catch(err => console.error('Caught error: ', err))
+}
 
 const data = [
     {img:'/assets/img/recipe1.png', name:'AAA',dec:'AAAsimple decoration',time:'15',rate:2},
