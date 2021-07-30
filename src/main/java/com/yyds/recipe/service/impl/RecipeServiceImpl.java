@@ -218,12 +218,19 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public ResponseEntity<?> commentRecipe(Comment comment, HttpServletRequest request) {
+        String token = request.getHeader("token");
+        if (StringUtils.isEmpty(token)) {
+            throw new AuthorizationException();
+        }
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
     @Override
     public ResponseEntity<?> deleteComment(Comment comment, HttpServletRequest request) {
-
+        String token = request.getHeader("token");
+        if (StringUtils.isEmpty(token)) {
+            throw new AuthorizationException();
+        }
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
