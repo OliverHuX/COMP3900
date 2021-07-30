@@ -13,22 +13,36 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import FetchFunc from './fetchFunc';
 
-function update(passWordOld, passWordNew, passWordConf) {
+function update(passWordOld, passWordNew, passWordConf, token) {
     console.log('old is ' + passWordOld + ' new is ' + passWordNew + ' confirm is ' + passWordConf)
     if (passWordNew !== passWordConf) {
         alert('make sure new password is same as confirmation')
     } else {
-        const result = FetchFunc();
+        const payload = JSON.stringify({
+            oldPassword: passWordOld,
+            newPassword: passWordNew,
+        });
+        const result = FetchFunc('editPassword', 'POST', token, payload);
         result.then(data => {
             if (data.status === 200) {
-                data.json().then(res => {
-
-                })
+                alert('Success')
             }
         })
         .catch(err => console.error('Caught error: ', err))
     }
+}
 
+function getInfo(setEmail, token) {
+    const result = FetchFunc('myProfile', 'GET', token, null);
+    result.then(data => {
+        if(data.status === 200) {
+            data.json().then(res => {
+                console.log(res);
+                setEmail(res.userInfo.email);
+            })
+        }
+    })
+    .catch(err => console.error('Caught error: ', err))
 }
 
 export default function Profile () {
@@ -39,7 +53,10 @@ export default function Profile () {
     const [showPasswordOld, setShowOld] = React.useState(false)
     const [showPasswordNew, setShowNew] = React.useState(false)
     const [showPasswordConf, setShowConf] = React.useState(false)
+    const token = localStorage.getItem('token');
     const classes = useStyles();
+
+    getInfo(setEmail, token)
 
     const handleShowPasswordOld = () => {
         setShowOld(!showPasswordOld);
