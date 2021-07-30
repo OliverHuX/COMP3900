@@ -50,7 +50,7 @@ public class RecipeServiceImpl implements RecipeService {
     @Value("${minio.bucket.recipe.photo}")
     private String recipePhotoBucketName;
 
-    @Value("${minio.bucket.recipe.video}}")
+    @Value("${minio.bucket.recipe.video}")
     private String recipeVideoBucketName;
 
 
