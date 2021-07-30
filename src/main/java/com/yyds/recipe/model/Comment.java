@@ -14,7 +14,7 @@ public class Comment implements Serializable {
     private String recipeId;
     private String creatorId;
     private String content;
-    private String nickname;
+    private String nickName;
     private String createTime;
     private String updateTime;
 }
