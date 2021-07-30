@@ -59,4 +59,8 @@ public interface RecipeMapper {
     void postComment(Comment comment);
 
     List<Comment> getComments(String commentId);
+
+    void deleteComments(Comment comment);
+
+
 }
