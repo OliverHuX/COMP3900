@@ -5,6 +5,18 @@ import { DownOutlined, LogoutOutlined } from '@ant-design/icons';
 import FetchFunc from './fetchFunc';
 const { Header} = Layout;
 const { Search } = Input;
+
+function logout(token) {
+  const result = FetchFunc('logout', 'GET', token, null);
+  result.then(data => {
+    if (data === 200) {
+      alert('log out successfully')
+      localStorage.clear()
+      window.location.href = '/'
+    }
+  })
+}
+
 const StyledHeader = () => {
     const menu = (
         <Menu>
@@ -76,6 +88,7 @@ const StyledHeader = () => {
       
  
     }
+    const token = localStorage.getItem('token')
   return (
     <Header style={ { backgroundColor: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'space-between' } } >
       <div style={ { display: 'flex', alignItems: 'center' } }>
@@ -92,7 +105,7 @@ const StyledHeader = () => {
         </Dropdown>
         <Search style={ { width: 200 } } placeholder="input search text" onSearch={ onSearch } enterButton />
       </div>
-      <LogoutOutlined style={ { float: 'right' } } />
+      <LogoutOutlined style={ { float: 'right' } } onClick={() => logout(token)}/>
     </Header>
   )
 }
