@@ -104,6 +104,9 @@
             <if test="creatorId != null">
                 and r.user_id = #{creatorId, jdbcType=VARCHAR}
             </if>
+            <if test="recipeId != null">
+                and r.recipe_id = #{recipeId, jdbcType=VARCHAR}
+            </if>
         </where>
         group by r.recipe_id;
     </select>

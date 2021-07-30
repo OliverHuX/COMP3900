@@ -23,7 +23,7 @@ public interface RecipeMapper {
 
     Recipe getRecipeById(String recipeId);
 
-    List<Recipe> getRecipeList(List<String> tagList, String searchContent, String creatorId);
+    List<Recipe> getRecipeList(List<String> tagList, String searchContent, String creatorId, String recipeId);
 
     List<Recipe> getMyRecipeList(String userId);
 
