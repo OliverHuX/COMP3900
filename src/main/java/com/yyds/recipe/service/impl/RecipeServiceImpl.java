@@ -244,9 +244,14 @@ public class RecipeServiceImpl implements RecipeService {
             return ResponseUtil.getResponse(ResponseCode.PARAMETER_ERROR, null, null);
         }
         String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
-        Recipe recipe = recipeMapper.getRecipeById(recipeId);
-        if (!StringUtils.equals(userId, recipe.getUserId())) {
+        Comment checkedComment = recipeMapper.getComments();
+        if (!StringUtils.equals(userId, checkedComment.getCreatorId())) {
             return ResponseUtil.getResponse(ResponseCode.BUSINESS_LOGIC_ERROR, null, null);
+        }
+        try {
+            recipeMapper.deleteComment(comment);
+        } catch (Exception e) {
+            throw new MySqlErrorException();
         }
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
