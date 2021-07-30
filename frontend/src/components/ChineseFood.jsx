@@ -4,27 +4,21 @@ import FetchFunc from './fetchFunc';
 
 
 function getInfo() {
-    const result = FetchFunc('recipe/recipe_list?pageNum=1&pageSize=9', 'GET', null, null);
-    console.log(result)
-    result.then((data) => {
-      console.log(data);
-      if (data.status === 200) {
-        data.json().then(res => {
-                    
-        })
-      }
-      // if (data.code === 200) {
-      //   data.json().then(res => {
-      //     console.log(res)
-      //     console.log(res.data)
-      //     // console.log(res.err)
-      //     if (res.code === 0) {
-      //       history.push('./home')
-      //     }
-      //   })
-      // }
-    })
-    .catch(err => console.error('Caught error: ', err))
+      // post the request
+      
+      const result = FetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=Chinese`, 'GET', null, null);
+      console.log(result)
+      result.then((data) => {
+        console.log(data);
+        if (data.status === 200) {
+          data.json().then(res => {
+            
+            
+            console.log('request success', res);
+          })
+        }
+      })
+      .catch(err => console.error('Caught error: ', err))
 }
 
 const data1 = [
