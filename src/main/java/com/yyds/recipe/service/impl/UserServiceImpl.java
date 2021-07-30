@@ -341,4 +341,28 @@ public class UserServiceImpl implements UserService {
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
+    @Override
+    public ResponseEntity<?> getMyPersonalProfile(HttpServletRequest request, HttpServletResponse response) {
+        String token = request.getHeader("token");
+        if (StringUtils.isEmpty(token)) {
+            throw new AuthorizationException();
+        }
+
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        User user = userMapper.getUserByUserId(userId);
+        if (user == null) {
+            return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
+        }
+
+        String profilePhoto = user.getProfilePhoto();
+        if (profilePhoto != null) {
+            String photoUrl = minioUtil.presignedGetObject(profilePhotoBucketName, profilePhoto, 7);
+            user.setProfilePhoto(photoUrl);
+        }
+
+        LinkedHashMap<String, Object> body = new LinkedHashMap<>();
+        body.put("userInfo", user);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, body);
+    }
+
 }

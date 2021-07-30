@@ -37,6 +37,11 @@ public class UserController {
         return userService.logoutUser(userId, request, response);
     }
 
+    @RequestMapping(value = "/myProfile", method = RequestMethod.GET)
+    public ResponseEntity<?> getMyProfile(HttpServletRequest request, HttpServletResponse response) {
+        return userService.getMyPersonalProfile(request, response);
+    }
+
     @RequestMapping(value = "/editProfile", method = RequestMethod.POST)
     public ResponseEntity<?> editProfile(@RequestPart(value = "profilePhoto", required = false) MultipartFile profilePhoto, @RequestPart(value = "jsonData") User user, HttpServletRequest request, HttpServletResponse response) {
         return userService.editUser(profilePhoto, user, request, response);

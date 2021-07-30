@@ -27,4 +27,6 @@ public interface UserService {
     ResponseEntity<?> unfollowUser(Follow unfollowReq);
 
     ResponseEntity<?> devRegister(User user);
+
+    ResponseEntity<?> getMyPersonalProfile(HttpServletRequest request, HttpServletResponse response);
 }
