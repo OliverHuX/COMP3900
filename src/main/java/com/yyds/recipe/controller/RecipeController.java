@@ -19,7 +19,8 @@ public class RecipeController {
     @RequestMapping(value = "/recipe/postRecipe", method = RequestMethod.POST)
     public ResponseEntity<?> postRecipe(HttpServletRequest request,
                                         @RequestPart(value = "uploadPhotos") MultipartFile[] uploadPhotos,
-                                        @RequestPart(value = "jsonData") Recipe recipe) {
+                                        @RequestPart(value = "jsonData") Recipe recipe,
+                                        @RequestPart(value = "uploadVideos", required = false) MutipartFile[] uploadVideo) {
         return recipeService.postRecipe(request, uploadPhotos, recipe);
     }
 

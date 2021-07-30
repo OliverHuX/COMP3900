@@ -8,7 +8,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 
 public interface RecipeService {
-    ResponseEntity<?> postRecipe(HttpServletRequest request, MultipartFile[] uploadPhotos, Recipe recipe);
+    ResponseEntity<?> postRecipe(HttpServletRequest request, MultipartFile[] uploadPhotos, Recipe recipe,
+                                 MultipartFile[] uploadVideos);
 
     ResponseEntity<?> likeRecipe(HttpServletRequest request, Recipe recipe);
 

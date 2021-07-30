@@ -56,7 +56,8 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
-    public ResponseEntity<?> postRecipe(HttpServletRequest request, MultipartFile[] uploadPhotos, Recipe recipe) {
+    public ResponseEntity<?> postRecipe(HttpServletRequest request, MultipartFile[] uploadPhotos, Recipe recipe,
+                                        MultipartFile[] uploadVideos) {
         User user = checkedUser(request);
         String recipeId = UUIDGenerator.createRecipeId();
         recipe.setRecipeId(recipeId);
