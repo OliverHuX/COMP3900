@@ -220,6 +220,7 @@ public class RecipeServiceImpl implements RecipeService {
         if (StringUtils.isEmpty(token)) {
             throw new AuthorizationException();
         }
+        comment.setCommentId(UUIDGenerator.generateUUID());
         comment.setCreatorId(JwtUtil.decodeToken(token).getClaim("userId").asString());
         String currentTimeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         comment.setCreateTime(currentTimeString);
