@@ -3,7 +3,6 @@ package com.yyds.recipe.service.impl;
 import com.yyds.recipe.exception.MySqlErrorException;
 import com.yyds.recipe.exception.response.ResponseCode;
 import com.yyds.recipe.mapper.TagMapper;
-import com.yyds.recipe.model.Tag;
 import com.yyds.recipe.service.TagService;
 import com.yyds.recipe.utils.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;

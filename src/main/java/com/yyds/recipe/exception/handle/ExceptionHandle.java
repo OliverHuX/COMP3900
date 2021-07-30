@@ -4,8 +4,6 @@ import com.yyds.recipe.exception.AuthorizationException;
 import com.yyds.recipe.exception.MySqlErrorException;
 import com.yyds.recipe.exception.response.ResponseCode;
 import com.yyds.recipe.utils.ResponseUtil;
-import com.yyds.recipe.vo.ErrorCode;
-import com.yyds.recipe.vo.ServiceVO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

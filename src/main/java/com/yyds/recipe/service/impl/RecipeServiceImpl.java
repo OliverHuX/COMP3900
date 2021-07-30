@@ -8,7 +8,7 @@ import com.yyds.recipe.exception.response.ResponseCode;
 import com.yyds.recipe.mapper.CollectionMapper;
 import com.yyds.recipe.mapper.RecipeMapper;
 import com.yyds.recipe.mapper.UserMapper;
-import com.yyds.recipe.model.Collection;
+import com.yyds.recipe.model.Comment;
 import com.yyds.recipe.model.Recipe;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.RecipeService;
@@ -16,7 +16,6 @@ import com.yyds.recipe.utils.JwtUtil;
 import com.yyds.recipe.utils.MinioUtil;
 import com.yyds.recipe.utils.ResponseUtil;
 import com.yyds.recipe.utils.UUIDGenerator;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @EnableTransactionManagement
@@ -50,14 +50,14 @@ public class RecipeServiceImpl implements RecipeService {
     @Value("${minio.bucket.recipe.photo}")
     private String recipePhotoBucketName;
 
-    @Value("${minio.bucket.recipe.video}}")
+    @Value("${minio.bucket.recipe.video}")
     private String recipeVideoBucketName;
 
-    private Helper helper = new Helper();
 
     @Override
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
-    public ResponseEntity<?> postRecipe(HttpServletRequest request, MultipartFile[] uploadPhotos, Recipe recipe) {
+    public ResponseEntity<?> postRecipe(HttpServletRequest request, MultipartFile[] uploadPhotos, Recipe recipe,
+                                        MultipartFile[] uploadVideos) {
         User user = checkedUser(request);
         String recipeId = UUIDGenerator.createRecipeId();
         recipe.setRecipeId(recipeId);
@@ -83,6 +83,27 @@ public class RecipeServiceImpl implements RecipeService {
             recipe.getRecipePhotos().add(photoName);
         }
 
+        if (uploadVideos != null) {
+            recipe.setRecipeVideos(new ArrayList<>());
+            for (MultipartFile uploadVideo : uploadVideos) {
+                String originalFilename = uploadVideo.getOriginalFilename();
+                if (originalFilename == null) {
+                    continue;
+                }
+                String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+                String contentType = uploadVideo.getContentType();
+                InputStream inputStream = null;
+                try {
+                    inputStream = uploadVideo.getInputStream();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                String videoName = UUIDGenerator.generateUUID() + suffix;
+                minioUtil.putObject(recipeVideoBucketName, videoName, contentType, inputStream);
+                recipe.getRecipeVideos().add(videoName);
+            }
+        }
+
         // insert into recipe table
         List<String> tagList = recipe.getTags();
         try {
@@ -95,6 +116,12 @@ public class RecipeServiceImpl implements RecipeService {
         // insert into photo table
         try {
             recipeMapper.savePhotos(recipeId, recipe.getRecipePhotos());
+        } catch (Exception e) {
+            throw new MySqlErrorException();
+        }
+
+        try {
+            recipeMapper.saveVideos(recipeId, recipe.getRecipeVideos());
         } catch (Exception e) {
             throw new MySqlErrorException();
         }
@@ -145,7 +172,13 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<?> getAllPublicRecipes(String recipeId, String creatorId, String searchContent, String searchTags, Integer pageNum, Integer pageSize) {
+    public ResponseEntity<?> getAllPublicRecipes(String recipeId,
+                                                 String creatorId,
+                                                 String searchContent,
+                                                 String searchTags,
+                                                 Integer pageNum,
+                                                 Integer pageSize,
+                                                 HttpServletRequest request) {
         if (pageNum == null || pageNum <= 0) {
             pageNum = 1;
         }
@@ -160,7 +193,8 @@ public class RecipeServiceImpl implements RecipeService {
         if (searchTags != null) {
             searchTagList = Arrays.asList(searchTags.split(","));
         }
-        List<Recipe> recipeList = recipeMapper.getRecipeList(searchTagList, searchContent, creatorId, recipeId);
+        String userId = JwtUtil.decodeToken(request.getHeader("token")).getClaim("userId").asString();
+        List<Recipe> recipeList = recipeMapper.getRecipeList(searchTagList, searchContent, creatorId, recipeId, userId);
         for (Recipe recipe : recipeList) {
             List<String> recipePhotos = new ArrayList<>();
             List<String> fileNameList = recipeMapper.getFileNameListByRecipeId(recipe.getRecipeId());
@@ -172,9 +206,11 @@ public class RecipeServiceImpl implements RecipeService {
             List<String> tags = recipeMapper.getTagListByRecipeId(recipe.getRecipeId());
             recipe.setTags(tags);
         }
+
+        Map<String, List<Comment>> commentsMapByRecipeId = recipeMapper.getCommentsMapByRecipeId();
         PageInfo<Recipe> recipePageInfo = new PageInfo<>(recipeList);
         HashMap<String, Object> resultMap = new HashMap<>();
-        resultMap.put("recipe lists", recipeList);
+        resultMap.put("recipe_lists", recipeList);
         resultMap.put("total", recipePageInfo.getTotal());
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, resultMap);
     }
@@ -209,121 +245,45 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<?> commentRecipe(String viewerUserId, String recipeId, String comment) {
-
-        ResponseEntity<?> userError = helper.verifyUserExist(viewerUserId);
-        if (userError != null) {
-            return userError;
+    public ResponseEntity<?> commentRecipe(Comment comment, HttpServletRequest request) {
+        String token = request.getHeader("token");
+        if (StringUtils.isEmpty(token)) {
+            throw new AuthorizationException();
         }
-
-        ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipeId);
-        if (recipeError != null) {
-            return recipeError;
-        }
-
-        if (comment == null) {
-            return ResponseUtil.getResponse(ResponseCode.PARAMETER_ERROR, null, null);
-        }
-
-        Recipe recipe = recipeMapper.getRecipeById(recipeId);
-        recipe.addComment(viewerUserId, comment);
-
+        comment.setCommentId(UUIDGenerator.generateUUID());
+        comment.setCreatorId(JwtUtil.decodeToken(token).getClaim("userId").asString());
+        String currentTimeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        comment.setCreateTime(currentTimeString);
+        comment.setUpdateTime(currentTimeString);
         try {
-            recipeMapper.updateRecipeComments(recipeId, recipe.getComments());
+            recipeMapper.postComment(comment);
         } catch (Exception e) {
-            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
+            throw new MySqlErrorException();
         }
-
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
     @Override
-    public ResponseEntity<?> deleteComment(String viewerUserId, String recipeId) {
-
-        ResponseEntity<?> userError = helper.verifyUserExist(viewerUserId);
-        if (userError != null) {
-            return userError;
+    public ResponseEntity<?> deleteComment(Comment comment, HttpServletRequest request) {
+        String token = request.getHeader("token");
+        if (StringUtils.isEmpty(token)) {
+            throw new AuthorizationException();
         }
-
-        ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipeId);
-        if (recipeError != null) {
-            return recipeError;
+        String commentId = comment.getCommentId();
+        if (commentId == null) {
+            throw new AuthorizationException();
         }
-
-        Recipe recipe = recipeMapper.getRecipeById(recipeId);
-        recipe.deleteComment(viewerUserId);
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        List<Comment> CommentList = recipeMapper.getComments(commentId);
 
         try {
-            recipeMapper.updateRecipeComments(recipeId, recipe.getComments());
+            recipeMapper.deleteComment(comment);
         } catch (Exception e) {
-            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
+            throw new MySqlErrorException();
         }
-
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
-    @Override
-    public ResponseEntity<?> summaryRecipe(Recipe recipe) {
-
-        HashMap<String, Object> resultMap = new HashMap<>();
-        resultMap.put("recipeId", recipe.getRecipeId());
-
-        ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipe.getRecipeId());
-        if (Objects.nonNull(recipeError)) {
-            resultMap.put("recipeError", recipeError);
-            // return ResponseUtil.getResponse(ResponseCode.ERROR, null, resultMap);
-            return null;
-        }
-
-        resultMap.put("summary", recipe.getIntroduction());
-        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, resultMap);
-    }
-
-    @Override
-    public ResponseEntity<?> subscribeRecipe(User viewer, Recipe recipe) {
-
-        if (userMapper.getUserByUserId(viewer.getUserId()) == null) {
-            // return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
-            return null;
-        }
-
-        ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipe.getRecipeId());
-        if (recipeError != null) {
-            return recipeError;
-        }
-
-        try {
-            viewer.getSubscribes().add(recipe.getRecipeId());
-            recipeMapper.updateSubscribe(viewer.getUserId(), viewer.getSubscribes());
-        } catch (Exception e) {
-            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
-        }
-
-        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
-    }
-
-    @Override
-    public ResponseEntity<?> cancelSubscribeRecipe(User viewer, Recipe recipe) {
-
-        if (userMapper.getUserByUserId(viewer.getUserId()) == null) {
-            // return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
-            return null;
-        }
-
-        ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipe.getRecipeId());
-        if (recipeError != null) {
-            return recipeError;
-        }
-
-        try {
-            viewer.getSubscribes().remove(recipe.getRecipeId());
-            recipeMapper.deleteSubscribe(viewer.getUserId(), viewer.getSubscribes());
-        } catch (Exception e) {
-            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
-        }
-
-        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
-    }
 
     @Override
     public ResponseEntity<?> setPrivacyRecipe(HttpServletRequest request, Recipe recipe) {
@@ -348,42 +308,6 @@ public class RecipeServiceImpl implements RecipeService {
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
-    @Override
-    public ResponseEntity<?> collectRecipe(String viewerUserId, String collectionId, String recipeId) {
-
-        ResponseEntity<?> userError = helper.verifyUserExist(viewerUserId);
-        if (userError != null) {
-            return userError;
-        }
-
-        ResponseEntity<?> collectionError = helper.verifyCollectionExist(collectionId);
-        if (collectionError != null) {
-            return collectionError;
-        }
-
-        ResponseEntity<?> recipeError = helper.verifyRecipeExist(recipeId);
-        if (recipeError != null) {
-            return recipeError;
-        }
-
-        User viewer = userMapper.getUserByUserId(viewerUserId);
-        Collection collection = collectionMapper.getCollectionById(collectionId);
-        Recipe recipe = recipeMapper.getRecipeById(recipeId);
-        collection.addRecipe(recipe);
-
-        HashMap<String, Collection> collections = viewer.getCollections();
-        collections.put(collectionId, collection);
-
-        try {
-            userMapper.updateCollections(viewerUserId, collections);
-            collectionMapper.updateCollectionRecipes(collectionId, collection.getRecipes());
-        } catch (Exception e) {
-            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
-        }
-
-        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
-
-    }
 
     private User checkedUser(HttpServletRequest request) {
         String token = request.getHeader("token");
@@ -398,50 +322,6 @@ public class RecipeServiceImpl implements RecipeService {
         return checkedUser;
     }
 
-    @Override
-    public ResponseEntity<?> testPost(HttpServletRequest request, MultipartFile[] uploadPhotos, Recipe recipe) {
-        // User user = checkedUser(request);
-        User user = userMapper.getUserByUserId("8bd7102547dd4f3f9feda9e811544c97");
-        String recipeId = UUIDGenerator.createRecipeId();
-        recipe.setRecipeId(recipeId);
-        recipe.setCreateTime(String.valueOf(System.currentTimeMillis()));
-        recipe.setUserId(user.getUserId());
-
-        // insert into recipe table
-        try {
-            recipeMapper.saveRecipe(recipe);
-        } catch (Exception e) {
-            throw new MySqlErrorException();
-        }
-
-        recipe.setRecipePhotos(new ArrayList<>());
-        for (MultipartFile uploadPhoto : uploadPhotos) {
-            String originalFilename = uploadPhoto.getOriginalFilename();
-            if (originalFilename == null) {
-                continue;
-            }
-            String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
-            String contentType = uploadPhoto.getContentType();
-            InputStream inputStream = null;
-            try {
-                inputStream = uploadPhoto.getInputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            String photoName = UUIDGenerator.generateUUID() + suffix;
-            minioUtil.putObject(recipePhotoBucketName, photoName, contentType, inputStream);
-            recipe.getRecipePhotos().add(photoName);
-        }
-
-        // insert into photo table
-        try {
-            recipeMapper.savePhotos(recipeId, recipe.getRecipePhotos());
-        } catch (Exception e) {
-            throw new MySqlErrorException();
-        }
-
-        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
-    }
 
     @Override
     public ResponseEntity<?> rateRecipe(Recipe recipe, HttpServletRequest request) {
@@ -457,15 +337,14 @@ public class RecipeServiceImpl implements RecipeService {
         try {
             int count = recipeMapper.getCountBySpecificRate(recipeId, userId);
             if (count > 0) {
-                recipeMapper.updateRate(recipeId, userId, recipe.getRate());
+                recipeMapper.updateRate(recipeId, userId, recipe.getRateScore());
             } else {
-                recipeMapper.rateRecipe(recipeId, userId, recipe.getRate());
+                recipeMapper.rateRecipe(recipeId, userId, recipe.getRateScore());
             }
         } catch (Exception e) {
             throw new MySqlErrorException();
         }
 
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
-
     }
 }

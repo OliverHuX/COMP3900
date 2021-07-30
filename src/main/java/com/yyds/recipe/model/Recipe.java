@@ -4,10 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @Data
@@ -30,9 +30,10 @@ public class Recipe implements Serializable {
     private String userId;
     private String createTime;
     private int isPrivacy;
-    private Double rate;
-    private Integer isLike;
-    private Integer isRate;
+    private Double rateScore;
+    private Integer isLiked;
+    private Integer isRated;
+    private Double myRateScore;
 
     public void addComment(String userId, String comment) {
         comments.put(userId, comment);

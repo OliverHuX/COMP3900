@@ -15,6 +15,21 @@
         <result column="time_duration" property="timeDuration" jdbcType="INTEGER"/>
         <result column="user_id" property="userId" jdbcType="VARCHAR"/>
         <result column="is_privacy" property="isPrivacy" jdbcType="INTEGER"/>
+        <result column="is_rated" property="isRated" jdbcType="INTEGER"/>
+        <result column="is_liked" property="isLiked" jdbcType="INTEGER"/>
+        <result column="likes" property="likes" jdbcType="INTEGER"/>
+        <result column="rateScore" property="rateScore" jdbcType="DOUBLE"/>
+        <result column="myRateScore" property="myRateScore" jdbcType="DOUBLE"/>
+    </resultMap>
+
+    <resultMap id="CommentResultMap" type="com.yyds.recipe.model.Comment">
+        <result column="comment_id" property="commentId" jdbcType="VARCHAR"/>
+        <result column="nick_name" property="nickName" jdbcType="VARCHAR"/>
+        <result column="recipe_id" property="recipeId" jdbcType="VARCHAR"/>
+        <result column="comment" property="content" jdbcType="VARCHAR"/>
+        <result column="comment_user_id" property="creatorId" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="VARCHAR"/>
     </resultMap>
 
     <insert id="saveRecipe" parameterType="com.yyds.recipe.model.Recipe">
@@ -83,10 +98,21 @@
         r.time_duration,
         r.user_id,
         r.is_privacy,
-        count(1) likes
+        ifnull((select count(1)
+        from recipe.rate
+        where rate.recipe_id = r.recipe_id
+        and rate.user_id = #{userId}), 1) is_rated,
+        ifnull((select count(1)
+        from recipe.like rl
+        where rl.recipe_id = r.recipe_id
+        and rl.user_id = #{userId}), 1) is_liked,
+        (select count(1) from recipe.like rl1 where rl1.recipe_id = r.recipe_id) likes,
+        ifnull((select avg(rr1.rate) from recipe.rate rr1 where rr1.recipe_id = r.recipe_id), 0) rateScore,
+        (select rr2.rate from recipe.rate rr2 where rr2.recipe_id=r.recipe_id and rr2.user_id = #{userId}) myRateScore
         from recipe.recipe r
         left join recipe.like l on r.recipe_id = l.recipe_id
         left join recipe.tag_recipe tr on tr.recipe_id = r.recipe_id
+        left join recipe.rate rr on rr.recipe_id = r.recipe_id
         <where>
             r.is_privacy = 0
             <if test="tagList != null">
@@ -171,4 +197,45 @@
         </where>
     </update>
 
+    <insert id="postComment" parameterType="com.yyds.recipe.model.Comment">
+        insert into comment(comment_id, recipe_id, comment, comment_user_id, create_time, update_time)
+        values (#{commentId}, #{recipeId}, #{content}, #{creatorId}, #{createTime}, #{updateTime})
+    </insert>
+
+    <select id="getComments" resultMap="CommentResultMap">
+        select c.comment_id, u.nick_name, c.recipe_id, c.comment, c.comment_user_id, c.create_time, c.update_time
+        from comment c
+        left join user u on c.comment_user_id = u.user_id
+        <where>
+            <if test="commentId != null">
+                c.comment_id = #{commentId}
+            </if>
+        </where>
+        order by str_to_date(c.create_time, 'yyyy-MM-dd HH:mm:ss')
+    </select>
+
+    <delete id="deleteComment" parameterType="com.yyds.recipe.model.Comment">
+        delete
+        from recipe.comment c
+        where c.comment_id = #{commentId}
+    </delete>
+
+    <insert id="saveVideos">
+        insert into recipe.video(recipe_id, file_name)
+        values
+        <foreach collection="uploadVideos" item="video" separator=",">
+            (#{recipeId,jdbcType=VARCHAR},#{video, jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+    <select id="getCommentsMapByRecipeId" resultMap="CommentResultMap">
+        select rc.comment_id,
+               rc.recipe_id,
+               rc.comment,
+               rc.comment_user_id,
+               rc.create_time,
+               rc.update_time
+        from recipe.comment rc
+                 left join user u on u.user_id = rc.comment_user_id
+    </select>
 </mapper>

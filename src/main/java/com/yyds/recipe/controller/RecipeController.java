@@ -1,17 +1,14 @@
 package com.yyds.recipe.controller;
 
+import com.yyds.recipe.model.Comment;
 import com.yyds.recipe.model.Recipe;
 import com.yyds.recipe.service.RecipeService;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotNull;
 
 @RestController
 public class RecipeController {
@@ -22,8 +19,9 @@ public class RecipeController {
     @RequestMapping(value = "/recipe/postRecipe", method = RequestMethod.POST)
     public ResponseEntity<?> postRecipe(HttpServletRequest request,
                                         @RequestPart(value = "uploadPhotos") MultipartFile[] uploadPhotos,
-                                        @RequestPart(value = "jsonData") Recipe recipe) {
-        return recipeService.postRecipe(request, uploadPhotos, recipe);
+                                        @RequestPart(value = "jsonData") Recipe recipe,
+                                        @RequestPart(value = "uploadVideos", required = false) MultipartFile[] uploadVideos) {
+        return recipeService.postRecipe(request, uploadPhotos, recipe, uploadVideos);
     }
 
     @RequestMapping(value = "/recipe/like", method = RequestMethod.POST)
@@ -47,8 +45,9 @@ public class RecipeController {
                                            @RequestParam(value = "search", required = false) String search,
                                            @RequestParam(value = "tag", required = false) String tags,
                                            @RequestParam(value = "pageNum", required = false) Integer pageNum,
-                                           @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        return recipeService.getAllPublicRecipes(recipeId, userId, search, tags, pageNum, pageSize);
+                                           @RequestParam(value = "pageSize", required = false) Integer pageSize,
+                                           HttpServletRequest request) {
+        return recipeService.getAllPublicRecipes(recipeId, userId, search, tags, pageNum, pageSize, request);
     }
 
     @RequestMapping(value = "/recipe/my_recipe", method = RequestMethod.GET)
@@ -62,62 +61,15 @@ public class RecipeController {
     }
 
 
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Data
-    public static class commentRecipeReq {
-        @NotNull
-        private String viewerUserId;
-        @NotNull
-        private String recipeId;
-        @NotNull
-        private String comment;
-    }
-
     @RequestMapping(value = "/recipe/comment", method = RequestMethod.POST)
-    public ResponseEntity<?> commentRecipe(@RequestBody commentRecipeReq req) {
-        return recipeService.commentRecipe(req.getViewerUserId(), req.getRecipeId(), req.getComment());
+    public ResponseEntity<?> commentRecipe(@RequestBody Comment comment, HttpServletRequest request) {
+        return recipeService.commentRecipe(comment, request);
     }
 
-
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Data
-    public static class deleteCommentReq {
-        @NotNull
-        private String viewerUserId;
-        @NotNull
-        private String recipeId;
-    }
 
     @RequestMapping(value = "/recipe/deleteComment", method = RequestMethod.POST)
-    public ResponseEntity<?> deleteComment(@RequestBody commentRecipeReq req) {
-        return recipeService.deleteComment(req.getViewerUserId(), req.getRecipeId());
+    public ResponseEntity<?> deleteComment(@RequestBody Comment comment, HttpServletRequest request) {
+        return recipeService.deleteComment(comment, request);
     }
 
-
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Data
-    public static class collectRecipeReq {
-        @NotNull
-        private String viewerUserId;
-        @NotNull
-        private String collectionId;
-        @NotNull
-        private String recipeId;
-    }
-
-    @RequestMapping(value = "/recipe/collectRecipe", method = RequestMethod.POST)
-    public ResponseEntity<?> collectRecipe(@RequestBody collectRecipeReq req) {
-        return recipeService.collectRecipe(req.getViewerUserId(), req.getCollectionId(), req.getRecipeId());
-    }
-
-    // TODO: just for test need to be deleted
-    @RequestMapping(value = "/recipe/testPost", method = RequestMethod.POST)
-    public ResponseEntity<?> testPostRecipe(HttpServletRequest request,
-                                            @RequestPart(value = "uploadPhotos") MultipartFile[] uploadPhotos,
-                                            @RequestPart(value = "jsonData") Recipe recipe) {
-        return recipeService.testPost(request, uploadPhotos, recipe);
-    }
 }

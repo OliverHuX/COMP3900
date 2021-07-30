@@ -1,6 +1,8 @@
 package com.yyds.recipe.exception.response;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,6 +22,7 @@ public enum ResponseCode {
     USER_IS_NOT_A_SUBSCRIBER(611, "user is not a subscriber"),
     FOLLOW_USER_NOT_EXIST(622, "follow user not exist"),
     USERID_NOT_FOUND_ERROR(623, "user id not found"),
+    BUSINESS_LOGIC_ERROR(666, "business parameter error"),
 
 
     // 801 -  middleware error

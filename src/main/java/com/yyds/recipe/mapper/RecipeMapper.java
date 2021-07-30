@@ -1,14 +1,15 @@
 package com.yyds.recipe.mapper;
 
+import com.yyds.recipe.model.Comment;
 import com.yyds.recipe.model.Recipe;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
-import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface RecipeMapper {
@@ -23,7 +24,7 @@ public interface RecipeMapper {
 
     Recipe getRecipeById(String recipeId);
 
-    List<Recipe> getRecipeList(List<String> tagList, String searchContent, String creatorId, String recipeId);
+    List<Recipe> getRecipeList(List<String> tagList, String searchContent, String creatorId, String recipeId, String userId);
 
     List<Recipe> getMyRecipeList(String userId);
 
@@ -56,4 +57,17 @@ public interface RecipeMapper {
     void rateRecipe(String recipeId, String userId, Double rate);
 
     void updateRate(String recipeId, String userId, Double rate);
+
+    void postComment(Comment comment);
+
+    List<Comment> getComments(String commentId);
+
+    void deleteComment(Comment comment);
+
+    void saveVideos(String recipeId, List<String> uploadVideos);
+
+    @MapKey("recipeId")
+    Map<String, List<Comment>> getCommentsMapByRecipeId();
+
+
 }
