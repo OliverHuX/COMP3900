@@ -120,6 +120,12 @@ public class RecipeServiceImpl implements RecipeService {
             throw new MySqlErrorException();
         }
 
+        try {
+            recipeMapper.saveVideos(recipeId, recipe.getRecipeVideos());
+        } catch (Exception e) {
+            throw new MySqlErrorException();
+        }
+
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
