@@ -66,8 +66,4 @@ public interface RecipeMapper {
 
     void saveVideos(String recipeId, List<String> uploadVideos);
 
-    @MapKey("recipeId")
-    Map<String, List<Comment>> getCommentsMapByRecipeId();
-
-
 }

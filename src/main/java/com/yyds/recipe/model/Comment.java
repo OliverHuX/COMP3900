@@ -17,4 +17,5 @@ public class Comment implements Serializable {
     private String nickName;
     private String createTime;
     private String updateTime;
+    private String profilePhoto;
 }

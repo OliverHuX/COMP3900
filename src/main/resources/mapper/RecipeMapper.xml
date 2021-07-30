@@ -20,7 +20,25 @@
         <result column="likes" property="likes" jdbcType="INTEGER"/>
         <result column="rateScore" property="rateScore" jdbcType="DOUBLE"/>
         <result column="myRateScore" property="myRateScore" jdbcType="DOUBLE"/>
+        <collection column="recipe_id" property="comments" ofType="com.yyds.recipe.model.Comment"
+                    javaType="java.util.ArrayList" select="com.yyds.recipe.mapper.RecipeMapper.getCommentsByRecipeId">
+        </collection>
     </resultMap>
+
+    <select id="getCommentsByRecipeId" resultMap="CommentResultMap">
+        select rc.comment_id,
+               rc.recipe_id,
+               rc.comment,
+               rc.comment_user_id,
+               rc.create_time,
+               rc.update_time,
+               u.nick_name,
+               u.profile_photo
+        from recipe.comment rc
+                 left join recipe.user u on u.user_id = rc.comment_user_id
+        where rc.recipe_id = #{recipeId}
+        order by str_to_date(rc.create_time, 'yyyy-MM-dd HH:mm:ss')
+    </select>
 
     <resultMap id="CommentResultMap" type="com.yyds.recipe.model.Comment">
         <result column="comment_id" property="commentId" jdbcType="VARCHAR"/>
@@ -30,6 +48,7 @@
         <result column="comment_user_id" property="creatorId" jdbcType="VARCHAR"/>
         <result column="create_time" property="createTime" jdbcType="VARCHAR"/>
         <result column="update_time" property="updateTime" jdbcType="VARCHAR"/>
+        <result column="profile_photo" property="profilePhoto" jdbcType="VARCHAR"/>
     </resultMap>
 
     <insert id="saveRecipe" parameterType="com.yyds.recipe.model.Recipe">
@@ -203,7 +222,8 @@
     </insert>
 
     <select id="getComments" resultMap="CommentResultMap">
-        select c.comment_id, u.nick_name, c.recipe_id, c.comment, c.comment_user_id, c.create_time, c.update_time
+        select c.comment_id, u.nick_name, c.recipe_id, c.comment, c.comment_user_id, c.create_time, c.update_time,
+        u.profile_photo
         from comment c
         left join user u on c.comment_user_id = u.user_id
         <where>
@@ -228,14 +248,4 @@
         </foreach>
     </insert>
 
-    <select id="getCommentsMapByRecipeId" resultMap="CommentResultMap">
-        select rc.comment_id,
-               rc.recipe_id,
-               rc.comment,
-               rc.comment_user_id,
-               rc.create_time,
-               rc.update_time
-        from recipe.comment rc
-                 left join user u on u.user_id = rc.comment_user_id
-    </select>
 </mapper>

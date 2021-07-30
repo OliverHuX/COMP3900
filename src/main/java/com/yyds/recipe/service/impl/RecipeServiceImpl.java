@@ -53,6 +53,9 @@ public class RecipeServiceImpl implements RecipeService {
     @Value("${minio.bucket.recipe.video}")
     private String recipeVideoBucketName;
 
+    @Value("${minio.bucket.profile.photo}")
+    private String profilePhotoBucketName;
+
 
     @Override
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
@@ -205,9 +208,14 @@ public class RecipeServiceImpl implements RecipeService {
             recipe.setRecipePhotos(recipePhotos);
             List<String> tags = recipeMapper.getTagListByRecipeId(recipe.getRecipeId());
             recipe.setTags(tags);
+
+            List<Comment> comments = recipe.getComments();
+            for (Comment comment : comments) {
+                String photoName = minioUtil.presignedGetObject(profilePhotoBucketName, comment.getProfilePhoto(), 7);
+                comment.setProfilePhoto(photoName);
+            }
         }
 
-        Map<String, List<Comment>> commentsMapByRecipeId = recipeMapper.getCommentsMapByRecipeId();
         PageInfo<Recipe> recipePageInfo = new PageInfo<>(recipeList);
         HashMap<String, Object> resultMap = new HashMap<>();
         resultMap.put("recipe_lists", recipeList);
