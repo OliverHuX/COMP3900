@@ -62,5 +62,7 @@ public interface RecipeMapper {
 
     void deleteComment(Comment comment);
 
+    void saveVideos(String recipeId, List<String> uploadVideos);
+
 
 }
