@@ -214,4 +214,9 @@
         order by str_to_date(c.create_time, 'yyyy-MM-dd HH:mm:ss')
     </select>
 
+    <delete id="deleteComment" parameterType="com.yyds.recipe.model.Comment">
+        delete
+        from recipe.comment c
+        where c.comment_id = #{commentId}
+    </delete>
 </mapper>
