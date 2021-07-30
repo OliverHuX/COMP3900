@@ -238,6 +238,15 @@ public class RecipeServiceImpl implements RecipeService {
         if (StringUtils.isEmpty(token)) {
             throw new AuthorizationException();
         }
+        String recipeId = comment.getRecipeId();
+        if (recipeId == null) {
+            return ResponseUtil.getResponse(ResponseCode.PARAMETER_ERROR, null, null);
+        }
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        Recipe recipe = recipeMapper.getRecipeById(recipeId);
+        if (!StringUtils.equals(userId, recipe.getUserId())) {
+            return ResponseUtil.getResponse(ResponseCode.BUSINESS_LOGIC_ERROR, null, null);
+        }
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
