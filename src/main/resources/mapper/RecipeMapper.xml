@@ -219,4 +219,12 @@
         from recipe.comment c
         where c.comment_id = #{commentId}
     </delete>
+
+    <insert id="saveVideos">
+        insert into recipe.video(recipe_id, file_name)
+        values
+        <foreach collection="uploadVideos" item="video" separator=",">
+            (#{recipeId,jdbcType=VARCHAR},#{video, jdbcType=VARCHAR})
+        </foreach>
+    </insert>
 </mapper>
