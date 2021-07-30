@@ -60,7 +60,7 @@ public interface RecipeMapper {
 
     List<Comment> getComments(String commentId);
 
-    void deleteComments(Comment comment);
+    void deleteComment(Comment comment);
 
 
 }
