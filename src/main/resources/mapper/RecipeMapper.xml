@@ -22,6 +22,16 @@
         <result column="myRateScore" property="myRateScore" jdbcType="DOUBLE"/>
     </resultMap>
 
+    <resultMap id="CommentResultMap" type="com.yyds.recipe.model.Comment">
+        <result column="comment_id" property="commentId" jdbcType="VARCHAR"/>
+        <result column="nick_name" property="nickName" jdbcType="VARCHAR"/>
+        <result column="recipe_id" property="recipeId" jdbcType="VARCHAR"/>
+        <result column="comment" property="content" jdbcType="VARCHAR"/>
+        <result column="comment_user_id" property="creatorId" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="VARCHAR"/>
+    </resultMap>
+
     <insert id="saveRecipe" parameterType="com.yyds.recipe.model.Recipe">
         insert into recipe.recipe(recipe_id,
                                   title,
