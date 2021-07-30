@@ -10,11 +10,23 @@ spring:
     password: qXd8b#5Y%!e2P4PcMR9zPj5XPA**
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
-    initial-size: 10
-    max-active: 150
-
-  transaction:
+    # Druid
+    initialSize: 10
+    minIdle: 5
+    maxActive: 50
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
     rollback-on-commit-failure: true
+    testOnReturn: false
+    poolPreparedStatements: true
+    filters: stat,wall,log4j2,config
+    maxPoolPreparedStatementPerConnectionSize: 20
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+
 
   servlet:
     multipart:
