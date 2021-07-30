@@ -1,5 +1,6 @@
 package com.yyds.recipe.controller;
 
+import com.yyds.recipe.model.Comment;
 import com.yyds.recipe.model.Recipe;
 import com.yyds.recipe.service.RecipeService;
 import lombok.AllArgsConstructor;
@@ -63,62 +64,15 @@ public class RecipeController {
     }
 
 
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Data
-    public static class commentRecipeReq {
-        @NotNull
-        private String viewerUserId;
-        @NotNull
-        private String recipeId;
-        @NotNull
-        private String comment;
-    }
-
     @RequestMapping(value = "/recipe/comment", method = RequestMethod.POST)
-    public ResponseEntity<?> commentRecipe(@RequestBody commentRecipeReq req) {
-        return recipeService.commentRecipe(req.getViewerUserId(), req.getRecipeId(), req.getComment());
+    public ResponseEntity<?> commentRecipe(@RequestBody Comment comment, HttpServletRequest request) {
+        return recipeService.commentRecipe(comment, request);
     }
 
-
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Data
-    public static class deleteCommentReq {
-        @NotNull
-        private String viewerUserId;
-        @NotNull
-        private String recipeId;
-    }
 
     @RequestMapping(value = "/recipe/deleteComment", method = RequestMethod.POST)
-    public ResponseEntity<?> deleteComment(@RequestBody commentRecipeReq req) {
-        return recipeService.deleteComment(req.getViewerUserId(), req.getRecipeId());
+    public ResponseEntity<?> deleteComment(@RequestBody Comment comment, HttpServletRequest request) {
+        return recipeService.deleteComment(comment, request);
     }
 
-
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Data
-    public static class collectRecipeReq {
-        @NotNull
-        private String viewerUserId;
-        @NotNull
-        private String collectionId;
-        @NotNull
-        private String recipeId;
-    }
-
-    @RequestMapping(value = "/recipe/collectRecipe", method = RequestMethod.POST)
-    public ResponseEntity<?> collectRecipe(@RequestBody collectRecipeReq req) {
-        return recipeService.collectRecipe(req.getViewerUserId(), req.getCollectionId(), req.getRecipeId());
-    }
-
-    // TODO: just for test need to be deleted
-    @RequestMapping(value = "/recipe/testPost", method = RequestMethod.POST)
-    public ResponseEntity<?> testPostRecipe(HttpServletRequest request,
-                                            @RequestPart(value = "uploadPhotos") MultipartFile[] uploadPhotos,
-                                            @RequestPart(value = "jsonData") Recipe recipe) {
-        return recipeService.testPost(request, uploadPhotos, recipe);
-    }
 }

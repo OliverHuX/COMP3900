@@ -1,5 +1,6 @@
 package com.yyds.recipe.service;
 
+import com.yyds.recipe.model.Comment;
 import com.yyds.recipe.model.Recipe;
 import com.yyds.recipe.model.User;
 import org.springframework.http.ResponseEntity;
@@ -16,32 +17,13 @@ public interface RecipeService {
 
     ResponseEntity<?> getAllPublicRecipes(String recipeId, String creatorId, String search, String tags, Integer pageNum, Integer pageSize, HttpServletRequest request);
 
-    // TODO:
-    ResponseEntity<?> commentRecipe(String viewerUserId, String recipeId, String comment);
+    ResponseEntity<?> commentRecipe(Comment comment, HttpServletRequest request);
 
-    // TODO:
-    ResponseEntity<?> deleteComment(String viewerUserId, String recipeId);
-
-    // TODO:
-    ResponseEntity<?> summaryRecipe(Recipe recipe);
-
-    // TODO:
-    ResponseEntity<?> subscribeRecipe(User viewer, Recipe recipe);
-
-
-    // TODO:
-    ResponseEntity<?> cancelSubscribeRecipe(User viewer, Recipe recipe);
+    ResponseEntity<?> deleteComment(Comment comment, HttpServletRequest request);
 
     ResponseEntity<?> setPrivacyRecipe(HttpServletRequest request, Recipe recipe);
 
-    // TODO:
-    ResponseEntity<?> collectRecipe(String viewerUserId, String collectionId, String recipeId);
-
-
-    // TODO:
     ResponseEntity<?> getMyRecipes(int pageNum, int pageSize, HttpServletRequest request);
-
-    ResponseEntity<?> testPost(HttpServletRequest request, MultipartFile[] uploadPhotos, Recipe recipe);
 
     ResponseEntity<?> rateRecipe(Recipe recipe, HttpServletRequest request);
 }
