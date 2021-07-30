@@ -68,10 +68,14 @@ const Home = () => {
         //     ingredients: '1321321',
         //     method: '2321321',
         //   });
-        formData.append('uploadPhotos', fileList[0]);
-        // formData.append('jsonData',jsonData );
+        for(let i=0;i<fileList.length;i++){
+            formData.append('uploadPhotos', fileList[i]);
+        }
+
+        // formData.append('uploadPhotos', fileList[0]);
+        
        
-      formData.append('jsonData',new Blob ([JSON.stringify({
+        formData.append('jsonData',new Blob ([JSON.stringify({
             title: 'test title',
             introduction: '12131',
             ingredients: '1321321',
@@ -183,7 +187,7 @@ const Home = () => {
                         label="time use"
                         name="time"
                         hasFeedback
-                        rules={ [{ required: true, message: 'recipe title!' }] }
+                        rules={ [{ required: true, message: 'need input time-use!' }] }
                     >
                         <Input />
                     </Form.Item>
