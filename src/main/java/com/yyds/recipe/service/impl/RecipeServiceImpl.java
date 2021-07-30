@@ -81,6 +81,27 @@ public class RecipeServiceImpl implements RecipeService {
             String photoName = UUIDGenerator.generateUUID() + suffix;
             minioUtil.putObject(recipePhotoBucketName, photoName, contentType, inputStream);
             recipe.getRecipePhotos().add(photoName);
+
+            if (uploadVideos != null) {
+                recipe.setRecipeVideos(new ArrayList<>());
+                for (MultipartFile uploadVideo : uploadVideos) {
+                    String originalFilename = uploadVideo.getOriginalFilename();
+                    if (originalFilename == null) {
+                        continue;
+                    }
+                    String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+                    String contentType = uploadVideo.getContentType();
+                    InputStream inputStream = null;
+                    try {
+                        inputStream = uploadVideo.getInputStream();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    String videoName = UUIDGenerator.generateUUID() + suffix;
+                    minioUtil.putObject(recipeVideoBucketName, videoName, contentType, inputStream);
+                    recipe.getRecipeVideos().add(videoName);
+                }
+            }
         }
 
         // insert into recipe table
