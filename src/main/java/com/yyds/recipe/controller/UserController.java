@@ -33,12 +33,17 @@ public class UserController {
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public ResponseEntity<?> logout(@RequestParam(value = "userId") String userId, HttpServletRequest request, HttpServletResponse response) {
-        return userService.logoutUser(userId, request, response);
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        return userService.logoutUser(request, response);
+    }
+
+    @RequestMapping(value = "/myProfile", method = RequestMethod.GET)
+    public ResponseEntity<?> getMyProfile(HttpServletRequest request, HttpServletResponse response) {
+        return userService.getMyPersonalProfile(request, response);
     }
 
     @RequestMapping(value = "/editProfile", method = RequestMethod.POST)
-    public ResponseEntity<?> editProfile(@RequestPart(value = "proflePhoto") MultipartFile profilePhoto, @RequestPart(value = "jsonData") User user, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> editProfile(@RequestPart(value = "profilePhoto", required = false) MultipartFile profilePhoto, @RequestPart(value = "jsonData") User user, HttpServletRequest request, HttpServletResponse response) {
         return userService.editUser(profilePhoto, user, request, response);
     }
 
@@ -56,7 +61,7 @@ public class UserController {
 
     @RequestMapping(value = "/editPassword", method = RequestMethod.POST)
     public ResponseEntity<?> editPassword(@RequestBody editPasswordReq req, HttpServletRequest request, HttpServletResponse response) {
-        return userService.editPassword(req.getOldPassword(), req.getNewPassword(), req.userId);
+        return userService.editPassword(req.getOldPassword(), req.getNewPassword(), request, response);
     }
 
     @RequestMapping(value = "/emailVerify/{token}", method = RequestMethod.GET)

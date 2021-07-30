@@ -7,5 +7,5 @@ import java.util.List;
 
 @Mapper
 public interface TagMapper {
-    List<Tag> getTagsList();
+    List<String> getTagsList();
 }

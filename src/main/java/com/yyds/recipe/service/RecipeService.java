@@ -14,7 +14,7 @@ public interface RecipeService {
 
     ResponseEntity<?> unlikeRecipe(HttpServletRequest request, Recipe recipe);
 
-    ResponseEntity<?> getAllPublicRecipes(String creatorId, String search, String tags, int pageNum, int pageSize);
+    ResponseEntity<?> getAllPublicRecipes(String recipeId, String creatorId, String search, String tags, Integer pageNum, Integer pageSize);
 
     // TODO:
     ResponseEntity<?> commentRecipe(String viewerUserId, String recipeId, String comment);
@@ -42,4 +42,6 @@ public interface RecipeService {
     ResponseEntity<?> getMyRecipes(int pageNum, int pageSize, HttpServletRequest request);
 
     ResponseEntity<?> testPost(HttpServletRequest request, MultipartFile[] uploadPhotos, Recipe recipe);
+
+    ResponseEntity<?> rateRecipe(Recipe recipe, HttpServletRequest request);
 }

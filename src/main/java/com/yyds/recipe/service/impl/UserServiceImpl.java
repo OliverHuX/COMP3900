@@ -8,6 +8,7 @@ import com.yyds.recipe.model.Follow;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
 import com.yyds.recipe.utils.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -164,7 +165,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> logoutUser(String userId, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> logoutUser(HttpServletRequest request, HttpServletResponse response) {
         String token = request.getHeader("token");
         redisTemplate.delete(token);
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
@@ -173,6 +174,11 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public ResponseEntity<?> editUser(MultipartFile profilePhoto, User user, HttpServletRequest request, HttpServletResponse response) {
+
+        String token = request.getHeader("token");
+
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        user.setUserId(userId);
 
         if (userMapper.getUserByUserId(user.getUserId()) == null) {
             throw new AuthorizationException();
@@ -207,8 +213,15 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public ResponseEntity<?> editPassword(String oldPassword, String newPassword, String userId) {
+    public ResponseEntity<?> editPassword(String oldPassword, String newPassword, HttpServletRequest request, HttpServletResponse response) {
 
+        String token = request.getHeader("token");
+
+        if (StringUtils.isEmpty(token)) {
+            throw new AuthorizationException();
+        }
+
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
         if (userMapper.getUserByUserId(userId) == null) {
             throw new AuthorizationException();
         }
@@ -331,6 +344,30 @@ public class UserServiceImpl implements UserService {
         }
 
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
+    }
+
+    @Override
+    public ResponseEntity<?> getMyPersonalProfile(HttpServletRequest request, HttpServletResponse response) {
+        String token = request.getHeader("token");
+        if (StringUtils.isEmpty(token)) {
+            throw new AuthorizationException();
+        }
+
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        User user = userMapper.getUserByUserId(userId);
+        if (user == null) {
+            return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
+        }
+
+        String profilePhoto = user.getProfilePhoto();
+        if (profilePhoto != null) {
+            String photoUrl = minioUtil.presignedGetObject(profilePhotoBucketName, profilePhoto, 7);
+            user.setProfilePhoto(photoUrl);
+        }
+
+        LinkedHashMap<String, Object> body = new LinkedHashMap<>();
+        body.put("userInfo", user);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, body);
     }
 
 }

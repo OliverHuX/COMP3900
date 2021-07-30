@@ -14,11 +14,11 @@ public interface UserService {
 
     ResponseEntity<?> loginUser(User loginUser, HttpServletRequest request, HttpServletResponse response);
 
-    ResponseEntity<?> logoutUser(String userId, HttpServletRequest request, HttpServletResponse response);
+    ResponseEntity<?> logoutUser(HttpServletRequest request, HttpServletResponse response);
 
     ResponseEntity<?> editUser(MultipartFile profilePhoto, User user, HttpServletRequest request, HttpServletResponse response);
 
-    ResponseEntity<?> editPassword(String oldPassword, String newPassword, String userId);
+    ResponseEntity<?> editPassword(String oldPassword, String newPassword, HttpServletRequest request, HttpServletResponse response);
 
     ResponseEntity<?> emailVerify(String token);
 
@@ -27,4 +27,6 @@ public interface UserService {
     ResponseEntity<?> unfollowUser(Follow unfollowReq);
 
     ResponseEntity<?> devRegister(User user);
+
+    ResponseEntity<?> getMyPersonalProfile(HttpServletRequest request, HttpServletResponse response);
 }

@@ -23,13 +23,15 @@ public interface RecipeMapper {
 
     Recipe getRecipeById(String recipeId);
 
-    List<Recipe> getRecipeList(List<String> tagList, String searchContent, String creatorId);
+    List<Recipe> getRecipeList(List<String> tagList, String searchContent, String creatorId, String recipeId);
 
     List<Recipe> getMyRecipeList(String userId);
 
     List<String> getFileNameListByRecipeId(String recipeId);
 
     void saveTagRecipe(String recipeId, List<String> tags);
+
+    int getCountBySpecificRate(String recipeId, String userId);
 
     @Update("update recipe likes set likes = #{likes}, where recipeId = #{recipeId}")
     void updateRecipeLikes(@Param(value = "recipeId") String recipeId, @Param(value = "likes") int likes);
@@ -50,4 +52,8 @@ public interface RecipeMapper {
                          @Param(value = "recipeId") List<String> recipeId);
 
     List<String> getTagListByRecipeId(String recipeId);
+
+    void rateRecipe(String recipeId, String userId, Double rate);
+
+    void updateRate(String recipeId, String userId, Double rate);
 }

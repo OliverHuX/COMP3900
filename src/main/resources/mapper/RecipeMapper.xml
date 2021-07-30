@@ -104,6 +104,9 @@
             <if test="creatorId != null">
                 and r.user_id = #{creatorId, jdbcType=VARCHAR}
             </if>
+            <if test="recipeId != null">
+                and r.recipe_id = #{recipeId, jdbcType=VARCHAR}
+            </if>
         </where>
         group by r.recipe_id;
     </select>
@@ -145,5 +148,27 @@
                  left join recipe.tag_list tl on tr.tag_name = tl.name
         where tr.recipe_id = #{recipeId}
     </select>
+
+    <select id="getCountBySpecificRate" resultType="java.lang.Integer">
+        select count(1) from recipe.rate
+        <where>
+            recipe_id = #{recipeId} and user_id = #{userId}
+        </where>
+    </select>
+
+    <insert id="rateRecipe">
+        insert into recipe.rate(recipe_id, user_id, rate)
+        values (#{recipeId}, #{userId}, #{rate})
+    </insert>
+
+    <update id="updateRate">
+        update recipe.rate
+        <set>
+            rate = #{rate}
+        </set>
+        <where>
+            recipe_id = #{recipeId} and user_id = #{userId}
+        </where>
+    </update>
 
 </mapper>
