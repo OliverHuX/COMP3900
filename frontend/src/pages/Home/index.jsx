@@ -115,10 +115,11 @@ export default function Home  ()  {
         //     ingredients: '1321321',
         //     method: '2321321',
         //   });
-        for(let i=0;i<fileList.length;i++){
-            formData.append('uploadPhotos', fileList[i]);
+        if(fileList!=undefined){
+            for(let i=0;i<fileList.length;i++){
+                formData.append('uploadPhotos', fileList[i]);
+            }
         }
-
         //formData.append('uploadPhotos', fileList[0]);
         
        
@@ -132,31 +133,31 @@ export default function Home  ()  {
 
           })], {type:"application/json"}));
 
-    //     formData.forEach((value, key) => {
-    //         console.log(`key ${key}: value ${value}`);
-    //    })
-    //    console.log(formData.get('uploadPhotos'))
-    //    console.log(formData.get('jsonData'))
     
-    
-        axios.post(
-                'http://localhost:8080/recipe/postRecipe',
-                formData,
-                {
-                    headers: {
-                        "token": token, //Authorization
-                        "Content-Type": "multipart/form-data",
-                        "type": "formData"
-                    },                    
+        if(fileList!=undefined& title != "" & introduction !=  "" & ingredients!= "" & method!= "" & tags_select!= "" & timeDuration!="" & timeDuration < 1000){
+                axios.post(
+                        'http://localhost:8080/recipe/postRecipe',
+                        formData,
+                        {
+                            headers: {
+                                "token": token, //Authorization
+                                "Content-Type": "multipart/form-data",
+                                "type": "formData"
+                            },                    
+                        }
+                    )
+                    .then(res => {
+                        console.log(`Success` + res.data);
+                        alert(' Congratulations, your recipe submit successfully!')  
+                        
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
                 }
-            )
-            .then(res => {
-                console.log(`Success` + res.data);
-            })
-            .catch(err => {
-                console.log(err);
-            })
+                 
         }
+
     
     return <Layout className="layout">
         
@@ -203,6 +204,7 @@ export default function Home  ()  {
                         label="upload Photo/video"
                         name="Upload"
                         valuePropName="fileList"
+                        rules={ [{ required: true, message: 'Need choose at least one photo!' }] }
                     >
                         {/* <Upload
                             // fileList={fileList}
@@ -227,7 +229,7 @@ export default function Home  ()  {
                         label="recipe title"
                         name="title"
                         hasFeedback
-                        rules={ [{ required: true, message: 'need input recipe title!' }] }
+                        rules={ [{ required: true, message: 'Need input recipe title!' }] }
                         onChange={ (e) => setTitleInputs(e.target.value) }
                     >
                         <Input />
@@ -236,7 +238,7 @@ export default function Home  ()  {
                         label="Select a tag!"
                         name="tag"
                         hasFeedback
-                        rules={ [{ required: true, message: 'need input tags!' }] }
+                        rules={ [{ required: true, message: 'Need input tags!' }] }
                              
                     >
                         <Select mode="tags" style={ { width: '100%' } } placeholder="Tags Mode" onChange={ handleChange }> 
@@ -247,7 +249,14 @@ export default function Home  ()  {
                         label="Time use(mins)"
                         name="time"
                         hasFeedback
-                        rules={ [{ required: true, message: 'need input time-use!' }] }
+                        rules={ [{  required: true,
+                            message: 'Need input time-use',
+                          }, {
+                            max: 3,
+                            message: 'Must less then 1000', },
+                            {
+                                message:'Onlyt number accepted',
+                                pattern: /^[0-9]+$/ }] }
                         onChange={ (e) => setTimeDurationInputs(e.target.value) }
                     >
                         <Input />
@@ -256,7 +265,7 @@ export default function Home  ()  {
                         label="Introduction"
                         name="Introduction"
                         hasFeedback
-                        rules={ [{ required: true, message: 'need input Introduction!' }] }
+                        rules={ [{ required: true, message: 'Need input Introduction!' }] }
                         onChange={ (e) => setIntroductionInputs(e.target.value) }
                         
                     >
@@ -266,7 +275,7 @@ export default function Home  ()  {
                         label="Ingredients"
                         name="Ingredients"
                         hasFeedback
-                        rules={ [{ required: true, message: 'need input Ingredients!' }] }
+                        rules={ [{ required: true, message: 'Need input ingredients!' }] }
                         onChange={ (e) => setIngredientsInputs(e.target.value) }
                     >
                         
@@ -277,7 +286,7 @@ export default function Home  ()  {
                         label="Method"
                         name="Method"
                         hasFeedback
-                        rules={ [{ required: true, message: 'need input Method!' }] }
+                        rules={ [{ required: true, message: 'Need input method!' }] }
                         onChange={ (e) => setMethodInputs(e.target.value) }
                     >
                         
