@@ -28,10 +28,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @EnableTransactionManagement
 @Service
@@ -223,6 +221,9 @@ public class RecipeServiceImpl implements RecipeService {
             throw new AuthorizationException();
         }
         comment.setCreatorId(JwtUtil.decodeToken(token).getClaim("userId").asString());
+        String currentTimeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        comment.setCreateTime(currentTimeString);
+        comment.setUpdateTime(currentTimeString);
         try {
             recipeMapper.postComment(comment);
         } catch (Exception e) {
