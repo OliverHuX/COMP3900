@@ -145,7 +145,13 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<?> getAllPublicRecipes(String recipeId, String creatorId, String searchContent, String searchTags, Integer pageNum, Integer pageSize) {
+    public ResponseEntity<?> getAllPublicRecipes(String recipeId,
+                                                 String creatorId,
+                                                 String searchContent,
+                                                 String searchTags,
+                                                 Integer pageNum,
+                                                 Integer pageSize,
+                                                 HttpServletRequest request) {
         if (pageNum == null || pageNum <= 0) {
             pageNum = 1;
         }
@@ -160,7 +166,8 @@ public class RecipeServiceImpl implements RecipeService {
         if (searchTags != null) {
             searchTagList = Arrays.asList(searchTags.split(","));
         }
-        List<Recipe> recipeList = recipeMapper.getRecipeList(searchTagList, searchContent, creatorId, recipeId);
+        String userId = JwtUtil.decodeToken(request.getHeader("token")).getClaim("userId").asString();
+        List<Recipe> recipeList = recipeMapper.getRecipeList(searchTagList, searchContent, creatorId, recipeId, userId);
         for (Recipe recipe : recipeList) {
             List<String> recipePhotos = new ArrayList<>();
             List<String> fileNameList = recipeMapper.getFileNameListByRecipeId(recipe.getRecipeId());

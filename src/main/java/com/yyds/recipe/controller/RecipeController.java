@@ -47,8 +47,9 @@ public class RecipeController {
                                            @RequestParam(value = "search", required = false) String search,
                                            @RequestParam(value = "tag", required = false) String tags,
                                            @RequestParam(value = "pageNum", required = false) Integer pageNum,
-                                           @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        return recipeService.getAllPublicRecipes(recipeId, userId, search, tags, pageNum, pageSize);
+                                           @RequestParam(value = "pageSize", required = false) Integer pageSize,
+                                           HttpServletRequest request) {
+        return recipeService.getAllPublicRecipes(recipeId, userId, search, tags, pageNum, pageSize, request);
     }
 
     @RequestMapping(value = "/recipe/my_recipe", method = RequestMethod.GET)

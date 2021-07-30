@@ -15,6 +15,7 @@
         <result column="time_duration" property="timeDuration" jdbcType="INTEGER"/>
         <result column="user_id" property="userId" jdbcType="VARCHAR"/>
         <result column="is_privacy" property="isPrivacy" jdbcType="INTEGER"/>
+        <result column="is_rated" property="isRate" jdbcType="INTEGER"/>
     </resultMap>
 
     <insert id="saveRecipe" parameterType="com.yyds.recipe.model.Recipe">
@@ -83,10 +84,15 @@
         r.time_duration,
         r.user_id,
         r.is_privacy,
+        ifnull((select count(1)
+        from recipe.rate
+        where rate.recipe_id = r.recipe_id
+        and rate.user_id = #{userId}), 1) is_rated,
         count(1) likes
         from recipe.recipe r
         left join recipe.like l on r.recipe_id = l.recipe_id
         left join recipe.tag_recipe tr on tr.recipe_id = r.recipe_id
+        left join recipe.rate rr on rr.recipe_id = r.recipe_id
         <where>
             r.is_privacy = 0
             <if test="tagList != null">
