@@ -21,7 +21,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public ResponseEntity<?> getTags() {
-        List<Tag> tagsList = null;
+        List<String> tagsList = null;
         try {
             tagsList = tagMapper.getTagsList();
         } catch (Exception e) {
