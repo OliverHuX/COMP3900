@@ -3,6 +3,7 @@ import { Layout, Menu, Dropdown, Input} from 'antd';
 import {Link} from 'react-router-dom'
 import { DownOutlined, LogoutOutlined } from '@ant-design/icons';
 import FetchFunc from './fetchFunc';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 const { Header} = Layout;
 const { Search } = Input;
 
@@ -105,7 +106,7 @@ const StyledHeader = () => {
         </Dropdown>
         <Search style={ { width: 200 } } placeholder="input search text" onSearch={ onSearch } enterButton />
       </div>
-      <LogoutOutlined style={ { float: 'right' } } onClick={() => logout(token)}/>
+      <ExitToAppIcon style={ { float: 'right' , cursor: 'pointer' } } onClick={() => logout(token)}/>
     </Header>
   )
 }
