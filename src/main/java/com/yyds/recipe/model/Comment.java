@@ -10,6 +10,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Data
 public class Comment implements Serializable {
+    private String commentId;
     private String recipeId;
     private String creatorId;
     private String content;
