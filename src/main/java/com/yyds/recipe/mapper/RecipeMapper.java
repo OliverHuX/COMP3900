@@ -57,4 +57,6 @@ public interface RecipeMapper {
     void updateRate(String recipeId, String userId, Double rate);
 
     void postComment(Comment comment);
+
+    List<Comment> getComments(String commentId);
 }
