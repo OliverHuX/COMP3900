@@ -202,4 +202,16 @@
         values (#{commentId}, #{recipeId}, #{content}, #{creatorId}, #{createTime}, #{updateTime})
     </insert>
 
+    <select id="getComments" resultMap="CommentResultMap">
+        select c.comment_id, u.nick_name, c.recipe_id, c.comment, c.comment_user_id, c.create_time, c.update_time
+        from comment c
+        left join user u on c.comment_user_id = u.user_id
+        <where>
+            <if test="commentId != null">
+                c.comment_id = #{commentId}
+            </if>
+        </where>
+        order by str_to_date(c.create_time, 'yyyy-MM-dd HH:mm:ss')
+    </select>
+
 </mapper>
