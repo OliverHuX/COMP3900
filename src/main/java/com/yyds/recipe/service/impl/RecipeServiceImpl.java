@@ -464,9 +464,9 @@ public class RecipeServiceImpl implements RecipeService {
         try {
             int count = recipeMapper.getCountBySpecificRate(recipeId, userId);
             if (count > 0) {
-                recipeMapper.updateRate(recipeId, userId, recipe.getRate());
+                recipeMapper.updateRate(recipeId, userId, recipe.getRateScore());
             } else {
-                recipeMapper.rateRecipe(recipeId, userId, recipe.getRate());
+                recipeMapper.rateRecipe(recipeId, userId, recipe.getRateScore());
             }
         } catch (Exception e) {
             throw new MySqlErrorException();
