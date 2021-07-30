@@ -145,11 +145,11 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public ResponseEntity<?> getAllPublicRecipes(String creatorId, String searchContent, String searchTags, int pageNum, int pageSize) {
-        if (pageNum <= 0) {
+    public ResponseEntity<?> getAllPublicRecipes(String recipeId, String creatorId, String searchContent, String searchTags, Integer pageNum, Integer pageSize) {
+        if (pageNum == null || pageNum <= 0) {
             pageNum = 1;
         }
-        if (pageSize >= 9) {
+        if (pageSize == null || pageSize >= 9) {
             pageSize = 9;
         }
         PageHelper.startPage(pageNum, pageSize, true);
@@ -160,7 +160,7 @@ public class RecipeServiceImpl implements RecipeService {
         if (searchTags != null) {
             searchTagList = Arrays.asList(searchTags.split(","));
         }
-        List<Recipe> recipeList = recipeMapper.getRecipeList(searchTagList, searchContent, creatorId);
+        List<Recipe> recipeList = recipeMapper.getRecipeList(searchTagList, searchContent, creatorId, recipeId);
         for (Recipe recipe : recipeList) {
             List<String> recipePhotos = new ArrayList<>();
             List<String> fileNameList = recipeMapper.getFileNameListByRecipeId(recipe.getRecipeId());
@@ -441,5 +441,31 @@ public class RecipeServiceImpl implements RecipeService {
         }
 
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
+    }
+
+    @Override
+    public ResponseEntity<?> rateRecipe(Recipe recipe, HttpServletRequest request) {
+        String token = request.getHeader("token");
+        if (StringUtils.isEmpty(token)) {
+            throw new AuthorizationException();
+        }
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        String recipeId = recipe.getRecipeId();
+        if (recipeMapper.getRecipeById(recipeId) == null) {
+            return ResponseUtil.getResponse(ResponseCode.RECIPE_ID_NOT_FOUND, null, null);
+        }
+        try {
+            int count = recipeMapper.getCountBySpecificRate(recipeId, userId);
+            if (count > 0) {
+                recipeMapper.updateRate(recipeId, userId, recipe.getRate());
+            } else {
+                recipeMapper.rateRecipe(recipeId, userId, recipe.getRate());
+            }
+        } catch (Exception e) {
+            throw new MySqlErrorException();
+        }
+
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
+
     }
 }
