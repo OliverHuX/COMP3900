@@ -239,19 +239,13 @@ public class RecipeServiceImpl implements RecipeService {
         if (StringUtils.isEmpty(token)) {
             throw new AuthorizationException();
         }
-        String recipeId = comment.getRecipeId();
-        if (recipeId == null) {
-            return ResponseUtil.getResponse(ResponseCode.PARAMETER_ERROR, null, null);
+        String commentId = comment.getCommentId();
+        if (commentId == null) {
+            throw new AuthorizationException();
         }
         String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
-        List<Comment> CommentList = recipeMapper.getComments(comment.getCommentId());
-        if (CommentList == null || CommentList.size() == 0) {
-            return ResponseUtil.getResponse(ResponseCode.BUSINESS_LOGIC_ERROR, null, null);
-        }
-        Comment checkedComment = CommentList.get(0);
-        if (!StringUtils.equals(userId, checkedComment.getCreatorId())) {
-            return ResponseUtil.getResponse(ResponseCode.BUSINESS_LOGIC_ERROR, null, null);
-        }
+        List<Comment> CommentList = recipeMapper.getComments(commentId);
+
         try {
             recipeMapper.deleteComment(comment);
         } catch (Exception e) {
