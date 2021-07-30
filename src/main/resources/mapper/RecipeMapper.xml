@@ -227,4 +227,15 @@
             (#{recipeId,jdbcType=VARCHAR},#{video, jdbcType=VARCHAR})
         </foreach>
     </insert>
+
+    <select id="getCommentsMapByRecipeId" resultMap="CommentResultMap">
+        select rc.comment_id,
+               rc.recipe_id,
+               rc.comment,
+               rc.comment_user_id,
+               rc.create_time,
+               rc.update_time
+        from recipe.comment rc
+                 left join user u on u.user_id = rc.comment_user_id
+    </select>
 </mapper>

@@ -206,9 +206,11 @@ public class RecipeServiceImpl implements RecipeService {
             List<String> tags = recipeMapper.getTagListByRecipeId(recipe.getRecipeId());
             recipe.setTags(tags);
         }
+
+        Map<String, List<Comment>> commentsMapByRecipeId = recipeMapper.getCommentsMapByRecipeId();
         PageInfo<Recipe> recipePageInfo = new PageInfo<>(recipeList);
         HashMap<String, Object> resultMap = new HashMap<>();
-        resultMap.put("recipe lists", recipeList);
+        resultMap.put("recipe_lists", recipeList);
         resultMap.put("total", recipePageInfo.getTotal());
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, resultMap);
     }
