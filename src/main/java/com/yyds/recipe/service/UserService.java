@@ -14,7 +14,7 @@ public interface UserService {
 
     ResponseEntity<?> loginUser(User loginUser, HttpServletRequest request, HttpServletResponse response);
 
-    ResponseEntity<?> logoutUser(String userId, HttpServletRequest request, HttpServletResponse response);
+    ResponseEntity<?> logoutUser(HttpServletRequest request, HttpServletResponse response);
 
     ResponseEntity<?> editUser(MultipartFile profilePhoto, User user, HttpServletRequest request, HttpServletResponse response);
 

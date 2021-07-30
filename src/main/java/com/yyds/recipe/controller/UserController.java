@@ -33,8 +33,8 @@ public class UserController {
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public ResponseEntity<?> logout(@RequestParam(value = "userId") String userId, HttpServletRequest request, HttpServletResponse response) {
-        return userService.logoutUser(userId, request, response);
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        return userService.logoutUser(request, response);
     }
 
     @RequestMapping(value = "/myProfile", method = RequestMethod.GET)

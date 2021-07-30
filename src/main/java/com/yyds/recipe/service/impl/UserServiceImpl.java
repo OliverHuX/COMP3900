@@ -165,7 +165,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> logoutUser(String userId, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> logoutUser(HttpServletRequest request, HttpServletResponse response) {
         String token = request.getHeader("token");
         redisTemplate.delete(token);
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
@@ -174,6 +174,11 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public ResponseEntity<?> editUser(MultipartFile profilePhoto, User user, HttpServletRequest request, HttpServletResponse response) {
+
+        String token = request.getHeader("token");
+
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        user.setUserId(userId);
 
         if (userMapper.getUserByUserId(user.getUserId()) == null) {
             throw new AuthorizationException();
