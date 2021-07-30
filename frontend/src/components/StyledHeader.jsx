@@ -2,6 +2,7 @@ import React from 'react'
 import { Layout, Menu, Dropdown, Input} from 'antd';
 import {Link} from 'react-router-dom'
 import { DownOutlined, LogoutOutlined } from '@ant-design/icons';
+import FetchFunc from './fetchFunc';
 const { Header} = Layout;
 const { Search } = Input;
 const StyledHeader = () => {
@@ -48,7 +49,30 @@ const StyledHeader = () => {
             </Menu.Item>
         </Menu>
     );
-    const onSearch = value => console.log(value);
+    const onSearch = value => {
+          console.log(value);
+
+          // axios.get('http://localhost:8080/recipe/recipe_list?pageNum=1&pageSize=9&search=${value}').then(
+          //   response =>{console.log('success',response.data);},
+          //   error => {console.log('fail',error);}
+          // )
+    
+      // post the request
+        const result = FetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=${value}`, 'GET', null, null);
+        console.log(result)
+        result.then((data) => {
+          console.log(data);
+          if (data.status === 200) {
+            data.json().then(res => {
+              console.log(res.token);
+              localStorage.setItem('token', result.token);
+            })
+          }
+        })
+        .catch(err => console.error('Caught error: ', err))
+      
+ 
+    }
   return (
     <Header style={ { backgroundColor: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'space-between' } } >
       <div style={ { display: 'flex', alignItems: 'center' } }>
