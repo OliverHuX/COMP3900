@@ -24,8 +24,19 @@ public class RecipeController {
         return recipeService.postRecipe(request, uploadPhotos, recipe, uploadVideos);
     }
 
+    @RequestMapping(value = "/recipe/update", method = RequestMethod.POST)
+    public ResponseEntity<?> RecipeUpdate(@RequestPart(value = "jsonData") Recipe recipe, HttpServletRequest request) {
+        return null;
+    }
+
+    @RequestMapping(value = "/recipe/delete", method = RequestMethod.POST)
+    public ResponseEntity<?> RecipeDelete(@RequestBody Recipe recipe, HttpServletRequest request) {
+        return recipeService.deleteRecipe(recipe, request);
+    }
+
     @RequestMapping(value = "/recipe/like", method = RequestMethod.POST)
     public ResponseEntity<?> likeRecipe(HttpServletRequest request, @RequestBody Recipe recipe) {
+
         return recipeService.likeRecipe(request, recipe);
     }
 

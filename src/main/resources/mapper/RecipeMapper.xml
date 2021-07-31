@@ -248,4 +248,10 @@
         </foreach>
     </insert>
 
+    <delete id="deleteRecipe" parameterType="com.yyds.recipe.model.Recipe">
+        delete
+        from recipe.recipe rr
+        where rr.recipe_id = #{recipeId}
+    </delete>
+
 </mapper>

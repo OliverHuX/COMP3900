@@ -133,6 +133,30 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
+    @Transactional(value = "transactionManager", rollbackFor = Exception.class)
+    public ResponseEntity<?> deleteRecipe(Recipe recipe, HttpServletRequest request) {
+        if (recipe == null || recipe.getRecipeId() == null) {
+            return ResponseUtil.getResponse(ResponseCode.PARAMETER_ERROR, null, null);
+        }
+        Recipe checkedRecipe = recipeMapper.getRecipeById(recipe.getRecipeId());
+        String token = request.getHeader("token");
+        if (StringUtils.isEmpty(token)) {
+            throw new AuthorizationException();
+        }
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        if (!StringUtils.equals(userId, checkedRecipe.getUserId())) {
+            return ResponseUtil.getResponse(ResponseCode.BUSINESS_LOGIC_ERROR, null, null);
+        }
+        try {
+            recipeMapper.deleteRecipe(recipe);
+        } catch (Exception e) {
+            throw new MySqlErrorException();
+        }
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
+
+    }
+
+    @Override
     public ResponseEntity<?> likeRecipe(HttpServletRequest request, Recipe recipe) {
 
         User user = checkedUser(request);

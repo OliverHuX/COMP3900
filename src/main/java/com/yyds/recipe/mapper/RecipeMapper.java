@@ -34,23 +34,7 @@ public interface RecipeMapper {
 
     int getCountBySpecificRate(String recipeId, String userId);
 
-    @Update("update recipe likes set likes = #{likes}, where recipeId = #{recipeId}")
-    void updateRecipeLikes(@Param(value = "recipeId") String recipeId, @Param(value = "likes") int likes);
-
-    @Update("update recipe comments set comments = #{comments}, where recipeId = #{recipeId}")
-    void updateRecipeComments(@Param(value = "recipeId") String recipeId,
-                              @Param(value = "comments") HashMap<String, String> comments);
-
-    @Update("update user subscribe set subscribe = #{recipeId}, where userId = #{userId})")
-    void updateSubscribe(@Param(value = "userId") String userId,
-                         @Param(value = "recipeId") List<String> recipeId);
-
-
     void updatePrivacy(String recipeId, int isPrivacy);
-
-    @Update("update user subscribe set subscribe = #{recipeId}, where userId = #{userId})")
-    void deleteSubscribe(@Param(value = "userId") String userId,
-                         @Param(value = "recipeId") List<String> recipeId);
 
     List<String> getTagListByRecipeId(String recipeId);
 
@@ -66,4 +50,5 @@ public interface RecipeMapper {
 
     void saveVideos(String recipeId, List<String> uploadVideos);
 
+    void deleteRecipe(Recipe recipe);
 }
