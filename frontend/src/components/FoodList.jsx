@@ -1,7 +1,7 @@
 import React from 'react'
 import {  Card } from 'antd';
 import {Link} from 'react-router-dom'
-import { FieldTimeOutlined, HeartOutlined, StarFilled } from '@ant-design/icons';
+import { FieldTimeOutlined, HeartOutlined, StarFilled ,HeartFilled} from '@ant-design/icons';
 const { Meta } = Card;
 
 const FoodList = (props) => {
@@ -21,7 +21,7 @@ const FoodList = (props) => {
                             <Meta title={food.name} description={food.dec} />
                             <div className='ope'>
                                 <span style={ { display: 'flex', alignItems: 'center' } }><FieldTimeOutlined style={{color: '#197574'}} />{food.time}mins</span>
-                                <HeartOutlined />
+                                <span onClick={()=>props.like(idx)} style={ { display: 'flex', alignItems: 'center' } }>{food.isLiked?<HeartFilled style={{color: '#f00',marginRight:5}}/>:<HeartOutlined style={{marginRight:5}}/>}{food.likes}</span>
                                 <span>
                                     {
                                         (new Array(5)).fill('').map((val,i)=>{

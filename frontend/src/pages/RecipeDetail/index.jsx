@@ -23,23 +23,29 @@ const RecipeDetail = () => {
         background: '#364d79',
     };
     const [rate, setRate] = useState(0)
-   
+
+
+
+    const data = [
+        {img:'/assets/img/recipe1.png'},
+        {img:'/assets/img/recipe2.png'},
+        {img:'/assets/img/recipe3.png'},
+    ]
+
+
+
     return <div className='recipedetail'>
         <div className='imgshow'>
             <div className='imgbox'>
-                <Carousel autoplay effect="fade" arrows={true}>
-                    <div>
-                        <img src="/assets/img/recipe1.png" alt="" />
-                    </div>
-                    <div>
-                        <img src="/assets/img/recipe2.png" alt="" />
-                    </div>
-                    <div>
-                        <img src="/assets/img/recipe3.png" alt="" />
-                    </div>
-                    <div>
-                        <img src="/assets/img/recipe1.png" alt="" />
-                    </div>
+                <Carousel autoplay effect="fade" arrows={true}>{
+                
+                    data.map((food)=>(
+                    <div>       
+                        <img src= {food.img} alt="" />
+                    </div>                          
+                    ))       
+                }
+
                 </Carousel>
             </div>
             <div>

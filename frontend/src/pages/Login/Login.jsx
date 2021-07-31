@@ -32,7 +32,7 @@ function signin(email, password, history) {
     if (data.status === 200) {
       data.json().then(res => {
         console.log(res.token);
-        localStorage.setItem('token', result.token);
+        localStorage.setItem('token', res.token);
         history.push('./home')
       })
     }

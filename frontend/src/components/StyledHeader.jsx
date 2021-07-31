@@ -2,9 +2,23 @@ import React from 'react'
 import { Layout, Menu, Dropdown, Input} from 'antd';
 import {Link} from 'react-router-dom'
 import { DownOutlined, LogoutOutlined } from '@ant-design/icons';
+import FetchFunc from './fetchFunc';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 const { Header} = Layout;
 const { Search } = Input;
-const StyledHeader = () => {
+
+function logout(token) {
+  const result = FetchFunc('logout', 'GET', token, null);
+  result.then(data => {
+    if (data === 200) {
+      alert('log out successfully')
+      localStorage.clear()
+      window.location.href = '/'
+    }
+  })
+}
+
+const StyledHeader = (props) => {
     const menu = (
         <Menu>
             <Menu.Item>
@@ -44,11 +58,38 @@ const StyledHeader = () => {
                 <a>My collection</a>
             </Menu.Item>
             <Menu.Item>
-                <a>Upload Recipe</a>
+                <a onClick = {props.showModal}>Upload Recipe</a>
             </Menu.Item>
         </Menu>
     );
-    const onSearch = value => console.log(value);
+
+
+
+    //                search 发送请求
+    const onSearch = value => {
+          console.log(value);
+
+          // axios.get('http://localhost:8080/recipe/recipe_list?pageNum=1&pageSize=9&search=${value}').then(
+          //   response =>{console.log('success',response.data);},
+          //   error => {console.log('fail',error);}
+          // )
+    
+      // post the request
+        const result = FetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=${value}`, 'GET', null, null);
+        console.log(result)
+        result.then((data) => {
+          console.log(data);
+          if (data.status === 200) {
+            data.json().then(res => {
+              console.log('request success');
+            })
+          }
+        })
+        .catch(err => console.error('Caught error: ', err))
+      
+ 
+    }
+    const token = localStorage.getItem('token')
   return (
     <Header style={ { backgroundColor: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'space-between' } } >
       <div style={ { display: 'flex', alignItems: 'center' } }>
@@ -65,7 +106,7 @@ const StyledHeader = () => {
         </Dropdown>
         <Search style={ { width: 200 } } placeholder="input search text" onSearch={ onSearch } enterButton />
       </div>
-      <LogoutOutlined style={ { float: 'right' } } />
+      <ExitToAppIcon style={ { float: 'right' , cursor: 'pointer' } } onClick={() => logout(token)}/>
     </Header>
   )
 }
