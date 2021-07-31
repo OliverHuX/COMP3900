@@ -54,7 +54,7 @@ public class RecipeController {
         return recipeService.setPrivacyRecipe(request, recipe);
     }
 
-    @RequestMapping(value = "/recipe/recipe_list")
+    @RequestMapping(value = "/recipe/recipe_list", method = RequestMethod.GET)
     public ResponseEntity<?> getRecipeList(@RequestParam(value = "recipeId", required = false) String recipeId,
                                            @RequestParam(value = "userId", required = false) String userId,
                                            @RequestParam(value = "search", required = false) String search,
