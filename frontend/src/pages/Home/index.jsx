@@ -10,6 +10,8 @@ import Profile from '../../components/Profile';
 import Password from '../../components/Password'
 import JapaneseFood from '../../components/JapaneseFood'
 import FetchFunc from '../../components/fetchFunc';
+import EditRecipe from '../../components/EditRecipe';
+import MyRecipe from '../../components/MyRecipe';
 import { Switch, Route } from 'react-router-dom';
 import Main from '../Main';
 import axios from 'axios';
@@ -183,6 +185,12 @@ export default function Home  ()  {
                     <Route path='/home/recipedetail/:cur_recipeId' >
                         <UpCircleOutlined className='upload' onClick={ showModal } />
                         <RecipeDetail /> 
+                    </Route>
+                    <Route path='/home/editrecipe/:recipeId' exact>
+                        <EditRecipe />
+                    </Route>
+                    <Route path='/home/myrecipe/:recipeId' exact>
+                        <MyRecipe />
                     </Route>
                     <Route path='/home/profile' exact>
                         <Profile />

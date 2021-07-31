@@ -31,12 +31,10 @@ const cur_recipeId = url[url.length - 1]
 
 function getDetial(token,setPhotoList,setTitle) {
 
-
-      const result = FetchFunc(`recipe/recipe_list?recipeId=${cur_recipeId}`, 'GET', token,null);
-      result.then((data) => {
+    const result = FetchFunc(`recipe/recipe_list?recipeId=${cur_recipeId}`, 'GET', token,null);
+    result.then((data) => {
         console.log('response is ',data);
-
-        if (data.status === 200) {          
+        if (data.status === 200) {
             
             data.json().then(res => {
                 setPhotoList( res.recipe_lists[0].recipePhotos)
@@ -48,10 +46,10 @@ function getDetial(token,setPhotoList,setTitle) {
             // console.log('res content', res);
 
             // console.log('res.recipe_lists  ',res.recipe_lists)
-          })
+            })
           
         }
-      })
+    })
 }
 
 
@@ -86,10 +84,10 @@ const RecipeDetail = () => {
     const token = localStorage.getItem('token');
 
     React.useEffect(()=>{ 
-        getDetial(token,setPhotoList,setTitle)
+        // getDetial(token,setPhotoList,setTitle)
       },[])
     //   let d = [...photolist];
-      console.log('sssssssssssssssssssss',photolist)
+    console.log('sssssssssssssssssssss',photolist)
       
 
     const handleOnchange = (e) => {
