@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Update;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 @Mapper
 public interface UserMapper {
@@ -31,4 +32,8 @@ public interface UserMapper {
     void followUser(String followingId, String followId);
 
     void unfollowUser(String followingId, String followId);
+
+    List<User> getFollowing(String userId, String search);
+
+    List<User> getFollower(String userId, String search);
 }

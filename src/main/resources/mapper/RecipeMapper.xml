@@ -20,6 +20,7 @@
         <result column="likes" property="likes" jdbcType="INTEGER"/>
         <result column="rateScore" property="rateScore" jdbcType="DOUBLE"/>
         <result column="myRateScore" property="myRateScore" jdbcType="DOUBLE"/>
+        <result column="nick_name" property="nickName" jdbcType="VARCHAR"/>
         <collection column="recipe_id" property="comments" ofType="com.yyds.recipe.model.Comment"
                     javaType="java.util.ArrayList" select="com.yyds.recipe.mapper.RecipeMapper.getCommentsByRecipeId">
         </collection>
@@ -117,6 +118,7 @@
         r.time_duration,
         r.user_id,
         r.is_privacy,
+        ru.nick_name,
         ifnull((select count(1)
         from recipe.rate
         where rate.recipe_id = r.recipe_id
@@ -132,6 +134,7 @@
         left join recipe.like l on r.recipe_id = l.recipe_id
         left join recipe.tag_recipe tr on tr.recipe_id = r.recipe_id
         left join recipe.rate rr on rr.recipe_id = r.recipe_id
+        left join recipe.user ru on r.user_id = ru.user_id
         <where>
             r.is_privacy = 0
             <if test="tagList != null">

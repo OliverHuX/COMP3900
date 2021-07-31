@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
@@ -286,8 +287,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> followUser(Follow follow) {
-        String userId = follow.getUserId();
+    public ResponseEntity<?> followUser(Follow follow, HttpServletRequest request) {
+        String token = request.getHeader("token");
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
         User checkedUser = userMapper.getUserByUserId(userId);
         if (checkedUser == null) {
             throw new AuthorizationException();
@@ -308,8 +310,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> unfollowUser(Follow unfollow) {
-        String userId = unfollow.getUserId();
+    public ResponseEntity<?> unfollowUser(Follow unfollow, HttpServletRequest request) {
+        String token = request.getHeader("token");
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
         User checkedUser = userMapper.getUserByUserId(userId);
         if (checkedUser == null) {
             throw new AuthorizationException();
@@ -367,6 +370,44 @@ public class UserServiceImpl implements UserService {
 
         LinkedHashMap<String, Object> body = new LinkedHashMap<>();
         body.put("userInfo", user);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, body);
+    }
+
+    @Override
+    public ResponseEntity<?> getFollowingList(String search, HttpServletRequest request) {
+        String token = request.getHeader("token");
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        List<User> followingList = userMapper.getFollowing(userId, search);
+        for (User user : followingList) {
+            String photoName = user.getProfilePhoto();
+            String profilePhoto = null;
+            try {
+                profilePhoto = minioUtil.presignedGetObject(profilePhotoBucketName, photoName, 7);
+            } catch (Exception ignored) {
+            }
+            user.setProfilePhoto(profilePhoto);
+        }
+        LinkedHashMap<String, Object> body = new LinkedHashMap<>();
+        body.put("following_list", followingList);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, body);
+    }
+
+    @Override
+    public ResponseEntity<?> getFollowerList(String search, HttpServletRequest request) {
+        String token = request.getHeader("token");
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        List<User> followingList = userMapper.getFollower(userId, search);
+        for (User user : followingList) {
+            String photoName = user.getProfilePhoto();
+            String profilePhoto = null;
+            try {
+                profilePhoto = minioUtil.presignedGetObject(profilePhotoBucketName, photoName, 7);
+            } catch (Exception ignored) {
+            }
+            user.setProfilePhoto(profilePhoto);
+        }
+        LinkedHashMap<String, Object> body = new LinkedHashMap<>();
+        body.put("following_list", followingList);
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, body);
     }
 
