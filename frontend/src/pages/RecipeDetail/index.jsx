@@ -20,8 +20,8 @@ const { Option } = Select;
 const { TextArea } = Input;
 const { Meta } = Card;
 
-function getComments() {
-    const result = FetchFunc('recipe/comment', )
+function addComments(token) {
+    const result = FetchFunc('recipe/comment', 'POST', token, )
 } 
 // function getRecipeDetail(){
 //     const result = fetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=${props.}`)
@@ -38,7 +38,7 @@ const RecipeDetail = ({recipeId}) => {
     };
     const [rate, setRate] = useState(0)
     const [comments, setComments] = useState('');
-    const [submitting, setSubmitting] = useState(false);
+    // const [submitting, setSubmitting] = useState(false);
 
     const data = [
         {img:'/assets/img/recipe1.png'},
@@ -51,11 +51,9 @@ const RecipeDetail = ({recipeId}) => {
     }
 
     const handleSubmitting = () => {
-        setSubmitting(!submitting)
-        console.log(comments)
-        setSubmitting(!submitting)
+        setComments('')
     }
-
+    // console.log(submitting)
     // React.useEffect(() => {
     //     setComments([
     //         {
@@ -203,7 +201,7 @@ const RecipeDetail = ({recipeId}) => {
                                 <TextArea rows={4} onChange={e => handleOnchange(e)} value={comments} />
                                 </Form.Item>
                                 <Form.Item>
-                                <Button htmlType="submit" loading={submitting} onClick={() => handleSubmitting()} type="primary">
+                                <Button htmlType="submit" onClick={() => handleSubmitting()} type="primary">
                                     Add Comment
                                 </Button>
                             </Form.Item>
