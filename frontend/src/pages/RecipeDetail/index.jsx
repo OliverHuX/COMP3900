@@ -11,6 +11,7 @@ import moment from 'moment';
 import Main from '../Main';
 import axios from 'axios';
 import Comments from '../../components/Comments';
+import PropTypes from 'prop-types';
 
 const FormData = require('form-data')
 
@@ -22,9 +23,12 @@ const { Meta } = Card;
 function getComments() {
     const result = FetchFunc('recipe/comment', )
 } 
+// function getRecipeDetail(){
+//     const result = fetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=${props.}`)
+// }
 
-
-const RecipeDetail = () => {
+const RecipeDetail = ({recipeId}) => {
+    console.log('props is :' , recipeId)
     const contentStyle = {
         height: '400px',
         color: '#fff',
@@ -211,4 +215,6 @@ const RecipeDetail = () => {
         </div>
     )
 }
+
+RecipeDetail.PropTypes = {recipeId: PropTypes.string}
 export default RecipeDetail;

@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 import { Row, Col, Card } from 'antd';
-import { Link } from 'react-router-dom'
+import { NavLink as Link } from 'react-router-dom'
 import { FieldTimeOutlined, HeartOutlined, HeartFilled,StarFilled } from '@ant-design/icons';
 import FoodList from '../../components/FoodList';
 import FetchFunc from '../../components/fetchFunc';
 const { Meta } = Card;
 
-
+const cur_recipeId = '53702903163a4556b664ef0cd9947662'
 function getInfo(token,setData) {
 
     // post the request
@@ -28,11 +28,6 @@ function getInfo(token,setData) {
     })
     .catch(err => console.error('Caught error: ', err))
 }
-
-
-
-
-
 
 
 
@@ -73,7 +68,7 @@ const Main = () => {
               console.log('mypost unlike data is',data);
               
               if (data.status === 200) {
-                console.log('post Like success')
+                console.log('post unLike success')
               }
             })
         }else{
@@ -108,7 +103,9 @@ const Main = () => {
                 <div className='deco'>
                     <h2>Recipe Name</h2>
                     <p>simple decoration simple decoration</p>
-                    <Link to='/home/recipedetail' className='gomore'>Get The Recipe</Link>
+                    
+                    <Link to={ '/home/recipedetail/' + cur_recipeId} className='gomore'>Get The Recipe
+                    </Link>
                 </div>
             </Col>
             <Col span={ 10 } offset={ 1 }>

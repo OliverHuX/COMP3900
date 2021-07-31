@@ -180,7 +180,7 @@ export default function Home  ()  {
                     <Route path='/home/janpnesefood' exact>
                         <JapaneseFood/>
                     </Route>
-                    <Route path='/home/recipedetail' exact>
+                    <Route path='/home/recipedetail:cur_recipeId' >
                         <UpCircleOutlined className='upload' onClick={ showModal } />
                         <RecipeDetail /> 
                     </Route>
