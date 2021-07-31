@@ -5,9 +5,9 @@ import { FieldTimeOutlined, HeartOutlined, HeartFilled,StarFilled } from '@ant-d
 import FoodList from '../../components/FoodList';
 const { Meta } = Card;
 const data1 = [
-    { img: '/assets/img/recipe1.png',isLiked:0,likes:10, name: 'AAA', dec: 'AAAsimple decoration', time: '15', rate: 2 },
-    { img: '/assets/img/recipe2.png',isLiked:1,likes:20, name: 'BBB', dec: 'BBBsimple decoration', time: '20', rate: 3 },
-    { img: '/assets/img/recipe3.png',isLiked:0,likes:100, name: 'CCC', dec: 'CCCsimple decoration', time: '25', rate: 5 },
+    { recipePhotos:['/assets/img/recipe1.png'],isLiked:0,likes:10, title: 'AAA', introduction: 'AAAsimple decoration', timeDuration: '11', rateScore: 2 },
+    { recipePhotos: ['/assets/img/recipe2.png'],isLiked:1,likes:20, title: 'BBB', introduction: 'BBBsimple decoration', timeDuration: '20',rateScore: 3 },
+    { recipePhotos: ['/assets/img/recipe3.png'],isLiked:0,likes:100, title: 'CCC', introduction: 'CCCsimple decoration', timeDuration: '25', rateScore: 5 }, 
 ]
 const Main = () => {
     const [data,setData] = useState(data1)
@@ -41,17 +41,17 @@ const Main = () => {
                                 key={ idx }
                                 hoverable
                                 style={ { width: '47%',marginBottom:10 } }
-                                cover={ <img style={ { height: 200 } } alt="example" src={ food.img } /> }
+                                cover={ <img style={ { height: 200 } } alt="example" src={ food.recipePhotos } /> }
                             >
-                                <Meta title={ food.name } description={ food.dec } />
+                                <Meta title={ food.title } description={ food.introduction } />
                                 <div className='ope'>
-                                    <span style={ { display: 'flex', alignItems: 'center' } }><FieldTimeOutlined style={ { color: '#197574' } } />{ food.time }mins</span>
+                                    <span style={ { display: 'flex', alignItems: 'center' } }><FieldTimeOutlined style={ { color: '#197574' } } />{ food.timeDuration }mins</span>
                                     <span onClick={()=>like(idx)} style={ { display: 'flex', alignItems: 'center' } }>{food.isLiked?<HeartFilled style={{color: '#f00',marginRight:5}}/>:<HeartOutlined style={{marginRight:5}}/>}{food.likes}</span>
                                 </div>
                                     <span>
                                         {
                                             (new Array(5)).fill('').map((val, i) => {
-                                                if (i < food.rate) {
+                                                if (i < food.rateScore) {
                                                     return <StarFilled style={ { color: '#197574' } } />
                                                 } else {
                                                     return <StarFilled style={ { color: '#aecbd1' } } />
