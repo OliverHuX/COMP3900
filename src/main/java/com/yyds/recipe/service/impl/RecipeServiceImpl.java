@@ -5,7 +5,6 @@ import com.github.pagehelper.PageInfo;
 import com.yyds.recipe.exception.AuthorizationException;
 import com.yyds.recipe.exception.MySqlErrorException;
 import com.yyds.recipe.exception.response.ResponseCode;
-import com.yyds.recipe.mapper.CollectionMapper;
 import com.yyds.recipe.mapper.RecipeMapper;
 import com.yyds.recipe.mapper.UserMapper;
 import com.yyds.recipe.model.Comment;
