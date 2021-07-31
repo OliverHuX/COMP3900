@@ -50,17 +50,57 @@ const Main = () => {
     React.useEffect(()=>{ 
       getInfo(token,setData)
     },[])
+
     const like = (i)=>{
         let d = [...data];
-        if(d[i].isLiked){
-            d[i].isLiked = 0;
-            d[i].likes--;
+        // console.log('xxxxxxxxxxx',d[0][0].likes)
+    
+        var recipeId = d[0][i].recipeId
+        
+        if(d[0][i].isLiked){
+            d[0][i].isLiked = 0;
+            d[0][i].likes--;
+            console.log('recipe ID is :', d[0][i].recipeId)
+            
+            recipeId = d[0][i].recipeId
+    
+            const payload = JSON.stringify({
+              recipeId:recipeId
+            });
+            const result = FetchFunc(`recipe/unlike`, 'POST', token, payload);
+            console.log(result)
+            result.then((data) => {
+              console.log('mypost unlike data is',data);
+              
+              if (data.status === 200) {
+                console.log('post Like success')
+              }
+            })
         }else{
-            d[i].isLiked = 1;
-            d[i].likes++;
+            d[0][i].isLiked = 1;
+            d[0][i].likes++;
+            console.log('recipe ID is :', d[0][i].recipeId)
+            
+            recipeId = d[0][i].recipeId
+    
+            var payload2 = JSON.stringify({
+              recipeId:recipeId
+            });
+            const result = FetchFunc(`recipe/like`, 'POST', token, payload2);
+            console.log(result)
+            result.then((data) => {
+              console.log('mypost data is',data);
+              if (data.status === 200) {
+                console.log('post Like success')
+              }
+            })
+
+    
         }
+        
         setData(d)
-    }
+          
+      }
     return (<div>
         <Row>
             <Col span={ 13 } className='rec'>
