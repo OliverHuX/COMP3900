@@ -19,8 +19,8 @@ const { Option } = Select;
 const { TextArea } = Input;
 const { Meta } = Card;
 
-function getComments() {
-    const result = FetchFunc('recipe/comment', )
+function addComments(token) {
+    const result = FetchFunc('recipe/comment', 'POST', token, )
 } 
 // function getRecipeDetail(){
 //     const result = fetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=${props.}`)
@@ -98,11 +98,9 @@ const RecipeDetail = () => {
     }
 
     const handleSubmitting = () => {
-        setSubmitting(!submitting)
-        console.log(comments)
-        setSubmitting(!submitting)
+        setComments('')
     }
-
+    // console.log(submitting)
     // React.useEffect(() => {
     //     setComments([
     //         {
@@ -250,7 +248,7 @@ const RecipeDetail = () => {
                                 <TextArea rows={4} onChange={e => handleOnchange(e)} value={comments} />
                                 </Form.Item>
                                 <Form.Item>
-                                <Button htmlType="submit" loading={submitting} onClick={() => handleSubmitting()} type="primary">
+                                <Button htmlType="submit" onClick={() => handleSubmitting()} type="primary">
                                     Add Comment
                                 </Button>
                             </Form.Item>

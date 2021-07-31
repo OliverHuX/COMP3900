@@ -147,7 +147,7 @@ const Main = () => {
         <FoodList data={ data } like={like} />
 
         <h2 className='subtitle'>Title Two Easy Dinners</h2>
-        <FoodList data={data} like={like} />
+            <FoodList data={data} like={like} />
     </div>
     )
 }

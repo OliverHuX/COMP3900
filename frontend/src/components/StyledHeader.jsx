@@ -4,20 +4,21 @@ import {Link} from 'react-router-dom'
 import { DownOutlined, LogoutOutlined } from '@ant-design/icons';
 import FetchFunc from './fetchFunc';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import logout from './logout';
 
 const { Header} = Layout;
 const { Search } = Input;
 
-function logout(token) {
-  const result = FetchFunc('logout', 'GET', token, null);
-  result.then(data => {
-    if (data === 200) {
-      alert('log out successfully')
-      localStorage.clear()
-      window.location.href = '/'
-    }
-  })
-}
+// function logout(token) {
+//   const result = FetchFunc('logout', 'GET', token, null);
+//   result.then(data => {
+//     if (data === 200) {
+//       alert('log out successfully')
+//       localStorage.clear()
+//       window.location.href = '/'
+//     }
+//   })
+// }
 
 const StyledHeader = (props) => {
     const menu = (
