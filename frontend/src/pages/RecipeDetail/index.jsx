@@ -72,7 +72,6 @@ const RecipeDetail = () => {
 
     const [rate, setRate] = useState(0)
     const [comments, setComments] = useState('');
-    const [submitting, setSubmitting] = useState(false);
     const [photolist, setPhotoList] = useState([]);
     const [title, setTitle] = useState('');
 
