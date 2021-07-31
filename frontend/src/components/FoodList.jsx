@@ -1,6 +1,5 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {  Card } from 'antd';
-import {Link} from 'react-router-dom'
 import { FieldTimeOutlined, HeartOutlined, StarFilled ,HeartFilled} from '@ant-design/icons';
 // import LikeHeart from './LikeHeart';
 const { Meta } = Card;

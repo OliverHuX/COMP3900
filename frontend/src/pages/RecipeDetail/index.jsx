@@ -11,7 +11,6 @@ import moment from 'moment';
 import Main from '../Main';
 import axios from 'axios';
 import Comments from '../../components/Comments';
-import PropTypes from 'prop-types';
 
 const FormData = require('form-data')
 
@@ -26,9 +25,38 @@ function getComments() {
 // function getRecipeDetail(){
 //     const result = fetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=${props.}`)
 // }
+const url = window.location.href.split('/')
+const cur_recipeId = url[url.length - 1]
 
-const RecipeDetail = ({recipeId}) => {
-    console.log('props is :' , recipeId)
+
+function getDetial(token,setPhotoList,setTitle) {
+
+
+      const result = FetchFunc(`recipe/recipe_list?recipeId=${cur_recipeId}`, 'GET', token,null);
+      result.then((data) => {
+        console.log('response is ',data);
+
+        if (data.status === 200) {          
+            
+            data.json().then(res => {
+                setPhotoList( res.recipe_lists[0].recipePhotos)
+                setTitle(res.recipe_lists[0].title)
+                // console.log('I got the recipe ditails',res.recipe_lists)
+                console.log('xxxxxxxxxxxxxxxxx',res.recipe_lists[0].recipePhotos)
+
+            
+            // console.log('res content', res);
+
+            // console.log('res.recipe_lists  ',res.recipe_lists)
+          })
+          
+        }
+      })
+}
+
+
+
+const RecipeDetail = () => {
     const contentStyle = {
         height: '400px',
         color: '#fff',
@@ -36,16 +64,35 @@ const RecipeDetail = ({recipeId}) => {
         textAlign: 'center',
         background: '#364d79',
     };
+
+
+
+
+
+
     const [rate, setRate] = useState(0)
     const [comments, setComments] = useState('');
     const [submitting, setSubmitting] = useState(false);
+    const [photolist, setPhotoList] = useState([]);
+    const [title, setTitle] = useState('');
 
     const data = [
-        {img:'/assets/img/recipe1.png'},
-        {img:'/assets/img/recipe2.png'},
-        {img:'/assets/img/recipe3.png'},
+        '/assets/img/recipe1.png',
+        '/assets/img/recipe2.png',
+        '/assets/img/recipe3.png',
     ]
-    
+     
+
+
+    const token = localStorage.getItem('token');
+
+    React.useEffect(()=>{ 
+        getDetial(token,setPhotoList,setTitle)
+      },[])
+    //   let d = [...photolist];
+      console.log('sssssssssssssssssssss',photolist)
+      
+
     const handleOnchange = (e) => {
         setComments(e.target.value)
     }
@@ -100,9 +147,9 @@ const RecipeDetail = ({recipeId}) => {
                     <div className='imgbox'>
                         <Carousel autoplay effect="fade" arrows={true}>{
                         
-                            data.map((food)=>(
+                        photolist.map((i)=>(
                             <div>       
-                                <img src= {food.img} alt="" />
+                                <img src= {i} alt="" />
                             </div>                          
                             ))       
                         }
@@ -119,7 +166,7 @@ const RecipeDetail = ({recipeId}) => {
                     </div>
                 </div>
                 <div className="recipeDec">
-                    <h2>Chorizo XXX AAA BBB</h2>
+                    <h2>{title}</h2>
                     <div>by <span className='author'>Marinane Turen</span></div>
                     <div className='rate'>
                         <span>Rating: 3 </span>
@@ -216,5 +263,4 @@ const RecipeDetail = ({recipeId}) => {
     )
 }
 
-RecipeDetail.PropTypes = {recipeId: PropTypes.string}
 export default RecipeDetail;

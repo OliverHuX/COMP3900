@@ -115,7 +115,7 @@ export default function Home  ()  {
         //     ingredients: '1321321',
         //     method: '2321321',
         //   });
-        if(fileList!=undefined){
+        if(fileList!==undefined){
             for(let i=0;i<fileList.length;i++){
                 formData.append('uploadPhotos', fileList[i]);
             }
@@ -134,7 +134,7 @@ export default function Home  ()  {
           })], {type:"application/json"}));
 
     
-        if(fileList!=undefined& title != "" & introduction !=  "" & ingredients!= "" & method!= "" & tags_select!= "" & timeDuration!="" & timeDuration < 1000){
+        if(fileList!==undefined& title !== "" & introduction !==  "" & ingredients!== "" & method!== "" & tags_select!== "" & timeDuration!=="" & timeDuration < 1000){
                 axios.post(
                         'http://localhost:8080/recipe/postRecipe',
                         formData,

@@ -5,7 +5,7 @@ import FetchFunc from './fetchFunc';
 import SelectInput from '@material-ui/core/Select/SelectInput';
 
 
-function getInfo(token,setData,setCurLikes) {
+function getInfo(token,setData) {
 
       // post the request
       console.log(token);
