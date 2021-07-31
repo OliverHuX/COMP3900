@@ -25,11 +25,10 @@ function addComments(token) {
 // function getRecipeDetail(){
 //     const result = fetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=${props.}`)
 // }
-const url = window.location.href.split('/')
-const cur_recipeId = url[url.length - 1]
 
 
-function getDetial(token,setPhotoList,setTitle) {
+
+function getDetial(token,cur_recipeId,setPhotoList,setTitle, setrateScore,settimeDuration) {
 
     const result = FetchFunc(`recipe/recipe_list?recipeId=${cur_recipeId}`, 'GET', token,null);
     result.then((data) => {
@@ -37,10 +36,13 @@ function getDetial(token,setPhotoList,setTitle) {
         if (data.status === 200) {
             
             data.json().then(res => {
+
+                setrateScore(res.recipe_lists[0].rateScore)
                 setPhotoList( res.recipe_lists[0].recipePhotos)
+                settimeDuration(res.recipe_lists[0].timeDuration)
                 setTitle(res.recipe_lists[0].title)
-                // console.log('I got the recipe ditails',res.recipe_lists)
-                console.log('xxxxxxxxxxxxxxxxx',res.recipe_lists[0].recipePhotos)
+                console.log('I got the recipe ditails',res.recipe_lists)
+                
 
             
             // console.log('res content', res);
@@ -67,11 +69,15 @@ const RecipeDetail = () => {
 
 
 
-
+    const url = window.location.href.split('/')
+    const cur_recipeId = url[url.length - 1]
     const [rate, setRate] = useState(0)
     const [comments, setComments] = useState('');
     const [photolist, setPhotoList] = useState([]);
     const [title, setTitle] = useState('');
+    const [rateScore, setrateScore] = useState('');
+    const [timeDuration, settimeDuration] = useState('');
+    // const [timeDuration, settimeDuration] = useState('');
 
     const data = [
         '/assets/img/recipe1.png',
@@ -84,10 +90,11 @@ const RecipeDetail = () => {
     const token = localStorage.getItem('token');
 
     React.useEffect(()=>{ 
-        // getDetial(token,setPhotoList,setTitle)
+        getDetial(token,cur_recipeId,setPhotoList,setTitle,setrateScore,settimeDuration)
       },[])
+      
     //   let d = [...photolist];
-    console.log('sssssssssssssssssssss',photolist)
+    //   console.log('sssssssssssssssssssss',photolist)
       
 
     const handleOnchange = (e) => {
@@ -97,43 +104,7 @@ const RecipeDetail = () => {
     const handleSubmitting = () => {
         setComments('')
     }
-    // console.log(submitting)
-    // React.useEffect(() => {
-    //     setComments([
-    //         {
-    //             author: 'Han Solo',
-    //             avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-    //             content: (
-    //               <p>
-    //                 We supply a series of design principles, practical patterns and high quality design
-    //                 resources (Sketch and Axure), to help people create their product prototypes beautifully and
-    //                 efficiently.
-    //               </p>
-    //             ),
-    //             datetime: (
-    //               <Tooltip title={moment().subtract(1, 'days').format('YYYY-MM-DD HH:mm:ss')}>
-    //                 <span>{moment().subtract(1, 'days').fromNow()}</span>
-    //               </Tooltip>
-    //             ),
-    //         },
-    //         {
-    //             author: 'Han HHHHHH',
-    //             avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-    //             content: (
-    //                 <p>
-    //                   We supply a series of design principles, practical patterns and high quality design
-    //                   resources (Sketch and Axure), to help people create their product prototypes beautifully and
-    //                   efficiently.
-    //                 </p>
-    //             ),
-    //             datetime: (
-    //                 <Tooltip title={moment().subtract(1, 'days').format('YYYY-MM-DD HH:mm:ss')}>
-    //                   <span>{moment('2021-05-21 23:34:12').fromNow()}</span>
-    //                 </Tooltip>
-    //               ),
-    //         },
-    //     ]);
-    // }, []);
+
 
     return (
         <div>
@@ -164,7 +135,7 @@ const RecipeDetail = () => {
                     <h2>{title}</h2>
                     <div>by <span className='author'>Marinane Turen</span></div>
                     <div className='rate'>
-                        <span>Rating: 3 </span>
+                        <span>Rating:   {rateScore} </span>
                         <span>
                             <span style={ { marginRight: 10 } }>Rate:</span>
                             {
@@ -180,27 +151,15 @@ const RecipeDetail = () => {
                         </span>
                         <Button style={ { backgroundColor: '#be2a77', color: '#fff' } } size='small'>Confirm</Button>
                     </div>
-                    <div><span className='author'>Marinane Turenxxxxxxxx</span></div>
+
                     <div className='icons'>
                         <div>
                             <ClockCircleFilled style={ { color: '#72aeb2', fontSize: 25 } } />
                             <div>
-                                <h3 className='h3'>Prep：10mins</h3>
-                                <h3 className='h3'>Cook：25mins</h3>
+                                <h3 className='h3'>Time use：{timeDuration}</h3>
                             </div>
                         </div>
-                        <div>
-                            <CheckCircleFilled style={ { color: '#72aeb2', fontSize: 25 } } />
-                            <div>
-                                <h3 className='h3'>Easy</h3>
-                            </div>
-                        </div>
-                        <div>
-                            <ToolFilled style={ { color: '#72aeb2', fontSize: 25 } } />
-                            <div>
-                                <h3 className='h3'>Serves 6</h3>
-                            </div>
-                        </div>
+
                     </div>
                     <h3 className='h3'>
                         Upgrade cheesy tomato pasta with gnocchi,chorizo and mozzarella for a comforting bake that makes an excellent midweek meal
