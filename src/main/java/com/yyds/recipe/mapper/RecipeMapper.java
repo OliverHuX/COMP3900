@@ -57,4 +57,6 @@ public interface RecipeMapper {
     void deleteVideoByRecipeId(Recipe recipe);
 
     void updateRecipe(Recipe recipe);
+
+    void deleteTagsByRecipe(Recipe recipe);
 }

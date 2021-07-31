@@ -165,6 +165,7 @@ public class RecipeServiceImpl implements RecipeService {
                     minioUtil.putObject(recipePhotoBucketName, photoName, contentType, inputStream);
                     recipe.getRecipePhotos().add(photoName);
                 }
+                recipeMapper.savePhotos(recipe.getRecipeId(), recipe.getRecipePhotos());
             }
 
             if (uploadVideos != null) {
@@ -186,9 +187,12 @@ public class RecipeServiceImpl implements RecipeService {
                     String videoName = UUIDGenerator.generateUUID() + suffix;
                     minioUtil.putObject(recipeVideoBucketName, videoName, contentType, inputStream);
                     recipe.getRecipeVideos().add(videoName);
+                    recipeMapper.saveVideos(recipe.getRecipeId(), recipe.getRecipeVideos());
                 }
             }
-
+            List<String> tags = recipe.getTags();
+            recipeMapper.deleteTagsByRecipe(recipe);
+            recipeMapper.saveTagRecipe(recipe.getRecipeId(), tags);
             recipeMapper.updateRecipe(recipe);
         } catch (Exception e) {
             throw new MySqlErrorException();
