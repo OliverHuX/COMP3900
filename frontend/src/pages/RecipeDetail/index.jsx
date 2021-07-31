@@ -38,7 +38,8 @@ function getDetial(token,cur_recipeId,
                     setintroduction,
                     setingredients,
                     setmethod,
-                    settags
+                    settags,
+                    setnickName
     
     
                     ) {
@@ -60,6 +61,8 @@ function getDetial(token,cur_recipeId,
                 setmethod(res.recipe_lists[0].method)
 
                 settags(res.recipe_lists[0].tags)
+
+                setnickName(res.recipe_lists[0].nickName)
                 console.log('I got the recipe ditails',res.recipe_lists[0].tags)
                 
 
@@ -100,6 +103,7 @@ const RecipeDetail = () => {
     const [ingredients, setingredients] = useState('');
     const [method, setmethod] = useState('');
     const [tags, settags] = useState([]);
+    const [nickName, setnickName] = useState('');
 
     const data = [
         '/assets/img/recipe1.png',
@@ -112,7 +116,7 @@ const RecipeDetail = () => {
     const token = localStorage.getItem('token');
 
     React.useEffect(()=>{ 
-        getDetial(token,cur_recipeId,setPhotoList,setTitle,setrateScore,settimeDuration,setintroduction,setingredients,setmethod,settags)
+        getDetial(token,cur_recipeId,setPhotoList,setTitle,setrateScore,settimeDuration,setintroduction,setingredients,setmethod,settags,setnickName)
       },[])
       
     //   let d = [...photolist];
@@ -153,7 +157,7 @@ const RecipeDetail = () => {
                 
                 <div className="recipeDec">
                     <Title level={1}>{title}</Title>
-                    <div>by <span className='author'>Marinane Turen</span></div>
+                    <div>by <span className='author'>{nickName}</span></div>
                     <div className='rate'>
                         <span>Rating:   {rateScore} </span>
                         <span>
