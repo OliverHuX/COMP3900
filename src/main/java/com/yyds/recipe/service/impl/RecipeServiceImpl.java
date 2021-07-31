@@ -380,7 +380,13 @@ public class RecipeServiceImpl implements RecipeService {
         }
         String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
         List<Comment> CommentList = recipeMapper.getComments(commentId);
-
+        if (CommentList == null || CommentList.size() == 0) {
+            return ResponseUtil.getResponse(ResponseCode.BUSINESS_LOGIC_ERROR, null, null);
+        }
+        Comment checkedComment = CommentList.get(0);
+        if (!StringUtils.equals(userId, checkedComment.getCreatorId())) {
+            return ResponseUtil.getResponse(ResponseCode.BUSINESS_LOGIC_ERROR, null, null);
+        }
         try {
             recipeMapper.deleteComment(comment);
         } catch (Exception e) {
