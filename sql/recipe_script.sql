@@ -50,7 +50,7 @@ create table user_account
         unique (user_id)
 );
 
-alter table user_account
+alter table account
     add primary key (user_id);
 
 create table user_admin

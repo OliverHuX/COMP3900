@@ -3,9 +3,10 @@ export default async function FetchFunc (path, method, token, body) {
     method: method,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: 'Bearer ' + token
+      Authorization: token,
     },
     body: body
   })
     .catch(err => console.warn(err))
 }
+// Authorization: 'Bearer ' + token

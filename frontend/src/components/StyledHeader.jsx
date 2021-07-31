@@ -1,78 +1,72 @@
-import React from 'react';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import RestaurantMenuIcon from '@material-ui/icons/RestaurantMenu';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import FastfoodIcon from '@material-ui/icons/Fastfood';
-import { makeStyles } from '@material-ui/core/styles';
-import logout from './logout';
-import PropTypes from 'prop-types';
-import Link from '@material-ui/core/Link';
-
-const useStyles = makeStyles((theme) => ({
-  icon: {
-    marginRight: theme.spacing(2),
-  },
-  logout: {
-    position: 'relative',
-    display: 'flex',
-    marginLeft: 'auto',
-    marginRight: 0,
-    cursor: 'pointer'
-  },
-  icons: {
-    position: 'relative',
-    marginLeft: theme.spacing(2),
-    marginRight: 0,
-    cursor: 'pointer'
-  },
-  footer: {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(6),
-  },
-}));
-
-const jumpto = () => {
-  window.location.href = '/'
-}
-export function IconButton ({ icon, handleOnClick }) {
-  const classes = useStyles();
-  if (!handleOnClick) handleOnClick = (icon === 'join' ? jumpto : logout)
-  if (icon === 'join') {
-    return (
-      <FastfoodIcon className={classes.icons} align="right" onClick={handleOnClick}>
-      </FastfoodIcon>
-    )
-  }
+import React from 'react'
+import { Layout, Menu, Dropdown, Input} from 'antd';
+import {Link} from 'react-router-dom'
+import { DownOutlined, LogoutOutlined } from '@ant-design/icons';
+const { Header} = Layout;
+const { Search } = Input;
+const StyledHeader = () => {
+    const menu = (
+        <Menu>
+            <Menu.Item>
+                <Link to='/home/chinesefood'>Chinese food</Link>
+            </Menu.Item>
+            <Menu.Item>
+                <a>Japaness food</a>
+            </Menu.Item>
+            <Menu.Item>
+                <a>Noodle</a>
+            </Menu.Item>
+            <Menu.Item>
+                <a>Cake</a>
+            </Menu.Item>
+            <Menu.Item>
+                <a>Seafood</a>
+            </Menu.Item>
+            <Menu.Item>
+                <a>View All</a>
+            </Menu.Item>
+        </Menu>
+    );
+    const menu2 = (
+        <Menu>
+            <Menu.Item>
+              <Link to='/home/profile'>Customise Profile</Link>
+                {/* <a>Customise Profile</a> */}
+            </Menu.Item>
+            <Menu.Item>
+              <Link to='/home/password'>Change Password</Link>
+                {/* <a>Customise Profile</a> */}
+            </Menu.Item>
+            <Menu.Item>
+                <a>My Recipe</a>
+            </Menu.Item>
+            <Menu.Item>
+                <a>My collection</a>
+            </Menu.Item>
+            <Menu.Item>
+                <a>Upload Recipe</a>
+            </Menu.Item>
+        </Menu>
+    );
+    const onSearch = value => console.log(value);
   return (
-    <ExitToAppIcon className={classes.icons} align="right" onClick={handleOnClick}>
-    </ExitToAppIcon>
+    <Header style={ { backgroundColor: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'space-between' } } >
+      <div style={ { display: 'flex', alignItems: 'center' } }>
+        <div className="logo" > <Link to='/home'>YYDS</Link></div>
+        <Dropdown overlay={ menu }>
+          <span className="dropdown" onClick={ e => e.preventDefault() }>
+            Recipe <DownOutlined />
+          </span>
+        </Dropdown>
+        <Dropdown overlay={ menu2 }>
+          <span className="dropdown" onClick={ e => e.preventDefault() }>
+            My profile <DownOutlined />
+          </span>
+        </Dropdown>
+        <Search style={ { width: 200 } } placeholder="input search text" onSearch={ onSearch } enterButton />
+      </div>
+      <LogoutOutlined style={ { float: 'right' } } />
+    </Header>
   )
 }
-IconButton.propTypes = {
-  icon: PropTypes.string,
-  handleOnClick: PropTypes.func
-};
-export function StyledHeader ({ handleOnClick }) {
-  const classes = useStyles();
-  const token = localStorage.getItem('token');
-  return (
-    <AppBar position="relative">
-      <Toolbar>
-        <RestaurantMenuIcon className={classes.icon} />
-        <Link href="/home" variant="h6" color="inherit" noWrap>
-                    {"MyRecipes"}
-        </Link>
-
-        <div className={classes.logout} color="inherit">
-          <IconButton handleOnClick={handleOnClick} icon={'join'} />
-          {token && (<IconButton handleOnClick={handleOnClick} icon={'logout'} />)}
-        </div>
-      </Toolbar>
-    </AppBar>
-  )
-}
-StyledHeader.propTypes = {
-  handleOnClick: PropTypes.func
-};
+export default StyledHeader;

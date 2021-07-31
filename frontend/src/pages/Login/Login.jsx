@@ -13,10 +13,12 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import { myStyles } from './Login.style';
 import FetchFunc from '../../components/fetchFunc';
-import { StyledHeader } from '../../components/StyledHeader';
+import StyledHeader from '../../components/StyledHeader'
 import { TextPopup } from '../../components/TextPopup';
 
-function signin (email, password, history) {
+function signin(email, password, history) {
+  // history.push('./home')   // 跳过登录， 测试
+  // return;         // 跳过登录 测试
   // console.log('incomplete' + email + password);
   // const path = 'login'
   const payload = JSON.stringify({
@@ -25,22 +27,31 @@ function signin (email, password, history) {
   });
   const result = FetchFunc('login', 'POST', null, payload);
   console.log(result)
-  result.then(data => {
-    if (data.code === 200) {
+  result.then((data) => {
+    console.log(data);
+    if (data.status === 200) {
       data.json().then(res => {
-        console.log(res)
-        console.log(res.data)
-        // console.log(res.err)
-        if (res.code === 0) {
-          history.push('./home')
-        }
+        console.log(res.token);
+        localStorage.setItem('token', result.token);
+        history.push('./home')
       })
     }
+    // if (data.code === 200) {
+    //   data.json().then(res => {
+    //     console.log(res)
+    //     console.log(res.data)
+    //     // console.log(res.err)
+    //     if (res.code === 0) {
+    //       history.push('./home')
+    //     }
+    //   })
+    // }
   })
+  .catch(err => console.error('Caught error: ', err))
 
 }
 
-export default function SignIn () {
+export default function SignIn() {
   const classes = myStyles();
   const [email, setEmailInputs] = React.useState('');
   const [passWord, setPasswordInputs] = React.useState('');
@@ -51,18 +62,18 @@ export default function SignIn () {
     // <div className={classes.size}>
     <React.Fragment>
       <CssBaseline />
-      <StyledHeader/>
+      <StyledHeader/> 
       <main>
-        <Container component="main" maxWidth="xs" className={classes.backg}>
-          {/* <img src='https://coolwallpapers.me/th700/3056229-cooking_delicious-food_dining_eat_food_fusion-cuisine_morning-bread_platter_restaurant.jpg'/> */}
-          <div className={classes.paper}>
-            <Avatar className={classes.avatar}>
+        <Container component="main" maxWidth="xs" className={ classes.backg }>
+          {/* <img src='https://coolwallpapers.me/th700/3056229-cooking_delicious-food_dining_eat_food_fusion-cuisine_morning-bread_platter_restaurant.jpg'/> */ }
+          <div className={ classes.paper }>
+            <Avatar className={ classes.avatar }>
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
               Sign in
             </Typography>
-            <form className={classes.form} noValidate>
+            <form className={ classes.form } noValidate>
               <TextField
                 variant="outlined"
                 margin="normal"
@@ -73,7 +84,7 @@ export default function SignIn () {
                 name="email"
                 autoComplete="email"
                 autoFocus
-                onChange={(e) => setEmailInputs(e.target.value)}
+                onChange={ (e) => setEmailInputs(e.target.value) }
               />
               <TextField
                 variant="outlined"
@@ -85,31 +96,31 @@ export default function SignIn () {
                 type="password"
                 id="password"
                 autoComplete="current-password"
-                onChange={(e) => setPasswordInputs(e.target.value)}
+                onChange={ (e) => setPasswordInputs(e.target.value) }
               />
               <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
+                control={ <Checkbox value="remember" color="primary" /> }
                 label="Remember me"
               />
               <Button
                 fullWidth
                 variant="contained"
                 color="primary"
-                className={classes.submit}
-                onClick={() => signin(email, passWord, history)}
+                className={ classes.submit }
+                onClick={ () => signin(email, passWord, history) }
               >
                 Sign In
               </Button>
               <TextPopup
-                open={error}
-                setOpen={setError}
-                title={errorMsg}
-                handleOnClick={() => setError(false)}
+                open={ error }
+                setOpen={ setError }
+                title={ errorMsg }
+                handleOnClick={ () => setError(false) }
               />
               <Grid container>
-                <Grid item className={classes.marginBtm}>
+                <Grid item className={ classes.marginBtm }>
                   <Link href="/register" variant="body2">
-                    {"Don't have an account? Sign Up"}
+                    { "Don't have an account? Sign Up" }
                   </Link>
                 </Grid>
               </Grid>

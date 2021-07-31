@@ -10,8 +10,29 @@ spring:
     password: qXd8b#5Y%!e2P4PcMR9zPj5XPA**
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
-    initial-size: 10
-    max-active: 150
+    # Druid
+    initialSize: 10
+    minIdle: 5
+    maxActive: 50
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    rollback-on-commit-failure: true
+    testOnReturn: false
+    poolPreparedStatements: true
+    filters: stat,wall,log4j2,config
+    maxPoolPreparedStatementPerConnectionSize: 20
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 200MB
+      max-request-size: 215MB
 
   # redis
   redis:
@@ -25,11 +46,11 @@ spring:
         max-wait: -1
     password: ^P9eVPp737vGjpmgqo#R3#&F%s7i
 
-  # gmail
+  # mail
   mail:
     host: smtp.gmail.com
     username: yyds.w09a@gmail.com
-    password: yysd3600
+    password: jpbdfjoagyzeteds
     port: 465
     protocol: smtp
     properties.mail.display.sendmail: Springboot
@@ -56,6 +77,23 @@ mybatis:
   mapper-locations: classpath:/mapper/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.log4j2.Log4j2Impl
+
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+
+# Minio
+minio:
+  endpoint: http://120.77.180.200:9000
+  accessKey: minioadmin
+  secretKey: minioadmin
+  bucket:
+    profile:
+      photo: profile-photo
+    recipe:
+      photo: recipe-photo
+      video: recipe-video
 
 # actuator
 management:

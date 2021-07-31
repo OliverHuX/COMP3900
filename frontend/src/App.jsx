@@ -10,9 +10,12 @@ import Register from './pages/Register/Register';
 import Login from './pages/Login/Login'
 import Home from './pages/Home/index'
 import Footer from './components/footer';
+import Wait from './pages/Wait/Wait';
+import StyledHeader from './components/StyledHeader'
+
 export default function App () {
-  return <>
-    <Router>
+  return <Router>
+      {/* <StyledHeader /> */}
       <div className='container_backg'>
         <Switch>
           
@@ -22,7 +25,7 @@ export default function App () {
             </div>
           </Route>
 
-          <Route path="/home" exact>        
+          <Route path="/home" >        
               <Home />       
           </Route>
 
@@ -32,9 +35,12 @@ export default function App () {
             </div>
           </Route>
 
+          <Route path="/wait" exact>
+            <Wait />
+          </Route>
+
         </Switch>
         <Footer/>
       </div>
-    </Router>
-  </>;
+    </Router>;
 }

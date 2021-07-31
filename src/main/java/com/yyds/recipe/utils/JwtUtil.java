@@ -5,6 +5,8 @@ import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
+import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class JwtUtil {
@@ -13,6 +15,14 @@ public class JwtUtil {
 
     public static String createToken(Map<String, String> payload) {
         JWTCreator.Builder builder = JWT.create();
+        LinkedHashMap<String, Object> headerMap = new LinkedHashMap<>();
+        headerMap.put("alg", "HS256");
+        headerMap.put("type", "JWT");
+
+        long currentTimeMillis = System.currentTimeMillis();
+        builder.withHeader(headerMap)
+                .withIssuedAt(new Date(currentTimeMillis))
+                .withExpiresAt(new Date(currentTimeMillis + 30 * 1000 * 60));
 
         payload.forEach(builder::withClaim);
 

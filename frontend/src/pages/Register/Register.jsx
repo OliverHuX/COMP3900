@@ -11,14 +11,14 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import { myStyles } from './Register.style';
 import FetchFunc from '../../components/fetchFunc';
-import { StyledHeader } from '../../components/StyledHeader';
 import { TextPopup } from '../../components/TextPopup';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
+import StyledHeader from '../../components/StyledHeader'
 
-function signup (firstName, lastName, gender, nickName, birthDate, email, password) {
+function signup (firstName, lastName, gender, nickName, birthDate, email, password, history) {
   // console.log('incomplete' + email + password);
   const payload = JSON.stringify({
     firstName: firstName,
@@ -32,7 +32,11 @@ function signup (firstName, lastName, gender, nickName, birthDate, email, passwo
   console.log(payload)
   const result = FetchFunc('register', 'POST', null, payload);
   result.then(data => {
-    console.log(data);
+    console.log(data.status);
+    if (data.status === 200) {
+      console.log(data);
+      history.push('./wait')
+    }
   })
 }
 
@@ -62,8 +66,8 @@ export default function Register () {
   return (
     <React.Fragment>
       <CssBaseline />
-      <StyledHeader/>
       <main>
+      <StyledHeader/>
         <Container component="main" maxWidth="xs" className={classes.backg}>
           <CssBaseline />
           <div className={classes.paper}>
@@ -180,7 +184,7 @@ export default function Register () {
                 variant="contained"
                 color="primary"
                 className={classes.submit}
-                onClick={() => signup(firstName, lastName, gender, nickName, birthDate, emailInputs, passWord)}
+                onClick={() => signup(firstName, lastName, gender, nickName, birthDate, emailInputs, passWord, history)}
               >
                 Sign Up
               </Button>
