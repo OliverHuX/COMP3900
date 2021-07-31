@@ -279,6 +279,7 @@ public class RecipeServiceImpl implements RecipeService {
                                                  String creatorId,
                                                  String searchContent,
                                                  String searchTags,
+                                                 Integer isLiked,
                                                  Integer pageNum,
                                                  Integer pageSize,
                                                  HttpServletRequest request) {
@@ -294,7 +295,7 @@ public class RecipeServiceImpl implements RecipeService {
             searchTagList = Arrays.asList(searchTags.split(","));
         }
         String userId = JwtUtil.decodeToken(request.getHeader("token")).getClaim("userId").asString();
-        List<Recipe> recipeList = recipeMapper.getRecipeList(searchTagList, searchContent, creatorId, recipeId, userId);
+        List<Recipe> recipeList = recipeMapper.getRecipeList(searchTagList, searchContent, creatorId, recipeId, userId, isLiked);
         for (Recipe recipe : recipeList) {
             List<String> recipePhotos = new ArrayList<>();
             List<String> fileNameList = recipeMapper.getFileNameListByRecipeId(recipe.getRecipeId());

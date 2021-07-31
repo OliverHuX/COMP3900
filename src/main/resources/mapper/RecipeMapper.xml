@@ -152,6 +152,12 @@
             <if test="recipeId != null">
                 and r.recipe_id = #{recipeId, jdbcType=VARCHAR}
             </if>
+            <if test="isLiked != null">
+                and (select count(1)
+                from recipe.like rl
+                where rl.recipe_id = r.recipe_id
+                and rl.user_id = #{userId}) > 0
+            </if>
         </where>
         group by r.recipe_id;
     </select>
