@@ -110,7 +110,7 @@ const StyledHeader = (props) => {
         </Dropdown>
         <Search style={ { width: 200 } } placeholder="input search text" onSearch={ onSearch } enterButton />
       </div>
-      <ExitToAppIcon style={ { float: 'right' , cursor: 'pointer' } } onClick={() => logout(token)}/>
+      {token && <ExitToAppIcon style={ { float: 'right' , cursor: 'pointer' } } onClick={() => logout(token)}/>}
     </Header>
   )
 }
