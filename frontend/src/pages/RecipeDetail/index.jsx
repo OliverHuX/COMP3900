@@ -25,11 +25,10 @@ function addComments(token) {
 // function getRecipeDetail(){
 //     const result = fetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=${props.}`)
 // }
-const url = window.location.href.split('/')
-const cur_recipeId = url[url.length - 1]
 
 
-function getDetial(token,setPhotoList,setTitle) {
+
+function getDetial(token,cur_recipeId,setPhotoList,setTitle) {
 
 
       const result = FetchFunc(`recipe/recipe_list?recipeId=${cur_recipeId}`, 'GET', token,null);
@@ -39,10 +38,11 @@ function getDetial(token,setPhotoList,setTitle) {
         if (data.status === 200) {          
             
             data.json().then(res => {
+
                 setPhotoList( res.recipe_lists[0].recipePhotos)
                 setTitle(res.recipe_lists[0].title)
                 // console.log('I got the recipe ditails',res.recipe_lists)
-                console.log('xxxxxxxxxxxxxxxxx',res.recipe_lists[0].recipePhotos)
+                
 
             
             // console.log('res content', res);
@@ -84,12 +84,13 @@ const RecipeDetail = () => {
 
 
     const token = localStorage.getItem('token');
-
+    const url = window.location.href.split('/')
+    const cur_recipeId = url[url.length - 1]
     React.useEffect(()=>{ 
-        getDetial(token,setPhotoList,setTitle)
+        getDetial(token,cur_recipeId,setPhotoList,setTitle)
       },[])
     //   let d = [...photolist];
-      console.log('sssssssssssssssssssss',photolist)
+    //   console.log('sssssssssssssssssssss',photolist)
       
 
     const handleOnchange = (e) => {
