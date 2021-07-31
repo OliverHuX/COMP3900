@@ -11,6 +11,10 @@ public interface RecipeService {
     ResponseEntity<?> postRecipe(HttpServletRequest request, MultipartFile[] uploadPhotos, Recipe recipe,
                                  MultipartFile[] uploadVideos);
 
+    ResponseEntity<?> updateRecipe(MultipartFile[] uploadPhotos, Recipe recipe, MultipartFile[] uploadVideos, HttpServletRequest request);
+
+    ResponseEntity<?> deleteRecipe(Recipe recipe, HttpServletRequest request);
+
     ResponseEntity<?> likeRecipe(HttpServletRequest request, Recipe recipe);
 
     ResponseEntity<?> unlikeRecipe(HttpServletRequest request, Recipe recipe);
@@ -26,4 +30,6 @@ public interface RecipeService {
     ResponseEntity<?> getMyRecipes(int pageNum, int pageSize, HttpServletRequest request);
 
     ResponseEntity<?> rateRecipe(Recipe recipe, HttpServletRequest request);
+
+    ResponseEntity<?> visitorGetRecipeList(String recipeId, String userId, String search, String tags, Integer pageNum, Integer pageSize);
 }

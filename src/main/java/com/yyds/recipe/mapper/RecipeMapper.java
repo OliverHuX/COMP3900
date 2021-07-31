@@ -2,14 +2,9 @@ package com.yyds.recipe.mapper;
 
 import com.yyds.recipe.model.Comment;
 import com.yyds.recipe.model.Recipe;
-import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Update;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Mapper
 public interface RecipeMapper {
@@ -34,23 +29,7 @@ public interface RecipeMapper {
 
     int getCountBySpecificRate(String recipeId, String userId);
 
-    @Update("update recipe likes set likes = #{likes}, where recipeId = #{recipeId}")
-    void updateRecipeLikes(@Param(value = "recipeId") String recipeId, @Param(value = "likes") int likes);
-
-    @Update("update recipe comments set comments = #{comments}, where recipeId = #{recipeId}")
-    void updateRecipeComments(@Param(value = "recipeId") String recipeId,
-                              @Param(value = "comments") HashMap<String, String> comments);
-
-    @Update("update user subscribe set subscribe = #{recipeId}, where userId = #{userId})")
-    void updateSubscribe(@Param(value = "userId") String userId,
-                         @Param(value = "recipeId") List<String> recipeId);
-
-
     void updatePrivacy(String recipeId, int isPrivacy);
-
-    @Update("update user subscribe set subscribe = #{recipeId}, where userId = #{userId})")
-    void deleteSubscribe(@Param(value = "userId") String userId,
-                         @Param(value = "recipeId") List<String> recipeId);
 
     List<String> getTagListByRecipeId(String recipeId);
 
@@ -66,8 +45,15 @@ public interface RecipeMapper {
 
     void saveVideos(String recipeId, List<String> uploadVideos);
 
-    @MapKey("recipeId")
-    Map<String, List<Comment>> getCommentsMapByRecipeId();
+    void deleteRecipe(Recipe recipe);
 
+    void deletePhotoByRecipeId(Recipe recipe);
 
+    void deleteVideoByRecipeId(Recipe recipe);
+
+    void updateRecipe(Recipe recipe);
+
+    void deleteTagsByRecipe(Recipe recipe);
+
+    List<Recipe> getVisitorRecipeList(String recipeId, String creatorId, String searchContent, List<String> tagList, Integer pageNum, Integer pageSize);
 }

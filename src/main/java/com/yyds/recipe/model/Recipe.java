@@ -6,8 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 @Data
@@ -24,8 +22,7 @@ public class Recipe implements Serializable {
     private int timeDuration;
     private List<String> recipePhotos;
     private List<String> recipeVideos;
-    // TODO: delete it !!!
-    private HashMap<String, String> comments;
+    private List<Comment> comments;
     private int likes;
     private String userId;
     private String createTime;
@@ -34,12 +31,4 @@ public class Recipe implements Serializable {
     private Integer isLiked;
     private Integer isRated;
     private Double myRateScore;
-
-    public void addComment(String userId, String comment) {
-        comments.put(userId, comment);
-    }
-
-    public void deleteComment(String userId) {
-        comments.remove(userId);
-    }
 }
