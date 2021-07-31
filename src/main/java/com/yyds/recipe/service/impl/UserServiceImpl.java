@@ -377,7 +377,7 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> getFollowingList(String search, HttpServletRequest request) {
         String token = request.getHeader("token");
         String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
-        List<User> followingList = userMapper.getFollowing(userId);
+        List<User> followingList = userMapper.getFollowing(userId, search);
         for (User user : followingList) {
             String photoName = user.getProfilePhoto();
             String profilePhoto = null;
@@ -396,7 +396,7 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> getFollowerList(String search, HttpServletRequest request) {
         String token = request.getHeader("token");
         String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
-        List<User> followingList = userMapper.getFollower(userId);
+        List<User> followingList = userMapper.getFollower(userId, search);
         for (User user : followingList) {
             String photoName = user.getProfilePhoto();
             String profilePhoto = null;

@@ -33,7 +33,7 @@ public interface UserMapper {
 
     void unfollowUser(String followingId, String followId);
 
-    List<User> getFollowing(String userId);
+    List<User> getFollowing(String userId, String search);
 
-    List<User> getFollower(String userId);
+    List<User> getFollower(String userId, String search);
 }
