@@ -3,10 +3,10 @@ import FoodList from './FoodList'
 import FetchFunc from './fetchFunc';
 
 
-function getInfo() {
+function getInfo(token) {
       // post the request
-      
-      const result = FetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=Chinese`, 'GET', null, null);
+      console.log(token);
+      const result = FetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=Chinese`, 'GET', token, null);
       console.log(result)
       result.then((data) => {
         console.log(data);
@@ -31,6 +31,7 @@ const data1 = [
 ]
 const ChineseFood = () => {
 
+  
   const [data,setData] = useState(data1)
   const like = (i)=>{
       let d = [...data];
@@ -43,8 +44,8 @@ const ChineseFood = () => {
       }
       setData(d)
   }
-
-   getInfo()
+  const token = localStorage.getItem('token');
+   getInfo(token)
 
 
    return (
