@@ -1,7 +1,7 @@
 import React, { useState, createElement } from 'react'
 import './index.css'
 import { Layout, Modal, Row, Col, Card, Carousel, Button, Input, Form, Upload, Select, message, Comment, Avatar, Tooltip, List } from 'antd';
-import { SaveOutlined, PrinterOutlined, StarFilled, StarOutlined, ClockCircleFilled, CheckCircleFilled, ToolFilled } from '@ant-design/icons';
+import { TagsOutlined, PrinterOutlined, StarFilled, StarOutlined, ClockCircleFilled, CheckCircleFilled, ToolFilled } from '@ant-design/icons';
 import FoodList from '../../components/FoodList';
 import StyledHeader from '../../components/StyledHeader'
 import ChineseFood from '../../components/ChineseFood'
@@ -11,7 +11,9 @@ import moment from 'moment';
 import Main from '../Main';
 import axios from 'axios';
 import Comments from '../../components/Comments';
+import { Typography } from 'antd';
 
+const { Title } = Typography;
 const FormData = require('form-data')
 
 const { Content } = Layout;
@@ -28,7 +30,18 @@ function addComments(token) {
 
 
 
-function getDetial(token,cur_recipeId,setPhotoList,setTitle, setrateScore,settimeDuration) {
+function getDetial(token,cur_recipeId,
+                    setPhotoList,
+                    setTitle, 
+                    setrateScore,
+                    settimeDuration,
+                    setintroduction,
+                    setingredients,
+                    setmethod,
+                    settags
+    
+    
+                    ) {
 
 
       const result = FetchFunc(`recipe/recipe_list?recipeId=${cur_recipeId}`, 'GET', token,null);
@@ -43,7 +56,13 @@ function getDetial(token,cur_recipeId,setPhotoList,setTitle, setrateScore,settim
                 setPhotoList( res.recipe_lists[0].recipePhotos)
                 settimeDuration(res.recipe_lists[0].timeDuration)
                 setTitle(res.recipe_lists[0].title)
-                console.log('I got the recipe ditails',res.recipe_lists)
+                setintroduction(res.recipe_lists[0].introduction)
+
+                setingredients(res.recipe_lists[0].ingredients)
+                setmethod(res.recipe_lists[0].method)
+
+                settags(res.recipe_lists[0].tags)
+                console.log('I got the recipe ditails',res.recipe_lists[0].tags)
                 
 
             
@@ -79,7 +98,10 @@ const RecipeDetail = () => {
     const [title, setTitle] = useState('');
     const [rateScore, setrateScore] = useState('');
     const [timeDuration, settimeDuration] = useState('');
-    // const [timeDuration, settimeDuration] = useState('');
+    const [introduction, setintroduction] = useState('');
+    const [ingredients, setingredients] = useState('');
+    const [method, setmethod] = useState('');
+    const [tags, settags] = useState([]);
 
     const data = [
         '/assets/img/recipe1.png',
@@ -92,7 +114,7 @@ const RecipeDetail = () => {
     const token = localStorage.getItem('token');
 
     React.useEffect(()=>{ 
-        getDetial(token,cur_recipeId,setPhotoList,setTitle,setrateScore,settimeDuration)
+        getDetial(token,cur_recipeId,setPhotoList,setTitle,setrateScore,settimeDuration,setintroduction,setingredients,setmethod,settags)
       },[])
       
     //   let d = [...photolist];
@@ -124,17 +146,15 @@ const RecipeDetail = () => {
 
                         </Carousel>
                     </div>
-                    <div>
-                        <Button className='save' style={ { color: '#fff', backgroundColor: '#be2a77', marginRight: 20, } } icon={ <SaveOutlined /> }>
-                            Save Recipe
-                        </Button>
-                        <Button className='save' style={ { color: '#be2a77', borderColor: '#be2a77', } } icon={ <PrinterOutlined /> }>
-                            Print
-                        </Button>
+                    <div className='imgbox'>
+                    <h1 className='h1'>
+                        {introduction}
+                    </h1>
                     </div>
                 </div>
+                
                 <div className="recipeDec">
-                    <h2>{title}</h2>
+                    <Title level={1}>{title}</Title>
                     <div>by <span className='author'>Marinane Turen</span></div>
                     <div className='rate'>
                         <span>Rating:   {rateScore} </span>
@@ -163,31 +183,23 @@ const RecipeDetail = () => {
                         </div>
 
                     </div>
-                    <h3 className='h3'>
-                        Upgrade cheesy tomato pasta with gnocchi,chorizo and mozzarella for a comforting bake that makes an excellent midweek meal
-                    </h3>
-                    <h3 className='h3'>Nutrition:Per serving</h3>
-                    <div className='nut'>
-                        <div>
-                            <div>kcal</div>
-                            <div>318</div>
-                        </div>
-                        <div>
-                            <div>fat</div>
-                            <div>13g</div>
-                        </div>
-                        <div>
-                            <div>saturates</div>
-                            <div>6g</div>
-                        </div>
-                        <div>
-                            <div>carbs</div>
-                            <div>36g</div>
-                        </div>
-                        <div>
-                            <div>sugars</div>
-                            <div>8g</div>
-                        </div>
+
+                    <div><h4 className='h4'>Ingredients:</h4>{ingredients}</div>
+                    <div><h4 className='h4'>Methdd:</h4>{method}</div>
+                    <h4 className='h4'>Recipe Tags:</h4>
+                    <div className='nut' >
+                            
+                                {
+                                tags.map((tag)=>(
+                                <div> 
+                                    <TagsOutlined/>
+                                    <div >      
+                                    {tag}
+                                    </div>
+                                </div>                          
+                                ))    
+                                }
+                            
                     </div>
                 </div>
             </div>
