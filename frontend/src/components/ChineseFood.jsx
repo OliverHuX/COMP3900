@@ -33,10 +33,13 @@ const data1 = [
   { recipePhotos:['/assets/img/recipe2.png'],isLiked:1,likes:20, title: 'BBB', introduction: 'BBBsimple decoration', timeDuration: '20', rateScore: 3 },
   { recipePhotos: ['/assets/img/recipe3.png'],isLiked:0,likes:100, title: 'CCC', introduction: 'CCCsimple decoration', timeDuration: '25', rateScore: 5 },
 ]
-const ChineseFood = () => {
+const ChineseFood = React.memo(() => {
   const [recipelist,setData] = useState([])
   const token = localStorage.getItem('token');
-  getInfo(token,setData)
+  React.useEffect(() =>{
+    getInfo(token,setData)
+  }, [])
+  // getInfo(token,setData)
   console.log(data1[0])
   console.log('recipelist is  ',recipelist)
   console.log('hhhhh', recipelist[0])
@@ -54,7 +57,6 @@ const ChineseFood = () => {
   }
   
 
-
    return (
 
         
@@ -62,9 +64,9 @@ const ChineseFood = () => {
           
             <h2 className='subtitle'>Chinese Food Recipe</h2>
             <p style={ { textAlign: 'center',fontSize:20 } }>simple decorationsimple decorationsimple decoration</p>
-            {recipelist[0] !== undefined && (<FoodList data={recipelist} like={like} />)}
+            <FoodList data={recipelist} like={like} />
         </h1>
     )
-}
+})
 
 export default ChineseFood

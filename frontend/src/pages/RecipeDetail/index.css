@@ -54,3 +54,12 @@
 .h3{
     font-size: 18px;
 }
+.paper {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.comments {
+    height: auto;
+}
