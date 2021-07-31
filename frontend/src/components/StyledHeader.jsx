@@ -4,6 +4,7 @@ import {Link} from 'react-router-dom'
 import { DownOutlined, LogoutOutlined } from '@ant-design/icons';
 import FetchFunc from './fetchFunc';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+
 const { Header} = Layout;
 const { Search } = Input;
 
@@ -25,7 +26,8 @@ const StyledHeader = (props) => {
                 <Link to='/home/chinesefood'>Chinese food</Link>
             </Menu.Item>
             <Menu.Item>
-                <a>Japaness food</a>
+          
+                <Link to='/home/janpnesefood'>Japanese food</Link>
             </Menu.Item>
             <Menu.Item>
                 <a>Noodle</a>
