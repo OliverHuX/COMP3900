@@ -30,4 +30,6 @@ public interface RecipeService {
     ResponseEntity<?> getMyRecipes(int pageNum, int pageSize, HttpServletRequest request);
 
     ResponseEntity<?> rateRecipe(Recipe recipe, HttpServletRequest request);
+
+    ResponseEntity<?> visitorGetRecipeList(String recipeId, String userId, String search, String tags, Integer pageNum, Integer pageSize);
 }

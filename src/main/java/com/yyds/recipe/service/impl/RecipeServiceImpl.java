@@ -18,6 +18,8 @@ import com.yyds.recipe.utils.UUIDGenerator;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -27,8 +29,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @EnableTransactionManagement
 @Service
@@ -42,6 +46,9 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Autowired
     private MinioUtil minioUtil;
+
+    @Autowired
+    private RedisTemplate<String, Serializable> redisTemplate;
 
     @Value("${minio.bucket.recipe.photo}")
     private String recipePhotoBucketName;
@@ -282,9 +289,6 @@ public class RecipeServiceImpl implements RecipeService {
             pageSize = 9;
         }
         PageHelper.startPage(pageNum, pageSize, true);
-        if (searchTags != null) {
-
-        }
         List<String> searchTagList = null;
         if (searchTags != null) {
             searchTagList = Arrays.asList(searchTags.split(","));
@@ -340,7 +344,7 @@ public class RecipeServiceImpl implements RecipeService {
         }
         PageInfo<Recipe> recipePageInfo = new PageInfo<>(myRecipeList);
         HashMap<String, Object> resultMap = new HashMap<>();
-        resultMap.put("recipe lists", myRecipeList);
+        resultMap.put("recipe_lists", myRecipeList);
         resultMap.put("total", recipePageInfo.getTotal());
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, resultMap);
     }
@@ -447,5 +451,62 @@ public class RecipeServiceImpl implements RecipeService {
         }
 
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
+    }
+
+    @Override
+    public ResponseEntity<?> visitorGetRecipeList(String recipeId,
+                                                  String creatorId,
+                                                  String searchContent,
+                                                  String searchTags,
+                                                  Integer pageNum,
+                                                  Integer pageSize) {
+        if (Boolean.TRUE.equals(redisTemplate.hasKey("visitorRecipeList"))) {
+            List<Recipe> visitorRecipeList = null;
+            try {
+                visitorRecipeList = (List<Recipe>) redisTemplate.opsForValue().get("visitorRecipeList");
+            } catch (Exception e) {
+                return ResponseUtil.getResponse(ResponseCode.REDIS_ERROR, null, null);
+            }
+            HashMap<String, Object> resultMap = new HashMap<>();
+            resultMap.put("recipe_lists", visitorRecipeList);
+            resultMap.put("total", visitorRecipeList.size());
+            return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, resultMap);
+        }
+
+        if (pageNum == null || pageNum <= 0) {
+            pageNum = 1;
+        }
+        if (pageSize == null || pageSize >= 9) {
+            pageSize = 9;
+        }
+        List<String> searchTagList = null;
+        if (searchTags != null) {
+            searchTagList = Arrays.asList(searchTags.split(","));
+        }
+        PageHelper.startPage(pageNum, pageSize, true);
+        List<Recipe> recipeList = recipeMapper.getVisitorRecipeList(recipeId, creatorId, searchContent, searchTagList, pageNum, pageSize);
+        for (Recipe recipe : recipeList) {
+            List<String> recipePhotos = new ArrayList<>();
+            List<String> fileNameList = recipeMapper.getFileNameListByRecipeId(recipe.getRecipeId());
+            for (String fileName : fileNameList) {
+                String fileUrl = minioUtil.presignedGetObject(recipePhotoBucketName, fileName, 7);
+                recipePhotos.add(fileUrl);
+            }
+            recipe.setRecipePhotos(recipePhotos);
+            List<String> tags = recipeMapper.getTagListByRecipeId(recipe.getRecipeId());
+            recipe.setTags(tags);
+
+        }
+        PageInfo<Recipe> recipePageInfo = new PageInfo<>(recipeList);
+        HashMap<String, Object> resultMap = new HashMap<>();
+        ValueOperations<String, Serializable> opsForValue = redisTemplate.opsForValue();
+        try {
+            opsForValue.set("visitorRecipeList", (Serializable) recipeList, 30, TimeUnit.MINUTES);
+        } catch (Exception e) {
+            return ResponseUtil.getResponse(ResponseCode.REDIS_ERROR, null, null);
+        }
+        resultMap.put("recipe_lists", recipeList);
+        resultMap.put("total", recipePageInfo.getTotal());
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, resultMap);
     }
 }

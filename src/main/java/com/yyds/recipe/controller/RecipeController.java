@@ -87,4 +87,15 @@ public class RecipeController {
         return recipeService.deleteComment(comment, request);
     }
 
+
+    @RequestMapping(value = "/visitor/recipe_list", method = RequestMethod.GET)
+    public ResponseEntity<?> getPublicList(@RequestParam(value = "recipeId", required = false) String recipeId,
+                                           @RequestParam(value = "userId", required = false) String userId,
+                                           @RequestParam(value = "search", required = false) String search,
+                                           @RequestParam(value = "tag", required = false) String tags,
+                                           @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                           @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        return recipeService.visitorGetRecipeList(recipeId, userId, search, tags, pageNum, pageSize);
+    }
+
 }

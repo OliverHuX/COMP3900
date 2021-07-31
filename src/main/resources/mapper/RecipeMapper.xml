@@ -296,4 +296,44 @@
         where rtc.recipe_id = #{recipeId}
     </delete>
 
+    <select id="getVisitorRecipeList" resultMap="RecipeResultMap">
+        select r.recipe_id,
+        r.title,
+        r.introduction,
+        r.ingredients,
+        r.method,
+        r.create_time,
+        r.time_duration,
+        r.user_id,
+        r.is_privacy,
+        (select count(1) from recipe.like rl1 where rl1.recipe_id = r.recipe_id) likes,
+        ifnull((select avg(rr1.rate) from recipe.rate rr1 where rr1.recipe_id = r.recipe_id), 0) rateScore
+        from recipe.recipe r
+        left join recipe.like l on r.recipe_id = l.recipe_id
+        left join recipe.tag_recipe tr on tr.recipe_id = r.recipe_id
+        left join recipe.rate rr on rr.recipe_id = r.recipe_id
+        <where>
+            r.is_privacy = 0
+            <if test="tagList != null">
+                and tr.tag_name in
+                <foreach collection="tagList" item="tagName" open="(" close=")" separator=",">
+                    #{tagName}
+                </foreach>
+            </if>
+            <if test="searchContent != null">
+                and (r.title like concat('%', #{searchContent,jdbcType=VARCHAR}, '%') or r.introduction like concat('%',
+                #{searchContent,jdbcType=VARCHAR}, '%') or r.ingredients like concat('%',
+                #{searchContent,jdbcType=VARCHAR}, '%') or r.method like concat('%', #{searchContent,jdbcType=VARCHAR},
+                '%'))
+            </if>
+            <if test="creatorId != null">
+                and r.user_id = #{creatorId, jdbcType=VARCHAR}
+            </if>
+            <if test="recipeId != null">
+                and r.recipe_id = #{recipeId, jdbcType=VARCHAR}
+            </if>
+        </where>
+        group by r.recipe_id;
+    </select>
+
 </mapper>
