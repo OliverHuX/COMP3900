@@ -254,4 +254,40 @@
         where rr.recipe_id = #{recipeId}
     </delete>
 
+    <delete id="deletePhotoByRecipeId" parameterType="com.yyds.recipe.model.Recipe">
+        delete
+        from recipe.photo rp
+        where rp.recipe_id = #{recipeId}
+    </delete>
+
+    <delete id="deleteVideoByRecipeId" parameterType="com.yyds.recipe.model.Recipe">
+        delete
+        from recipe.video rv
+        where rv.recipe_id = #{recipeId}
+    </delete>
+
+    <update id="updateRecipe" parameterType="com.yyds.recipe.model.Recipe">
+        update recipe.recipe
+        <set>
+            <if test="title != null">
+                title = #{title}
+            </if>
+            <if test="introduction != null">
+                introduction = #{introduction}
+            </if>
+            <if test="ingredients != null">
+                ingredients = #{ingredients}
+            </if>
+            <if test="method != null">
+                method = #{method}
+            </if>
+            <if test="timeDuration != null">
+                time_duration = ${timeDuration}
+            </if>
+        </set>
+        <where>
+            user_id = #{userId}
+        </where>
+    </update>
+
 </mapper>

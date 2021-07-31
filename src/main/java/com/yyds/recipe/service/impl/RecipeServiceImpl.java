@@ -36,9 +36,6 @@ import java.util.*;
 public class RecipeServiceImpl implements RecipeService {
 
     @Autowired
-    private CollectionMapper collectionMapper;
-
-    @Autowired
     private UserMapper userMapper;
 
     @Autowired
@@ -130,6 +127,75 @@ public class RecipeServiceImpl implements RecipeService {
         }
 
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
+    }
+
+    @Override
+    @Transactional(value = "transactionManager", rollbackFor = Exception.class)
+    public ResponseEntity<?> updateRecipe(MultipartFile[] uploadPhotos, Recipe recipe, MultipartFile[] uploadVideos, HttpServletRequest request) {
+        if (recipe == null || recipe.getRecipeId() == null) {
+            return ResponseUtil.getResponse(ResponseCode.PARAMETER_ERROR, null, null);
+        }
+        Recipe checkedRecipe = recipeMapper.getRecipeById(recipe.getRecipeId());
+        String token = request.getHeader("token");
+        if (StringUtils.isEmpty(token)) {
+            throw new AuthorizationException();
+        }
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        if (!StringUtils.equals(userId, checkedRecipe.getUserId())) {
+            return ResponseUtil.getResponse(ResponseCode.BUSINESS_LOGIC_ERROR, null, null);
+        }
+        try {
+            if (uploadPhotos != null) {
+                recipeMapper.deletePhotoByRecipeId(recipe);
+                recipe.setRecipePhotos(new ArrayList<>());
+                for (MultipartFile uploadPhoto : uploadPhotos) {
+                    String originalFilename = uploadPhoto.getOriginalFilename();
+                    if (originalFilename == null) {
+                        continue;
+                    }
+                    String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+                    String contentType = uploadPhoto.getContentType();
+                    InputStream inputStream = null;
+                    try {
+                        inputStream = uploadPhoto.getInputStream();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    String photoName = UUIDGenerator.generateUUID() + suffix;
+                    minioUtil.putObject(recipePhotoBucketName, photoName, contentType, inputStream);
+                    recipe.getRecipePhotos().add(photoName);
+                }
+            }
+
+            if (uploadVideos != null) {
+                recipeMapper.deleteVideoByRecipeId(recipe);
+                recipe.setRecipeVideos(new ArrayList<>());
+                for (MultipartFile uploadVideo : uploadVideos) {
+                    String originalFilename = uploadVideo.getOriginalFilename();
+                    if (originalFilename == null) {
+                        continue;
+                    }
+                    String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+                    String contentType = uploadVideo.getContentType();
+                    InputStream inputStream = null;
+                    try {
+                        inputStream = uploadVideo.getInputStream();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    String videoName = UUIDGenerator.generateUUID() + suffix;
+                    minioUtil.putObject(recipeVideoBucketName, videoName, contentType, inputStream);
+                    recipe.getRecipeVideos().add(videoName);
+                }
+            }
+
+            recipeMapper.updateRecipe(recipe);
+        } catch (Exception e) {
+            throw new MySqlErrorException();
+        }
+
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
+
     }
 
     @Override

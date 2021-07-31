@@ -51,4 +51,10 @@ public interface RecipeMapper {
     void saveVideos(String recipeId, List<String> uploadVideos);
 
     void deleteRecipe(Recipe recipe);
+
+    void deletePhotoByRecipeId(Recipe recipe);
+
+    void deleteVideoByRecipeId(Recipe recipe);
+
+    void updateRecipe(Recipe recipe);
 }

@@ -11,6 +11,8 @@ public interface RecipeService {
     ResponseEntity<?> postRecipe(HttpServletRequest request, MultipartFile[] uploadPhotos, Recipe recipe,
                                  MultipartFile[] uploadVideos);
 
+    ResponseEntity<?> updateRecipe(MultipartFile[] uploadPhotos, Recipe recipe, MultipartFile[] uploadVideos, HttpServletRequest request);
+
     ResponseEntity<?> deleteRecipe(Recipe recipe, HttpServletRequest request);
 
     ResponseEntity<?> likeRecipe(HttpServletRequest request, Recipe recipe);

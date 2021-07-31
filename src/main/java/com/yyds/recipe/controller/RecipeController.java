@@ -25,8 +25,12 @@ public class RecipeController {
     }
 
     @RequestMapping(value = "/recipe/update", method = RequestMethod.POST)
-    public ResponseEntity<?> RecipeUpdate(@RequestPart(value = "jsonData") Recipe recipe, HttpServletRequest request) {
-        return null;
+    public ResponseEntity<?> RecipeUpdate(
+            @RequestPart(value = "uploadPhotos", required = false) MultipartFile[] uploadPhotos,
+            @RequestPart(value = "jsonData") Recipe recipe,
+            @RequestPart(value = "uploadVideos", required = false) MultipartFile[] uploadVideos,
+            HttpServletRequest request) {
+        return recipeService.updateRecipe(uploadPhotos, recipe, uploadVideos, request);
     }
 
     @RequestMapping(value = "/recipe/delete", method = RequestMethod.POST)
