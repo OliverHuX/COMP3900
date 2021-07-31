@@ -8,7 +8,7 @@ import ChineseFood from '../../components/ChineseFood'
 import RecipeDetail from '../RecipeDetail'
 import Profile from '../../components/Profile';
 import Password from '../../components/Password'
-
+import JapaneseFood from '../../components/JapaneseFood'
 import FetchFunc from '../../components/fetchFunc';
 import { Switch, Route } from 'react-router-dom';
 import Main from '../Main';
@@ -177,6 +177,9 @@ export default function Home  ()  {
                         <UpCircleOutlined className='upload' onClick={ showModal } />
                         <ChineseFood /> 
                     </Route>
+                    <Route path='/home/janpnesefood' exact>
+                        <JapaneseFood/>
+                    </Route>
                     <Route path='/home/recipedetail' exact>
                         <UpCircleOutlined className='upload' onClick={ showModal } />
                         <RecipeDetail /> 
@@ -186,9 +189,8 @@ export default function Home  ()  {
                     </Route>
                     <Route path='/home/password' exact>
                         <Password />
-                    </Route>
+                    </Route> 
 
-                    
                 </Switch>
 
             </Content>
