@@ -21,6 +21,7 @@ const { Search } = Input;
 // }
 
 const StyledHeader = (props) => {
+    const [userId, setId] = React.useState('123')
     const menu = (
         <Menu>
             <Menu.Item>
@@ -55,7 +56,7 @@ const StyledHeader = (props) => {
                 {/* <a>Customise Profile</a> */}
             </Menu.Item>
             <Menu.Item>
-                <a>My Recipe</a>
+                <Link to={'/home/myrecipe/' + userId}>My Recipe</Link>
             </Menu.Item>
             <Menu.Item>
                 <a>My collection</a>

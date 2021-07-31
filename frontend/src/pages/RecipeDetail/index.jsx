@@ -43,12 +43,10 @@ function getDetial(token,cur_recipeId,
     
                     ) {
 
-
-      const result = FetchFunc(`recipe/recipe_list?recipeId=${cur_recipeId}`, 'GET', token,null);
-      result.then((data) => {
+    const result = FetchFunc(`recipe/recipe_list?recipeId=${cur_recipeId}`, 'GET', token,null);
+    result.then((data) => {
         console.log('response is ',data);
-
-        if (data.status === 200) {          
+        if (data.status === 200) {
             
             data.json().then(res => {
 
@@ -69,10 +67,10 @@ function getDetial(token,cur_recipeId,
             // console.log('res content', res);
 
             // console.log('res.recipe_lists  ',res.recipe_lists)
-          })
+            })
           
         }
-      })
+    })
 }
 
 
