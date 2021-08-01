@@ -78,7 +78,7 @@ function getDetial(token,cur_recipeId,
                     var comment = res.recipe_lists[0].comments[key];
                     var payload = {
                         author: comment.nickName,
-                        avatar: comment.profilePhoto,
+                        avatar: URL.createObjectURL(comment.profilePhoto),
                         content: (
                             <p>
                             {comment.content}
@@ -229,6 +229,7 @@ const RecipeDetail = () => {
                     </div>
                 </div>
             </div>
+            <Comments comments={comments}/>
             <div>
                 {/* {comments.length > 0 && <CommentList comments={comments} />} */}
                 <Comment
@@ -252,7 +253,6 @@ const RecipeDetail = () => {
                     }
                 />
             </div>
-            <Comments comments={comments}/>
         </div>
     )
 }
