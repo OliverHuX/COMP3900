@@ -309,6 +309,9 @@ public class RecipeServiceImpl implements RecipeService {
 
             List<Comment> comments = recipe.getComments();
             for (Comment comment : comments) {
+                if (comment.getProfilePhoto() == null) {
+                    continue;
+                }
                 String photoName = minioUtil.presignedGetObject(profilePhotoBucketName, comment.getProfilePhoto(), 7);
                 comment.setProfilePhoto(photoName);
             }
