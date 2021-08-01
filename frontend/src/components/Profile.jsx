@@ -95,8 +95,9 @@ export default function Profile () {
     const [lastName, setLast] = React.useState('');
     const token = localStorage.getItem('token');
     const classes = useStyles();
-
-    getInfo(setNickName, setBOD, setEmail, setAvatar, setGender, setFirst, setLast, token)
+    React.useEffect(()=>{ 
+        getInfo(setNickName, setBOD, setEmail, setAvatar, setGender, setFirst, setLast, token)
+      },[])
     
     const handleChange = (event) => {
         setNickName(event.target.value);
