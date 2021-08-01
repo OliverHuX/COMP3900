@@ -557,17 +557,17 @@ public class RecipeServiceImpl implements RecipeService {
             size = recipeListSize;
         }
 
-        recipeList.sort((o1, o2) -> o1.getLikes() - o2.getLikes());
+        recipeList.sort((o1, o2) -> o2.getLikes() - o1.getLikes());
         List<Recipe> topLikesList = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             topLikesList.add(recipeList.get(i));
         }
-        recipeList.sort((o1, o2) -> o1.getRateScore().compareTo(o2.getRateScore()));
+        recipeList.sort((o1, o2) -> o2.getRateScore().compareTo(o1.getRateScore()));
         List<Recipe> topRateList = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             topRateList.add(recipeList.get(i));
         }
-        recipeList.sort((o1, o2) -> o1.getTimeDuration() - o2.getTimeDuration());
+        recipeList.sort((o1, o2) -> o2.getTimeDuration() - o1.getTimeDuration());
         List<Recipe> easyRecipeList = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             easyRecipeList.add(recipeList.get(i));
