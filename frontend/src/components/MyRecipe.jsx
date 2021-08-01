@@ -37,10 +37,10 @@ export default function MyRecipe() {
     const [recipes, setRecipes] = React.useState([])
     const token = localStorage.getItem('token')
     const userId = localStorage.getItem('userId')
-    console.log(recipeId)
+    // console.log(recipeId)
 
     React.useEffect(() => {
-        etRecipe(token, userId, setRecipes, recipes)
+        getRecipe(token, userId, setRecipes, recipes)
     }, [])
 
     return (

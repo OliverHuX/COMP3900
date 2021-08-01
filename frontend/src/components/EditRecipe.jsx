@@ -23,10 +23,12 @@ function getRecipe(token, recipeId, setTitle, setTime, setIntro, setIngre) {
     })
 }
 
+// function updateRecipe() {}
 
 export default function EditRecipe () {
     const url = window.location.href.split('/')
     const recipeId = url[url.length - 1]
+    const token = localStorage.getItem('token')
     const classes = useStyles();
     const [title, setTitle] = React.useState('');
     const [time, setTime] = React.useState('');
