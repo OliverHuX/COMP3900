@@ -57,6 +57,7 @@ function signin(email, password, history, remember) {
 export default function SignIn() {
   const classes = myStyles();
   const [email, setEmailInputs] = React.useState(localStorage.getItem('email'));
+  console.log(email)
   const [passWord, setPasswordInputs] = React.useState('');
   const [errorMsg, setErrorMsg] = React.useState('');
   const [error, setError] = React.useState(false);
@@ -91,6 +92,7 @@ export default function SignIn() {
                 id="email"
                 label="Email Address"
                 name="email"
+                value={email}
                 autoComplete="email"
                 autoFocus
                 onChange={ (e) => setEmailInputs(e.target.value) }
