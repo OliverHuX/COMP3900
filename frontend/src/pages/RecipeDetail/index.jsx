@@ -39,9 +39,8 @@ function getDetial(token,cur_recipeId,
                     setingredients,
                     setmethod,
                     settags,
-                    setnickName
-    
-    
+                    setnickName,
+                    setComments
                     ) {
 
     const result = FetchFunc(`recipe/recipe_list?recipeId=${cur_recipeId}`, 'GET', token,null);
@@ -65,6 +64,23 @@ function getDetial(token,cur_recipeId,
                 setnickName(res.recipe_lists[0].nickName)
                 console.log('I got the recipe ditails',res.recipe_lists[0].tags)
                 
+                for (comment in res.comments) {
+                    var payload = {
+                        author: comment.nickName,
+                        avatar: comment.profilePhoto,
+                        content: (
+                            <p>
+                            {comment.content}
+                            </p>
+                        ),
+                        datetime: (
+                            <Tooltip title={moment(comment.createTime).format('YYYY-MM-DD HH:mm:ss')}>
+                            <span>{moment(comment.createTime).fromNow()}</span>
+                            </Tooltip>
+                        ),
+                    }
+                    setComments(coms => [...coms, payload])
+                }
 
             
             // console.log('res content', res);
@@ -104,6 +120,7 @@ const RecipeDetail = () => {
     const [method, setmethod] = useState('');
     const [tags, settags] = useState([]);
     const [nickName, setnickName] = useState('');
+    const [comments, setComments] = useState([]);
 
     const data = [
         '/assets/img/recipe1.png',
@@ -116,7 +133,7 @@ const RecipeDetail = () => {
     const token = localStorage.getItem('token');
 
     React.useEffect(()=>{ 
-        getDetial(token,cur_recipeId,setPhotoList,setTitle,setrateScore,settimeDuration,setintroduction,setingredients,setmethod,settags,setnickName)
+        getDetial(token,cur_recipeId,setPhotoList,setTitle,setrateScore,settimeDuration,setintroduction,setingredients,setmethod,settags,setnickName, setComments)
       },[])
       
     //   let d = [...photolist];
@@ -228,7 +245,7 @@ const RecipeDetail = () => {
                     }
                 />
             </div>
-            <Comments />
+            <Comments comments={comments}/>
         </div>
     )
 }

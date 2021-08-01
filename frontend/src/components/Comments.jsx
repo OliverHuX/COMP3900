@@ -1,47 +1,48 @@
 import React from 'react';
 import { List, Tooltip, Comment } from 'antd';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 
-export default function Comments() {
-    const [comments, setComments] = React.useState('')
+export default function Comments({ comments }) {
+    // const [comments, setComments] = React.useState('')
     
-    React.useEffect(() => {
-        setComments([
-            {
-                author: 'Han Solo',
-                avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-                content: (
-                  <p>
-                    We supply a series of design principles, practical patterns and high quality design
-                    resources (Sketch and Axure), to help people create their product prototypes beautifully and
-                    efficiently.
-                  </p>
-                ),
-                datetime: (
-                  <Tooltip title={moment().subtract(1, 'days').format('YYYY-MM-DD HH:mm:ss')}>
-                    <span>{moment().subtract(1, 'days').fromNow()}</span>
-                  </Tooltip>
-                ),
-            },
-            {
-                author: 'Han HHHHHH',
-                avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-                content: (
-                    <p>
-                      We supply a series of design principles, practical patterns and high quality design
-                      resources (Sketch and Axure), to help people create their product prototypes beautifully and
-                      efficiently.
-                    </p>
-                ),
-                datetime: (
-                    <Tooltip title={moment().subtract(1, 'days').format('YYYY-MM-DD HH:mm:ss')}>
-                      <span>{moment('2021-05-21 23:34:12').fromNow()}</span>
-                    </Tooltip>
-                  ),
-            },
-        ]);
-    }, []);
+    // React.useEffect(() => {
+    //     setComments([
+    //         {
+    //             author: 'Han Solo',
+    //             avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+    //             content: (
+    //               <p>
+    //                 We supply a series of design principles, practical patterns and high quality design
+    //                 resources (Sketch and Axure), to help people create their product prototypes beautifully and
+    //                 efficiently.
+    //               </p>
+    //             ),
+    //             datetime: (
+    //               <Tooltip title={moment().subtract(1, 'days').format('YYYY-MM-DD HH:mm:ss')}>
+    //                 <span>{moment().subtract(1, 'days').fromNow()}</span>
+    //               </Tooltip>
+    //             ),
+    //         },
+    //         {
+    //             author: 'Han HHHHHH',
+    //             avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+    //             content: (
+    //                 <p>
+    //                   We supply a series of design principles, practical patterns and high quality design
+    //                   resources (Sketch and Axure), to help people create their product prototypes beautifully and
+    //                   efficiently.
+    //                 </p>
+    //             ),
+    //             datetime: (
+    //                 <Tooltip title={moment().subtract(1, 'days').format('YYYY-MM-DD HH:mm:ss')}>
+    //                   <span>{moment('2021-05-21 23:34:12').fromNow()}</span>
+    //                 </Tooltip>
+    //               ),
+    //         },
+    //     ]);
+    // }, []);
 
     return (
         <div>
@@ -64,3 +65,7 @@ export default function Comments() {
         </div>
     )
 }
+
+Comments.propTypes = {
+    comments: PropTypes.array
+};
