@@ -9,7 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
 import { useStyles } from './Style';
 
-export default function RecipeCard ({ recipeId }) {
+export default function RecipeCard ({ recipeId, title, intro, photo }) {
 
     const classes = useStyles();
 
@@ -27,15 +27,15 @@ export default function RecipeCard ({ recipeId }) {
             <Card className={classes.card}>
             <CardMedia
                 className={classes.cardMedia}
-                image={require('../test.jpg')}
+                image={require(photo)}
                 title="Image title"
             />
             <CardContent className={classes.cardContent}>
                 <Typography gutterBottom variant="h5" component="h2">
-                Title
+                {title}
                 </Typography>
                 <Typography>
-                This is a my recipe card.
+                {intro}
                 </Typography>
             </CardContent>
             <CardActions>
@@ -60,5 +60,8 @@ export default function RecipeCard ({ recipeId }) {
 }
 
 RecipeCard.propTypes = {
-    recipeId: PropTypes.string
+    recipeId: PropTypes.string,
+    title: PropTypes.string,
+    intro: PropTypes.string,
+    photo: PropTypes.string,
 };

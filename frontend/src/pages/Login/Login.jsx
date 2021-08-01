@@ -35,6 +35,7 @@ function signin(email, password, history, remember) {
           localStorage.setItem('email', email)
         }
         console.log(res.token);
+        localStorage.setItem('userId', res.userId);
         localStorage.setItem('token', res.token);
         history.push('./home')
       })
