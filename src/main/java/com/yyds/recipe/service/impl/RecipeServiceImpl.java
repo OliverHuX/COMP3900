@@ -512,6 +512,26 @@ public class RecipeServiceImpl implements RecipeService {
                 resultMap.put("top_rates_list", topRateList);
                 resultMap.put("random_recipe_list", randomRecipeList);
                 resultMap.put("easy_recipe_list", easyRecipeList);
+
+                LinkedHashMap<String, Object> topLikes = new LinkedHashMap<>();
+                topLikes.put("list", topLikesList);
+                topLikes.put("name", "like");
+                resultMap.put("top_likes_list", topLikes);
+
+                LinkedHashMap<String, Object> topRate = new LinkedHashMap<>();
+                topRate.put("list", topRateList);
+                topRate.put("name", "rate");
+                resultMap.put("top_rates_list", topRate);
+
+                LinkedHashMap<String, Object> randomRecipe = new LinkedHashMap<>();
+                randomRecipe.put("list", randomRecipeList);
+                randomRecipe.put("name", "random");
+                resultMap.put("random_recipe_list", randomRecipe);
+
+                LinkedHashMap<String, Object> easyRecipe = new LinkedHashMap<>();
+                easyRecipe.put("list", easyRecipeList);
+                easyRecipe.put("name", "easy");
+                resultMap.put("easy_recipe_list", easyRecipe);
                 return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, resultMap);
             }
         } catch (Exception ignored) {
@@ -576,10 +596,27 @@ public class RecipeServiceImpl implements RecipeService {
             return ResponseUtil.getResponse(ResponseCode.REDIS_ERROR, null, null);
         }
         LinkedHashMap<String, Object> resultMap = new LinkedHashMap<>();
-        resultMap.put("top_likes_list", topLikesList);
-        resultMap.put("top_rates_list", topRateList);
-        resultMap.put("random_recipe_list", randomRecipeList);
-        resultMap.put("easy_recipe_list", easyRecipeList);
+
+        LinkedHashMap<String, Object> topLikes = new LinkedHashMap<>();
+        topLikes.put("list", topLikesList);
+        topLikes.put("name", "like");
+        resultMap.put("top_likes_list", topLikes);
+
+        LinkedHashMap<String, Object> topRate = new LinkedHashMap<>();
+        topRate.put("list", topRateList);
+        topRate.put("name", "rate");
+        resultMap.put("top_rates_list", topRate);
+
+        LinkedHashMap<String, Object> randomRecipe = new LinkedHashMap<>();
+        randomRecipe.put("list", randomRecipeList);
+        randomRecipe.put("name", "random");
+        resultMap.put("random_recipe_list", randomRecipe);
+
+        LinkedHashMap<String, Object> easyRecipe = new LinkedHashMap<>();
+        easyRecipe.put("list", easyRecipeList);
+        easyRecipe.put("name", "easy");
+        resultMap.put("easy_recipe_list", easyRecipe);
+
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, resultMap);
     }
 }
