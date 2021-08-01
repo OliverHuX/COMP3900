@@ -11,10 +11,7 @@ import com.yyds.recipe.model.Comment;
 import com.yyds.recipe.model.Recipe;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.RecipeService;
-import com.yyds.recipe.utils.JwtUtil;
-import com.yyds.recipe.utils.MinioUtil;
-import com.yyds.recipe.utils.ResponseUtil;
-import com.yyds.recipe.utils.UUIDGenerator;
+import com.yyds.recipe.utils.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,6 +45,9 @@ public class RecipeServiceImpl implements RecipeService {
     private MinioUtil minioUtil;
 
     @Autowired
+    private AliyunOSSUtil aliyunOSSUtil;
+
+    @Autowired
     private RedisTemplate<String, Serializable> redisTemplate;
 
     @Value("${minio.bucket.recipe.photo}")
@@ -58,6 +58,13 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Value("${minio.bucket.profile.photo}")
     private String profilePhotoBucketName;
+
+    @Value("${aliyun.oss.bucketName}")
+    private String bucketName;
+
+    private final static String RECIPE_PHOTO_FOLDER = "recipe-photos/";
+
+    private final static String RECIPE_VIDEO_FOLDER = "recipe-videos/";
 
 
     @Override
@@ -72,40 +79,42 @@ public class RecipeServiceImpl implements RecipeService {
 
         recipe.setRecipePhotos(new ArrayList<>());
         for (MultipartFile uploadPhoto : uploadPhotos) {
-            String originalFilename = uploadPhoto.getOriginalFilename();
-            if (originalFilename == null) {
-                continue;
-            }
-            String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
-            String contentType = uploadPhoto.getContentType();
-            InputStream inputStream = null;
-            try {
-                inputStream = uploadPhoto.getInputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            String photoName = UUIDGenerator.generateUUID() + suffix;
-            minioUtil.putObject(recipePhotoBucketName, photoName, contentType, inputStream);
+            // String originalFilename = uploadPhoto.getOriginalFilename();
+            // if (originalFilename == null) {
+            //     continue;
+            // }
+            // String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+            // String contentType = uploadPhoto.getContentType();
+            // InputStream inputStream = null;
+            // try {
+            //     inputStream = uploadPhoto.getInputStream();
+            // } catch (IOException e) {
+            //     e.printStackTrace();
+            // }
+            // String photoName = UUIDGenerator.generateUUID() + suffix;
+            // minioUtil.putObject(recipePhotoBucketName, photoName, contentType, inputStream);
+            String photoName = aliyunOSSUtil.uploadObject(uploadPhoto, bucketName, RECIPE_PHOTO_FOLDER);
             recipe.getRecipePhotos().add(photoName);
         }
 
         if (uploadVideos != null) {
             recipe.setRecipeVideos(new ArrayList<>());
             for (MultipartFile uploadVideo : uploadVideos) {
-                String originalFilename = uploadVideo.getOriginalFilename();
-                if (originalFilename == null) {
-                    continue;
-                }
-                String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
-                String contentType = uploadVideo.getContentType();
-                InputStream inputStream = null;
-                try {
-                    inputStream = uploadVideo.getInputStream();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                String videoName = UUIDGenerator.generateUUID() + suffix;
-                minioUtil.putObject(recipeVideoBucketName, videoName, contentType, inputStream);
+                // String originalFilename = uploadVideo.getOriginalFilename();
+                // if (originalFilename == null) {
+                //     continue;
+                // }
+                // String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+                // String contentType = uploadVideo.getContentType();
+                // InputStream inputStream = null;
+                // try {
+                //     inputStream = uploadVideo.getInputStream();
+                // } catch (IOException e) {
+                //     e.printStackTrace();
+                // }
+                // String videoName = UUIDGenerator.generateUUID() + suffix;
+                // minioUtil.putObject(recipeVideoBucketName, videoName, contentType, inputStream);
+                String videoName = aliyunOSSUtil.uploadObject(uploadVideo, bucketName, RECIPE_VIDEO_FOLDER);
                 recipe.getRecipeVideos().add(videoName);
             }
         }
@@ -126,10 +135,13 @@ public class RecipeServiceImpl implements RecipeService {
             throw new MySqlErrorException();
         }
 
-        try {
-            recipeMapper.saveVideos(recipeId, recipe.getRecipeVideos());
-        } catch (Exception e) {
-            throw new MySqlErrorException();
+        if (!(recipe.getRecipeVideos() == null || recipe.getRecipeVideos().size() == 0)) {
+
+            try {
+                recipeMapper.saveVideos(recipeId, recipe.getRecipeVideos());
+            } catch (Exception e) {
+                throw new MySqlErrorException();
+            }
         }
 
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
@@ -300,7 +312,8 @@ public class RecipeServiceImpl implements RecipeService {
             List<String> recipePhotos = new ArrayList<>();
             List<String> fileNameList = recipeMapper.getFileNameListByRecipeId(recipe.getRecipeId());
             for (String fileName : fileNameList) {
-                String fileUrl = minioUtil.presignedGetObject(recipePhotoBucketName, fileName, 7);
+                // String fileUrl = minioUtil.presignedGetObject(recipePhotoBucketName, fileName, 7);
+                String fileUrl = aliyunOSSUtil.getUrl(bucketName, RECIPE_PHOTO_FOLDER,fileName);
                 recipePhotos.add(fileUrl);
             }
             recipe.setRecipePhotos(recipePhotos);

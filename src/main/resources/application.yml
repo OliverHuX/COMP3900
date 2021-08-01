@@ -48,10 +48,10 @@ spring:
 
   # mail
   mail:
-    host: smtp.gmail.com
-    username: yyds.w09a@gmail.com
-    password: jpbdfjoagyzeteds
-    port: 465
+    host: smtp.office365.com
+    username: comp3900-w18a-yyds@outlook.com
+    password: COMP3900
+    port: 587
     protocol: smtp
     properties.mail.display.sendmail: Springboot
     properties.mail.display.sendname: COMP3900-YYDS
@@ -68,8 +68,15 @@ spring:
           writetimeout: 6000
           ssl: true
           socketFactory:
-            port: 465
+            port: 587
             class: javax.net.ssl.SSLSocketFactory
+
+  thymeleaf:
+    cache: false
+    encoding: utf-8
+    mode: HTML5
+    prefix: classpath:/templates/
+    suffix: .html
 
 
 # mybatis
@@ -113,3 +120,10 @@ management:
       show-details: always
     shutdown:
       enabled: true
+
+aliyun:
+  oss:
+    bucketName: comp3900-w18a-yyds
+    accessKeyId: LTAI5tMGGufMdDKS2SiyQXdJ
+    accessKeySecret: B3FaLdpLAQFFZ9gaWqyCFgaNdA6JtR
+    endpoint: oss-cn-shenzhen.aliyuncs.com
