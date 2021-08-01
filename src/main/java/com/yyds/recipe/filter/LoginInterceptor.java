@@ -33,7 +33,12 @@ public class LoginInterceptor implements HandlerInterceptor {
             throw new AuthorizationException();
         }
 
-        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        String userId = null;
+        try {
+            userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        } catch (Exception e) {
+            throw new AuthorizationException();
+        }
         User user = userMapper.getUserByUserId(userId);
         if (user == null) {
             throw new AuthorizationException();
