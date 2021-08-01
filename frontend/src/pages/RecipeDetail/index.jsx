@@ -163,6 +163,10 @@ const RecipeDetail = () => {
     const handleOnchange = (e) => {
         setNewComments(e.target.value)
     }
+    const sentScore = () => {
+        
+
+    }
 
     return (
         <div>
@@ -173,7 +177,7 @@ const RecipeDetail = () => {
                         
                         photolist.map((i)=>(
                             <div>       
-                                <img style={{maxWidth:50, height:'auto'}} src= {i} alt="" />
+                                <img style={{maxWidth:500, height:'auto'}} src= {i} alt="" />
                             </div>                          
                             ))       
                         }

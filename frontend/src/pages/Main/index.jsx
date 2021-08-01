@@ -172,7 +172,7 @@ const Main = () => {
                 </div>
             </Col>
         </Row>
-        <h2 className='subtitle'>Title One Easy Dinners</h2>
+        <h2 className='subtitle'>Japanese </h2>
         <FoodList data={ data } like={like} />
 
         <h2 className='subtitle'>Title Two Easy Dinners</h2>
