@@ -1,6 +1,6 @@
 import React from 'react'
 import {  Card } from 'antd';
-import { FieldTimeOutlined, HeartOutlined, StarFilled ,HeartFilled} from '@ant-design/icons';
+import { FieldTimeOutlined, HeartOutlined, StarFilled ,HeartFilled,StarOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 // import LikeHeart from './LikeHeart';
 const { Meta } = Card;
@@ -41,9 +41,9 @@ const FoodList = (props) => {
                                             {
                                                 (new Array(5)).fill('').map((val,i)=>{
                                                     if(i<recipe.rateScore){
-                                                        return <StarFilled style={{color:'#197574'}} />
+                                                        return <StarFilled style={{color: '#f4bf1f'}} />
                                                     }else{
-                                                        return <StarFilled style={{color:'#aecbd1'}} />
+                                                        return <StarOutlined  style={{color: '#f4bf1f'}} />
                                                     }
                                                     
 

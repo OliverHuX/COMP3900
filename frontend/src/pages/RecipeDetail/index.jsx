@@ -1,6 +1,6 @@
 import React, { useState, createElement } from 'react'
 import './index.css'
-import { Layout, Modal, Row, Col, Card, Carousel, Button, Input, Form, Upload, Select, message, Comment, Avatar, Tooltip, List, Alert, Image } from 'antd';
+import {Tag, Layout, Modal, Row, Col, Card, Carousel, Button, Input, Form, Upload, Select, message, Comment, Avatar, Tooltip, List, Alert, Image } from 'antd';
 import { TagsOutlined, PrinterOutlined, StarFilled, StarOutlined, ClockCircleFilled, CheckCircleFilled, ToolFilled, ConsoleSqlOutlined } from '@ant-design/icons';
 import FoodList from '../../components/FoodList';
 import StyledHeader from '../../components/StyledHeader'
@@ -50,7 +50,8 @@ function getDetial(token,cur_recipeId,
                     setmethod,
                     settags,
                     setnickName,
-                    setComments
+                    setComments,
+                    setmyRateScore
                     ) {
 
     const result = FetchFunc(`recipe/recipe_list?recipeId=${cur_recipeId}`, 'GET', token,null);
@@ -59,7 +60,7 @@ function getDetial(token,cur_recipeId,
         if (data.status === 200) {
             
             data.json().then(res => {
-
+                setmyRateScore(res.recipe_lists[0].myRateScore)
                 setrateScore(res.recipe_lists[0].rateScore)
                 setPhotoList( res.recipe_lists[0].recipePhotos)
                 settimeDuration(res.recipe_lists[0].timeDuration)
@@ -142,7 +143,8 @@ const RecipeDetail = () => {
     const [nickName, setnickName] = useState('');
     const [comments, setComments] = useState([]);
     const [isRated, setisRated] = useState(0);
-
+    const [myRateScore, setmyRateScore] = useState(null);
+ 
     const data = [
         '/assets/img/recipe1.png',
         '/assets/img/recipe2.png',
@@ -154,7 +156,7 @@ const RecipeDetail = () => {
     const token = localStorage.getItem('token');
 
     React.useEffect(()=>{ 
-        getDetial(token,cur_recipeId,setPhotoList,setTitle,setrateScore,settimeDuration,setintroduction,setingredients,setmethod,settags,setnickName, setComments)
+        getDetial(token,cur_recipeId,setPhotoList,setTitle,setrateScore,settimeDuration,setintroduction,setingredients,setmethod,settags,setnickName, setComments,setmyRateScore)
       },[])
     console.log(comments)
     //   let d = [...photolist];
@@ -166,7 +168,8 @@ const RecipeDetail = () => {
     }
     const sentScore = (rate) => {
         console.log('xxxxxxxxxxxxxxxxxxxxxI click',rate)
-
+        setmyRateScore(rate)
+        setisRated(1)
     }
 
     return (
@@ -178,7 +181,7 @@ const RecipeDetail = () => {
                         
                         photolist.map((i)=>(
                             <div>       
-                                <img style={{maxWidth:500, maxHeight:400, object_fit:'contain' }} src= {i} alt="" />
+                                <img style={{maxWidth:500, maxHeight:400,minWidth:400,minHeight:400, object_fit:'contain' }} src= {i} alt="" />
                             </div>                          
                             ))       
                         }
@@ -199,18 +202,37 @@ const RecipeDetail = () => {
                         <span>Rating:   {rateScore} </span>
                         <span>
                             <span style={ { marginRight: 10 } }>Rate:</span>
-                            {
-                                (new Array(5)).fill('').map((val, i) => {
-                                    if (i < rate) {
-                                        return <StarFilled onMouseOver={ () => setRate(i + 1) } style={ { color: '#f4bf1f' } } />
-                                    } else {
-                                        return <StarOutlined onMouseOver={ () => setRate(i + 1) } style={ { color: '#f4bf1f' } } />
-                                    }
-                                }
-                                )
-                            }
+                            {isRated?
+                                                    <span>
+                                                            {
+                                                                
+                                                                    (new Array(5)).fill('').map((val, i) => {
+                                                                        if (i < myRateScore) {
+                                                                            return <StarFilled  style={ { color: '#f4bf1f' } } />
+                                                                        } else {
+                                                                            return <StarOutlined  style={ { color: '#f4bf1f' } } />
+                                                                        }
+                                                                        }
+                                                                    )
+                                                            }
+                                                    </span>:                                
+                            
+                                                    <span>
+                                                            {
+                                                                
+                                                                    (new Array(5)).fill('').map((val, i) => {
+                                                                        if (i < rate) {
+                                                                            return <StarFilled onMouseOver={ () => setRate(i + 1) } style={ { color: '#f4bf1f' } } />
+                                                                        } else {
+                                                                            return <StarOutlined onMouseOver={ () => setRate(i + 1) } style={ { color: '#f4bf1f' } } />
+                                                                        }
+                                                                        }
+                                                                    )
+                                                            }
+                                                    </span>}
+
                         </span>
-                        {isRated?<Button onClick={() => sentScore(rate)}style={ { backgroundColor: '#be2a77', color: '#fff' } } size='small'>you have already rated this recipe</Button>:<Button onClick={() => sentScore(rate)}style={ { backgroundColor: '#be2a77', color: '#fff' } } size='small'>Submit</Button>}
+                        {isRated?<Tag color="#87d068">Your score</Tag>:<Button onClick={() => sentScore(rate)}style={ { backgroundColor: '#be2a77', color: '#fff' } } size='small'>Submit</Button>}
                         
                     </div>
 
