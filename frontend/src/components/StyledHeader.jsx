@@ -59,7 +59,8 @@ const StyledHeader = (props) => {
                 <Link to={'/home/myrecipe/' + userId}>My Recipe</Link>
             </Menu.Item>
             <Menu.Item>
-                <a>My collection</a>
+              
+                <Link to={'/home/mylikes/'}>My Likes</Link>   
             </Menu.Item>
             <Menu.Item>
                 <a onClick = {props.showModal}>Upload Recipe</a>

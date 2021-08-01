@@ -4,6 +4,7 @@ import { NavLink as Link } from 'react-router-dom'
 import { FieldTimeOutlined, HeartOutlined, HeartFilled,StarFilled } from '@ant-design/icons';
 import FoodList from '../../components/FoodList';
 import FetchFunc from '../../components/fetchFunc';
+import { useHistory } from 'react-router-dom';
 const { Meta } = Card;
 
 const cur_recipeId = '53702903163a4556b664ef0cd9947662'
@@ -39,13 +40,15 @@ function getInfo(token,setData) {
 //     { recipePhotos: ['/assets/img/recipe1.png','/assets/img/recipe3.png'],isLiked:0,likes:10, title: 'AAA', introduction: 'AAAsimple decoration', timeDuration: '15', rateScore: 2 },
 //   ]
 const Main = () => {
-
+    const history = useHistory()
     const [data,setData] = useState([])
     const token = localStorage.getItem('token');
     React.useEffect(()=>{ 
       getInfo(token,setData)
     },[])
-
+    const GotoDetial = (cur_recipeId,history )=>{
+      history.push('/home/recipedetail/' + cur_recipeId)
+    }
     const like = (i)=>{
         let d = [...data];
         // console.log('xxxxxxxxxxx',d[0][0].likes)
@@ -114,13 +117,15 @@ const Main = () => {
                     {
                         data.map((foods) => (
                             foods.map((food, idx) => (
-                                        <Card
+                                        <Card                                  
+                                            
                                             key={ idx }
                                             hoverable
                                             style={ { width: '47%',marginBottom:10 } }
-                                            cover={ <img style={ { height: 200 } } alt="example" src={ food.recipePhotos[0]} /> }
+                                            cover={  <img onClick={()=>GotoDetial(food.recipeId,history)} style={ { height: 200 } } alt="example" src={ food.recipePhotos[0]} /> }
                                         >
-                                            <Meta title={ food.title } description={ food.introduction } />
+                                          
+                                            <Meta onClick={()=>GotoDetial(food.recipeId,history)} title={ food.title } description={ food.introduction } />
                                             <div className='ope'>
                                                 <span style={ { display: 'flex', alignItems: 'center' } }><FieldTimeOutlined style={ { color: '#197574' } } />{ food.timeDuration }mins</span>
                                                 <span onClick={()=>like(idx)} style={ { display: 'flex', alignItems: 'center' } }>{food.isLiked?<HeartFilled style={{color: '#f00',marginRight:5}}/>:<HeartOutlined style={{marginRight:5}}/>}{food.likes}</span>

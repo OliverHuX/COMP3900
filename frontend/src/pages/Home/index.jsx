@@ -12,6 +12,7 @@ import JapaneseFood from '../../components/JapaneseFood'
 import FetchFunc from '../../components/fetchFunc';
 import EditRecipe from '../../components/EditRecipe';
 import MyRecipe from '../../components/MyRecipe';
+import MyLikes from '../MyLikes';
 import { Switch, Route } from 'react-router-dom';
 import Main from '../Main';
 import axios from 'axios';
@@ -192,6 +193,9 @@ export default function Home  ()  {
                     <Route path='/home/myrecipe/:recipeId' exact>
                         <MyRecipe />
                     </Route>
+                    <Route path='/home/mylikes' exact>
+                        <MyLikes/>
+                    </Route> 
                     <Route path='/home/profile' exact>
                         <Profile />
                     </Route>
