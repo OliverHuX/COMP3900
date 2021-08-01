@@ -33,4 +33,6 @@ public interface UserService {
     ResponseEntity<?> getFollowingList(String search, HttpServletRequest request);
 
     ResponseEntity<?> getFollowerList(String search, HttpServletRequest request);
+
+    ResponseEntity<?> decodeToken(HttpServletRequest request);
 }
