@@ -141,6 +141,7 @@ const RecipeDetail = () => {
     const [tags, settags] = useState([]);
     const [nickName, setnickName] = useState('');
     const [comments, setComments] = useState([]);
+    const [isRated, setisRated] = useState(0);
 
     const data = [
         '/assets/img/recipe1.png',
@@ -209,7 +210,8 @@ const RecipeDetail = () => {
                                 )
                             }
                         </span>
-                        <Button onClick={() => sentScore(rate)}style={ { backgroundColor: '#be2a77', color: '#fff' } } size='small'>Confirm</Button>
+                        {isRated?<Button onClick={() => sentScore(rate)}style={ { backgroundColor: '#be2a77', color: '#fff' } } size='small'>you have already rated this recipe</Button>:<Button onClick={() => sentScore(rate)}style={ { backgroundColor: '#be2a77', color: '#fff' } } size='small'>Submit</Button>}
+                        
                     </div>
 
                     <div className='icons'>
