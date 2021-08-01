@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Row, Col, Card,Alert, Button, Space  } from 'antd';
 import { NavLink as Link } from 'react-router-dom'
 import { FieldTimeOutlined, HeartOutlined, HeartFilled,StarFilled } from '@ant-design/icons';
-import FoodList from '../../components/FoodList';
+import FoodList1 from '../../components/FoodList1';
 import FetchFunc from '../../components/fetchFunc';
 import { useHistory } from 'react-router-dom';
 const { Meta } = Card;
@@ -18,11 +18,15 @@ function getInfo(token,setData,setData1,setData2) {
       console.log(data);
       if (data.status === 200) {
         data.json().then(res => {
-          
-          setData(data => [...data, res.top_likes_list])
-          setData1(data => [...data, res.top_rates_list])
-        
           // console.log('res content', res);
+          // console.log('res.top_likes_list content', res.top_likes_list);
+          // console.log('res.top_likes_list.list content', res.top_likes_list.list);
+          // console.log('res.top_likes_list content', res.top_likes_list.list.recipeId);
+          setData(data => [...data, res.top_likes_list.list])
+          console.log('xxxxxxxxxxxxxxxxxxxxx', data);
+          setData1(data => [...data, res.top_rates_list.list])
+          setData2(data => [...data, res.random_recipe_list.list])
+        
 
           // console.log('res.recipe_lists  ',res.recipe_lists)
         })
@@ -43,8 +47,8 @@ function getInfo(token,setData,setData1,setData2) {
 const Main = () => {
     const history = useHistory()
     const [data,setData] = useState([])
-    const [data1,setData1] = useState([])
-    const [data2,setData2] = useState([])
+    const [toprates,setData1] = useState([])
+    const [randoms,setData2] = useState([])
     const token = localStorage.getItem('token');
     React.useEffect(()=>{ 
       getInfo(token,setData,setData1,setData2)
@@ -77,53 +81,53 @@ const Main = () => {
       // history.push('/home/recipedetail/' + cur_recipeId)
     }
     const like = (i)=>{
-        let d = [...data];
-        // console.log('xxxxxxxxxxx',d[0][0].likes)
-    
-        var recipeId = d[0][i].recipeId
-        
-        if(d[0][i].isLiked){
-            d[0][i].isLiked = 0;
-            d[0][i].likes--;
-            console.log('recipe ID is :', d[0][i].recipeId)
-            
-            recipeId = d[0][i].recipeId
-    
-            const payload = JSON.stringify({
-              recipeId:recipeId
-            });
-            const result = FetchFunc(`recipe/unlike`, 'POST', token, payload);
-            console.log(result)
-            result.then((data) => {
-              console.log('mypost unlike data is',data);
+              let d = [...data];
+              // console.log('xxxxxxxxxxx',d[0][0].likes)
               
-              if (data.status === 200) {
-                console.log('post unLike success')
-              }
-            })
-        }else{
-            d[0][i].isLiked = 1;
-            d[0][i].likes++;
-            console.log('recipe ID is :', d[0][i].recipeId)
-            
-            recipeId = d[0][i].recipeId
-    
-            var payload2 = JSON.stringify({
-              recipeId:recipeId
-            });
-            const result = FetchFunc(`recipe/like`, 'POST', token, payload2);
-            console.log(result)
-            result.then((data) => {
-              console.log('mypost data is',data);
-              if (data.status === 200) {
-                console.log('post Like success')
-              }
-            })
+              var recipeId = d[0][i].recipeId
+              
+              if(d[0][i].isLiked){
+                  d[0][i].isLiked = 0;
+                  d[0][i].likes--;
+                  console.log('recipe ID is :', d[0][i].recipeId)
+                  
+                  recipeId = d[0][i].recipeId
+          
+                  const payload = JSON.stringify({
+                    recipeId:recipeId
+                  });
+                  const result = FetchFunc(`recipe/unlike`, 'POST', token, payload);
+                  console.log(result)
+                  result.then((data) => {
+                    console.log('mypost unlike data is',data);
+                    
+                    if (data.status === 200) {
+                      console.log('post unLike success')
+                    }
+                  })
+              }else{
+                  d[0][i].isLiked = 1;
+                  d[0][i].likes++;
+                  console.log('recipe ID is :', d[0][i].recipeId)
+                  
+                  recipeId = d[0][i].recipeId
+          
+                  var payload2 = JSON.stringify({
+                    recipeId:recipeId
+                  });
+                  const result = FetchFunc(`recipe/like`, 'POST', token, payload2);
+                  console.log(result)
+                  result.then((data) => {
+                    console.log('mypost data is',data);
+                    if (data.status === 200) {
+                      console.log('post Like success')
+                    }
+                  })
 
-    
-        }
-        
-        setData(d)
+          
+              }
+              
+              setData(d)
           
       }
     return (<div>
@@ -176,10 +180,10 @@ const Main = () => {
             </Col>
         </Row>
         <h2 className='subtitle'>Title One Easy Dinners</h2>
-        <FoodList data={ data } like={like} />
+            <FoodList1 data={ randoms } like={like} />
 
         <h2 className='subtitle'>Title Two Easy Dinners</h2>
-            <FoodList data={data1} like={like} />
+            <FoodList1 data={toprates} like={like} />
     </div>
     )
 }
