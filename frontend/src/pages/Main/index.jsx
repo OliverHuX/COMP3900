@@ -8,18 +8,19 @@ import { useHistory } from 'react-router-dom';
 const { Meta } = Card;
 
 const cur_recipeId = '53702903163a4556b664ef0cd9947662'
-function getInfo(token,setSoupData,setJapaneseData) {
+function getInfo(token,setData,setData1,setData2) {
 
     // post the request
     console.log('token now is ', token);
-    const result = FetchFunc(`visitor/recipe_list?search=Soup`, 'GET', null, null);
+    const result = FetchFunc(`visitor/recipe_list`, 'GET', null, null);
     console.log(result)
     result.then((data) => {
       console.log(data);
       if (data.status === 200) {
         data.json().then(res => {
           
-          setSoupData(data => [...data, res.recipe_lists])
+          setData(data => [...data, res.top_likes_list])
+          setData1(data => [...data, res.top_rates_list])
         
           // console.log('res content', res);
 
@@ -27,26 +28,9 @@ function getInfo(token,setSoupData,setJapaneseData) {
         })
       }
     })
-
-
-    const result1 = FetchFunc(`visitor/recipe_list?search=Japanese`, 'GET', null, null);
-    console.log(result)
-    result1.then((data) => {
-      console.log(data);
-      if (data.status === 200) {
-        data.json().then(res => {
-          
-          setJapaneseData(data => [...data, res.recipe_lists])
-        
-          // console.log('res content', res);
-
-          // console.log('res.recipe_lists  ',res.recipe_lists)
-        })
-      }
-    })
-
-
+    .catch(err => console.error('Caught error: ', err))
 }
+
 
 
 
@@ -58,12 +42,12 @@ function getInfo(token,setSoupData,setJapaneseData) {
 //   ]
 const Main = () => {
     const history = useHistory()
-    const [data,setSoupData] = useState([])
-    const [data1,setJapaneseData] = useState([])
+    const [data,setData] = useState([])
+    const [data1,setData1] = useState([])
     const [data2,setData2] = useState([])
     const token = localStorage.getItem('token');
     React.useEffect(()=>{ 
-      getInfo(token,setSoupData,setJapaneseData)
+      getInfo(token,setData,setData1,setData2)
     },[])
 
 
@@ -139,7 +123,7 @@ const Main = () => {
     
         }
         
-        setSoupData(d)
+        setData(d)
           
       }
     return (<div>
@@ -191,11 +175,11 @@ const Main = () => {
                 </div>
             </Col>
         </Row>
-        <h2 className='subtitle'>Japanese Recipe</h2>
-        <FoodList data={ data1 } like={like} />
+        <h2 className='subtitle'>Title One Easy Dinners</h2>
+        <FoodList data={ data } like={like} />
 
         <h2 className='subtitle'>Title Two Easy Dinners</h2>
-            <FoodList data={data} like={like} />
+            <FoodList data={data1} like={like} />
     </div>
     )
 }
