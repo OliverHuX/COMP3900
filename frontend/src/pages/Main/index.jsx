@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Row, Col, Card,Alert, Button, Space  } from 'antd';
 import { NavLink as Link } from 'react-router-dom'
 import { FieldTimeOutlined, HeartOutlined, HeartFilled,StarFilled } from '@ant-design/icons';
-import FoodList1 from '../../components/FoodList1';
+import FoodList from '../../components/FoodList';
 import FetchFunc from '../../components/fetchFunc';
 import { useHistory } from 'react-router-dom';
 const { Meta } = Card;
@@ -143,7 +143,7 @@ const Main = () => {
                 </div>
             </Col>
             <Col span={ 10 } offset={ 1 }>
-                <h2 style={ { textAlign: 'center' } }><Link to='/home/foodlist' className='gomore'>Easy Dinners</Link></h2>
+                <h1 style={ { textAlign: 'center' } }><Link to='/home/foodlist' className='gomore'>Easy Dinners</Link></h1>
                 <div className="dinnerList">
                     {
                         data.map((foods) => (
@@ -179,11 +179,11 @@ const Main = () => {
                 </div>
             </Col>
         </Row>
-        <h2 className='subtitle'>Title One Easy Dinners</h2>
-            <FoodList1 data={ randoms } like={like} />
+        <h2 className='subtitle'>Top rate recipe</h2>
+            <FoodList data={ toprates } like={like} />
 
-        <h2 className='subtitle'>Title Two Easy Dinners</h2>
-            <FoodList1 data={toprates} like={like} />
+        <h2 className='subtitle'>More recipe are here! </h2>
+            <FoodList data={randoms } like={like} />
     </div>
     )
 }
