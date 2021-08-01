@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Row, Col, Card } from 'antd';
+import { Row, Col, Card,Alert, Button, Space  } from 'antd';
 import { NavLink as Link } from 'react-router-dom'
 import { FieldTimeOutlined, HeartOutlined, HeartFilled,StarFilled } from '@ant-design/icons';
 import FoodList from '../../components/FoodList';
@@ -11,7 +11,7 @@ const cur_recipeId = '53702903163a4556b664ef0cd9947662'
 function getInfo(token,setData) {
 
     // post the request
-    console.log(token);
+    console.log('token now is ', token);
     const result = FetchFunc(`visitor/recipe_list?search=Chinese`, 'GET', null, null);
     console.log(result)
     result.then((data) => {
@@ -46,8 +46,32 @@ const Main = () => {
     React.useEffect(()=>{ 
       getInfo(token,setData)
     },[])
+
+
+    //页面跳转
     const GotoDetial = (cur_recipeId,history )=>{
+      // console.log('xxxxxxxxxxxxx', token)
+      if (token=== null){
+       
+          //   <Alert
+          //   message="Warning Text"
+          //   type="warning"
+          //   action={
+          //     <Space>
+          //       <Button size="small" type="ghost">
+          //         Done
+          //       </Button>
+          //     </Space>
+          //   }
+          //   closable
+          // />
+          alert(' You need Login first !')  
+        
+    }
+    else{
       history.push('/home/recipedetail/' + cur_recipeId)
+    }
+      // history.push('/home/recipedetail/' + cur_recipeId)
     }
     const like = (i)=>{
         let d = [...data];
