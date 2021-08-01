@@ -5,24 +5,18 @@ import FetchFunc from './fetchFunc';
 import SelectInput from '@material-ui/core/Select/SelectInput';
 
 
-function getInfo(token,setData,cur_serach,setShow) {
+function getInfo(token,setData) {
 
       // post the request
       console.log(token);
-      const result = FetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=${cur_serach}`, 'GET', token, null);
+      const result = FetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=cake`, 'GET', token, null);
       console.log(result)
       result.then((data) => {
         console.log(data);
         if (data.status === 200) {
           data.json().then(res => {
-            if(res.total!==0){
-                setShow(1)
-                setData(data => [...data, res.recipe_lists])
-            }else{
-                setShow(0)
-            }
             
-            
+            setData(data => [...data, res.recipe_lists])
             
             // console.log('res content', res);
 
@@ -43,21 +37,26 @@ const data1 = [
   { recipePhotos:['/assets/img/recipe2.png'],isLiked:1,likes:20, title: 'BBB', introduction: 'BBBsimple decoration', timeDuration: '20', rateScore: 3 },
   { recipePhotos: ['/assets/img/recipe3.png'],isLiked:0,likes:100, title: 'CCC', introduction: 'CCCsimple decoration', timeDuration: '25', rateScore: 5 },
 ]
-const Searchresult = () => {
+const Cake = () => {
+
+  // const [fillheart, setFillHeart] = useState(0); // }
+  // const FillHeart = () => {
+  //     if(fillheart==0){
+  //       setFillHeart(1)
+  //     }
+  //     if(fillheart==1){
+  //       setFillHeart(0)
+  //     }
+  // };
 
 
-  const url = window.location.href.split('/')
-  var cur_serach = url[url.length - 1]
 
 
- 
   const [recipelist,setData] = useState([])
-  const [show,setShow] = useState([])
   const token = localStorage.getItem('token');
-
   React.useEffect(()=>{ 
-    getInfo(token,setData,cur_serach,setShow)
-  },[cur_serach])
+    getInfo(token,setData)
+  },[])
   // console.log(data1[0])
   
   // console.log('recipelist is  ',recipelist)
@@ -68,6 +67,7 @@ const Searchresult = () => {
   const like = (i)=>{
     let d = [...recipelist];
     // console.log('xxxxxxxxxxx',d[0][0].likes)
+
     var recipeId = d[0][i].recipeId
     
     if(d[0][i].isLiked){
@@ -116,19 +116,17 @@ const Searchresult = () => {
   }
   
 
-   return ( <div> 
-                {show?                        
-                        <h1>
-                            
-                            <h2 className='subtitle'>Search {cur_serach} Results</h2>
-                            <p style={ { textAlign: 'center',fontSize:20 } }>simple decorationsimple decorationsimple decoration</p>
-                            {/* <FoodList data={recipelist} FillHeart={FillHeart} fillheart = {fillheart}/> */}
-                            <FoodList data={ recipelist } like={like} />
-                        </h1>:
-                        <h2 className='subtitle'>Ops! seems no results for {cur_serach}!</h2>}
+   return (
 
-            </div>
+        
+        <h1>
+            
+            <h2 className='subtitle'>Cake Recipe</h2>
+            <p style={ { textAlign: 'center',fontSize:20 } }>Here are the recipe you want: </p>
+            {/* <FoodList data={recipelist} FillHeart={FillHeart} fillheart = {fillheart}/> */}
+            <FoodList data={ recipelist} like={like} />
+        </h1>
     )
 }
 
-export default Searchresult
+export default Cake

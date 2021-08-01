@@ -37,7 +37,7 @@ const Searchresult = (props) => {
                 <a>Noodle</a>
             </Menu.Item>
             <Menu.Item>
-                <a>Cake</a>
+              <Link to='/home/cake'>Cake</Link>
             </Menu.Item>
             <Menu.Item>
                 <a>Seafood</a>

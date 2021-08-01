@@ -121,8 +121,8 @@ const JapaneseFood = () => {
         
         <h1>
             
-            <h2 className='subtitle'>Japanese Food Recipe</h2>
-            <p style={ { textAlign: 'center',fontSize:20 } }>simple decorationsimple decorationsimple decoration</p>
+            <h2 className='subtitle'>Japanese Food</h2>
+            <p style={ { textAlign: 'center',fontSize:20 } }>Here are the recipe you want: </p>
             {/* <FoodList data={recipelist} FillHeart={FillHeart} fillheart = {fillheart}/> */}
             <FoodList data={ recipelist} like={like} />
         </h1>
