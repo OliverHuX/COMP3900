@@ -77,8 +77,8 @@ function getDetial(token,cur_recipeId,
                 for (var key in res.recipe_lists[0].comments) {
                     var comment = res.recipe_lists[0].comments[key];
                     var payload = {
-                        author: (<Image src={comment.nickName} />),
-                        avatar: URL.createObjectURL(comment.profilePhoto),
+                        author: comment.nickName,
+                        avatar: (<Image src={comment.profilePhoto} />),
                         content: (
                             <p>
                             {comment.content}
