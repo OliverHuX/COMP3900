@@ -78,7 +78,10 @@ function getDetial(token,cur_recipeId,
                     var comment = res.recipe_lists[0].comments[key];
                     var payload = {
                         author: comment.nickName,
-                        avatar: (<Image src={comment.profilePhoto} />),
+                        avatar: (<Avatar
+                                src={<Image src={comment.profilePhoto} />}
+                                alt={comment.nickName}
+                                />),
                         content: (
                             <p>
                             {comment.content}
@@ -96,7 +99,12 @@ function getDetial(token,cur_recipeId,
 
             
             // console.log('res content', res);
-
+// {
+//     (<Avatar
+//     src={<Image src={comment.profilePhoto} />}
+//     alt={comment.nickName}
+//     />)
+// }
             // console.log('res.recipe_lists  ',res.recipe_lists)
             })
           

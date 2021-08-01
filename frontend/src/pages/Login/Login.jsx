@@ -16,7 +16,7 @@ import FetchFunc from '../../components/fetchFunc';
 import StyledHeader from '../../components/StyledHeader'
 import { TextPopup } from '../../components/TextPopup';
 
-function signin(email, password, history) {
+function signin(email, password, history, remember) {
   // history.push('./home')   // 跳过登录， 测试
   // return;         // 跳过登录 测试
   // console.log('incomplete' + email + password);
@@ -31,6 +31,9 @@ function signin(email, password, history) {
     console.log(data);
     if (data.status === 200) {
       data.json().then(res => {
+        if (remember) {
+          localStorage.setItem('email', email)
+        }
         console.log(res.token);
         localStorage.setItem('token', res.token);
         history.push('./home')
@@ -53,11 +56,17 @@ function signin(email, password, history) {
 
 export default function SignIn() {
   const classes = myStyles();
-  const [email, setEmailInputs] = React.useState('');
+  const [email, setEmailInputs] = React.useState(localStorage.getItem('email'));
   const [passWord, setPasswordInputs] = React.useState('');
   const [errorMsg, setErrorMsg] = React.useState('');
   const [error, setError] = React.useState(false);
+  const [remember, setRemember] = React.useState(false)
   const history = useHistory();
+
+  const handleRemember = () => {
+    setRemember(!remember)
+  }
+
   return (
     // <div className={classes.size}>
     <React.Fragment>
@@ -99,7 +108,7 @@ export default function SignIn() {
                 onChange={ (e) => setPasswordInputs(e.target.value) }
               />
               <FormControlLabel
-                control={ <Checkbox value="remember" color="primary" /> }
+                control={ <Checkbox value="remember" color="primary" onClick={() => handleRemember()} /> }
                 label="Remember me"
               />
               <Button
@@ -107,7 +116,7 @@ export default function SignIn() {
                 variant="contained"
                 color="primary"
                 className={ classes.submit }
-                onClick={ () => signin(email, passWord, history) }
+                onClick={ () => signin(email, passWord, history, remember) }
               >
                 Sign In
               </Button>
