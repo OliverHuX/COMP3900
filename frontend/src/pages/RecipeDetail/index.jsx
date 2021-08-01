@@ -173,7 +173,7 @@ const RecipeDetail = () => {
                         
                         photolist.map((i)=>(
                             <div>       
-                                <img src= {i} alt="" />
+                                <img style={{maxWidth:50, height:'auto'}} src= {i} alt="" />
                             </div>                          
                             ))       
                         }
