@@ -56,7 +56,9 @@ export default function Profile () {
     const token = localStorage.getItem('token');
     const classes = useStyles();
 
-    getInfo(setEmail, token)
+    React.useEffect(() => {
+        getInfo(setEmail, token)
+    }, [])
 
     const handleShowPasswordOld = () => {
         setShowOld(!showPasswordOld);

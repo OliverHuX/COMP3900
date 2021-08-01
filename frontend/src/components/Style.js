@@ -92,6 +92,13 @@ const useStyles = makeStyles((theme) => ({
     input: {
       display: 'none',
     },
+    pop: {
+      position: 'fixed',
+      width: '30%',
+      height: '15%',
+      overflow: 'auto',
+      margin: 'auto',
+    },
 }));
 
 export { useStyles }

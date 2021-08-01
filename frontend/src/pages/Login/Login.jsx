@@ -15,6 +15,9 @@ import { myStyles } from './Login.style';
 import FetchFunc from '../../components/fetchFunc';
 import StyledHeader from '../../components/StyledHeader'
 import { TextPopup } from '../../components/TextPopup';
+// import Alert from '@material-ui/lab/Alert';
+// import AlertTitle from '@material-ui/lab';
+// import Collapse from '@material-ui/core/Collapse';
 
 function signin(email, password, history, remember) {
   // history.push('./home')   // 跳过登录， 测试
@@ -59,7 +62,7 @@ export default function SignIn() {
   const [email, setEmailInputs] = React.useState(localStorage.getItem('email'));
   const [passWord, setPasswordInputs] = React.useState('');
   const [errorMsg, setErrorMsg] = React.useState('');
-  const [error, setError] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
   const [remember, setRemember] = React.useState(false)
   const history = useHistory();
 
@@ -121,12 +124,12 @@ export default function SignIn() {
               >
                 Sign In
               </Button>
-              <TextPopup
+              {/* <TextPopup
                 open={ error }
                 setOpen={ setError }
                 title={ errorMsg }
                 handleOnClick={ () => setError(false) }
-              />
+              /> */}
               <Grid container>
                 <Grid item className={ classes.marginBtm }>
                   <Link href="/register" variant="body2">
