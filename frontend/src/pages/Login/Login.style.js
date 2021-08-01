@@ -31,7 +31,14 @@ const myStyles = makeStyles((theme) => ({
   },
   marginBtm: {
     marginBottom: theme.spacing(2),
-  }
+  },
+  pop: {
+    position: 'fixed',
+    width: '30%',
+    height: '15%',
+    overflow: 'auto',
+    margin: 'auto',
+  },
 }));
 
 export { myStyles };
