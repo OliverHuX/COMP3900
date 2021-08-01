@@ -160,7 +160,7 @@ const RecipeDetail = () => {
 
     React.useEffect(()=>{ 
         getDetial(token,cur_recipeId,setPhotoList,setTitle,setrateScore,settimeDuration,setintroduction,setingredients,setmethod,settags,setnickName, setComments,setmyRateScore,setisRated)
-      },[])
+      },[newComments])
     console.log(comments)
     //   let d = [...photolist];
     //   console.log('sssssssssssssssssssss',photolist)
