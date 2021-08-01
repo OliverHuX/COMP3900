@@ -121,7 +121,7 @@ const ChineseFood = () => {
         
         <h1>
             
-            <h2 className='subtitle'>Chinese Food Recipe</h2>
+            <h2 className='subtitle'>Japanese Food Recipe</h2>
             <p style={ { textAlign: 'center',fontSize:20 } }>simple decorationsimple decorationsimple decoration</p>
             {/* <FoodList data={recipelist} FillHeart={FillHeart} fillheart = {fillheart}/> */}
             <FoodList data={ recipelist} like={like} />
