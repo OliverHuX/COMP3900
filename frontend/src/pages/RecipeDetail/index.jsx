@@ -240,7 +240,7 @@ const RecipeDetail = () => {
                     content={
                         <div>
                             <Form.Item>
-                                <TextArea rows={4} onChange={e => handleOnchange(e)} value={comments} />
+                                <TextArea rows={4} onChange={e => handleOnchange(e)} value={newComments} />
                                 </Form.Item>
                                 <Form.Item>
                                 <Button htmlType="submit" onClick={() => addComments(token, cur_recipeId, newComments, setNewComments)} type="primary">
