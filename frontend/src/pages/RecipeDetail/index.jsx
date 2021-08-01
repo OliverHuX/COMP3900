@@ -30,9 +30,7 @@ function addComments(token, recipeId, NewComments, setNewComments) {
     result.then(data => {
         if (data.status === 200) {
             setNewComments('')
-            return <>
-                <Alert message="Success Tips" type="success" showIcon closable />
-            </>
+            console.log('success')
         }
     })
 } 
