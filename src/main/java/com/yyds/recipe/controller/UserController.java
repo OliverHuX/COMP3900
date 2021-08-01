@@ -89,6 +89,12 @@ public class UserController {
         return userService.getFollowerList(search, request);
     }
 
+    @RequestMapping(value = "user/decodeToken", method = RequestMethod.GET)
+    public ResponseEntity<?> decodeToken(HttpServletRequest request) {
+        return userService.decodeToken(request);
+
+    }
+
 
     @RequestMapping(value = "/dev/register", method = RequestMethod.POST)
     public ResponseEntity<?> devRegister(@RequestBody User user) {

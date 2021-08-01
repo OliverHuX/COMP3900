@@ -411,4 +411,15 @@ public class UserServiceImpl implements UserService {
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, body);
     }
 
+    @Override
+    public ResponseEntity<?> decodeToken(HttpServletRequest request) {
+        String token = request.getHeader("token");
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        String email = JwtUtil.decodeToken(token).getClaim("email").asString();
+        LinkedHashMap<String, Object> body = new LinkedHashMap<>();
+        body.put("userId", userId);
+        body.put("email", email);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, body);
+    }
+
 }
