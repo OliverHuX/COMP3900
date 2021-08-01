@@ -37,7 +37,7 @@ export default function MyRecipe() {
     const [recipes, setRecipes] = React.useState([])
     const token = localStorage.getItem('token')
     const userId = localStorage.getItem('userId')
-    // console.log(recipeId)
+    console.log(recipes.length)
 
     React.useEffect(() => {
         getRecipe(token, userId, setRecipes, recipes)
@@ -48,11 +48,13 @@ export default function MyRecipe() {
         <CssBaseline />
         <main>
             <Container className={classes.cardGrid} maxWidth="md">
-            <Grid container spacing={4}>
+            {recipes.length != 0 ? <Grid container spacing={4}>
                 {recipes.map((recipe) => (
                     <RecipeCard recipeId={recipe.recipeId} intro={recipe.intro} title={recipe.title} photo={recipe.photo} />
                 ))}
-            </Grid>
+            </Grid> : <div className={classes.paper}>
+                <h1>You haven't upload any recipes</h1>
+                </div>}
             </Container>
         </main>
         </React.Fragment>
