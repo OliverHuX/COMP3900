@@ -5,10 +5,28 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
+import FetchFunc from './fetchFunc';
 import { useStyles } from './Style';
 
+function getRecipe(token, recipeId, setTitle, setTime, setIntro, setIngre) {
+    const result = FetchFunc('recipe/recipe_list?pageNum=1&pageSize=9&search=' + recipeId, 'GET', token, null);
+    result.then(data => {
+        if (data === 200) {
+            data.json().then(res => {
+                const recipe = res.recipe_lists[0];
+                setTitle(recipe.title);
+                setTime(recipe.timeDuration);
+                setIntro(recipe.introduction);
+                setIngre(recipe.ingredients);
+            })
+        }
+    })
+}
+
+
 export default function EditRecipe () {
-    
+    const url = window.location.href.split('/')
+    const recipeId = url[url.length - 1]
     const classes = useStyles();
     const [title, setTitle] = React.useState('');
     const [time, setTime] = React.useState('');
@@ -31,6 +49,10 @@ export default function EditRecipe () {
     const handleMethod = (e) => {
         setMethod(e.target.value)
     }
+
+    React.useEffect(() => {
+        getRecipe(token, recipeId, setTitle, setTime, setIntro, setIngre);
+    }, [])
 
     return (
         <React.Fragment>

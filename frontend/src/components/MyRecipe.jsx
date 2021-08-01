@@ -41,7 +41,7 @@ export default function MyRecipe() {
 
     React.useEffect(() => {
         etRecipe(token, userId, setRecipes, recipes)
-    })
+    }, [])
 
     return (
         <React.Fragment>
