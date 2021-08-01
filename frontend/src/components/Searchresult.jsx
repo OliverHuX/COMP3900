@@ -40,13 +40,14 @@ const data1 = [
 const Searchresult = () => {
 
 
-    const url = window.location.href.split('/')
-    var cur_serach = url[url.length - 1]
+  const url = window.location.href.split('/')
+  var cur_serach = url[url.length - 1]
 
 
  
   const [recipelist,setData] = useState([])
   const token = localStorage.getItem('token');
+
   React.useEffect(()=>{ 
     getInfo(token,setData,cur_serach)
   },[cur_serach])
@@ -60,7 +61,6 @@ const Searchresult = () => {
   const like = (i)=>{
     let d = [...recipelist];
     // console.log('xxxxxxxxxxx',d[0][0].likes)
-
     var recipeId = d[0][i].recipeId
     
     if(d[0][i].isLiked){
@@ -117,7 +117,7 @@ const Searchresult = () => {
             <h2 className='subtitle'>Search {cur_serach} Results</h2>
             <p style={ { textAlign: 'center',fontSize:20 } }>simple decorationsimple decorationsimple decoration</p>
             {/* <FoodList data={recipelist} FillHeart={FillHeart} fillheart = {fillheart}/> */}
-            <FoodList data={ recipelist} like={like} />
+            <FoodList data={ recipelist } like={like} />
         </h1>
     )
 }
