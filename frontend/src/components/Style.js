@@ -89,6 +89,9 @@ const useStyles = makeStyles((theme) => ({
     cardContent: {
       flexGrow: 1,
     },
+    input: {
+      display: 'none',
+    },
 }));
 
 export { useStyles }

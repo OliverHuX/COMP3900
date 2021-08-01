@@ -143,6 +143,7 @@ export default function Profile () {
                     Upload
                 </Button>
             </label>
+
             {/* <FormControl>
                 <InputLabel htmlFor="component-simple">Nick Name</InputLabel>
                 <Input fullWidth='true' value={nickName} onChange={e => handleChange(e)} />

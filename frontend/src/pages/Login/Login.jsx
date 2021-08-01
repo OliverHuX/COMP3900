@@ -57,7 +57,6 @@ function signin(email, password, history, remember) {
 export default function SignIn() {
   const classes = myStyles();
   const [email, setEmailInputs] = React.useState(localStorage.getItem('email'));
-  console.log(email)
   const [passWord, setPasswordInputs] = React.useState('');
   const [errorMsg, setErrorMsg] = React.useState('');
   const [error, setError] = React.useState(false);
