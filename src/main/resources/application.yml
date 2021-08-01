@@ -71,13 +71,6 @@ spring:
             port: 587
             class: javax.net.ssl.SSLSocketFactory
 
-  thymeleaf:
-    cache: false
-    encoding: utf-8
-    mode: HTML5
-    prefix: classpath:/templates/
-    suffix: .html
-
 
 # mybatis
 mybatis:
