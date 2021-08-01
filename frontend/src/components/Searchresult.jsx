@@ -5,6 +5,11 @@ import FetchFunc from './fetchFunc';
 import SelectInput from '@material-ui/core/Select/SelectInput';
 
 
+
+const GotoDetial = (cur_recipeId,history )=>{
+    history.push('/home/recipedetail/' + cur_recipeId)
+  }
+
 function getInfo(token,setData) {
 
       // post the request
@@ -37,7 +42,7 @@ const data1 = [
   { recipePhotos:['/assets/img/recipe2.png'],isLiked:1,likes:20, title: 'BBB', introduction: 'BBBsimple decoration', timeDuration: '20', rateScore: 3 },
   { recipePhotos: ['/assets/img/recipe3.png'],isLiked:0,likes:100, title: 'CCC', introduction: 'CCCsimple decoration', timeDuration: '25', rateScore: 5 },
 ]
-const JapaneseFood = () => {
+const Searchresult = () => {
 
   // const [fillheart, setFillHeart] = useState(0); // }
   // const FillHeart = () => {
@@ -129,4 +134,4 @@ const JapaneseFood = () => {
     )
 }
 
-export default JapaneseFood
+export default Searchresult

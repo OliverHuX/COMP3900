@@ -16,6 +16,7 @@ import MyLikes from '../MyLikes';
 import { Switch, Route } from 'react-router-dom';
 import Main from '../Main';
 import axios from 'axios';
+import Searchresult from '../../components/Searchresult';
 
 
 const FormData = require('form-data')
@@ -188,6 +189,10 @@ export default function Home  ()  {
                     </Route>
                     <Route path='/home/janpnesefood' exact>
                         <JapaneseFood/>
+                    </Route>
+                    <Route path='/home/:cur_recipeId' >
+                        <UpCircleOutlined className='upload' onClick={ showModal } />
+                        <Searchresult /> 
                     </Route>
                     <Route path='/home/recipedetail/:cur_recipeId' >
                         <UpCircleOutlined className='upload' onClick={ showModal } />

@@ -80,7 +80,7 @@ const StyledHeader = (props) => {
           // )
     
       // post the request
-        const result = FetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=${value}`, 'GET', null, null);
+        const result = FetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=${value}`, 'GET', token, null);
         console.log(result)
         result.then((data) => {
           console.log(data);

@@ -8,18 +8,18 @@ import { useHistory } from 'react-router-dom';
 const { Meta } = Card;
 
 const cur_recipeId = '53702903163a4556b664ef0cd9947662'
-function getInfo(token,setData) {
+function getInfo(token,setSoupData,setJapaneseData) {
 
     // post the request
     console.log('token now is ', token);
-    const result = FetchFunc(`visitor/recipe_list?search=Chinese`, 'GET', null, null);
+    const result = FetchFunc(`visitor/recipe_list?search=Soup`, 'GET', null, null);
     console.log(result)
     result.then((data) => {
       console.log(data);
       if (data.status === 200) {
         data.json().then(res => {
           
-          setData(data => [...data, res.recipe_lists])
+          setSoupData(data => [...data, res.recipe_lists])
         
           // console.log('res content', res);
 
@@ -27,9 +27,26 @@ function getInfo(token,setData) {
         })
       }
     })
-    .catch(err => console.error('Caught error: ', err))
-}
 
+
+    const result1 = FetchFunc(`visitor/recipe_list?search=Japanese`, 'GET', null, null);
+    console.log(result)
+    result1.then((data) => {
+      console.log(data);
+      if (data.status === 200) {
+        data.json().then(res => {
+          
+          setJapaneseData(data => [...data, res.recipe_lists])
+        
+          // console.log('res content', res);
+
+          // console.log('res.recipe_lists  ',res.recipe_lists)
+        })
+      }
+    })
+
+
+}
 
 
 
@@ -41,10 +58,12 @@ function getInfo(token,setData) {
 //   ]
 const Main = () => {
     const history = useHistory()
-    const [data,setData] = useState([])
+    const [data,setSoupData] = useState([])
+    const [data1,setJapaneseData] = useState([])
+    const [data2,setData2] = useState([])
     const token = localStorage.getItem('token');
     React.useEffect(()=>{ 
-      getInfo(token,setData)
+      getInfo(token,setSoupData,setJapaneseData)
     },[])
 
 
@@ -120,7 +139,7 @@ const Main = () => {
     
         }
         
-        setData(d)
+        setSoupData(d)
           
       }
     return (<div>
@@ -172,8 +191,8 @@ const Main = () => {
                 </div>
             </Col>
         </Row>
-        <h2 className='subtitle'>Japanese </h2>
-        <FoodList data={ data } like={like} />
+        <h2 className='subtitle'>Japanese Recipe</h2>
+        <FoodList data={ data1 } like={like} />
 
         <h2 className='subtitle'>Title Two Easy Dinners</h2>
             <FoodList data={data} like={like} />

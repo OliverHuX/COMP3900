@@ -144,6 +144,8 @@ const RecipeDetail = () => {
     const [comments, setComments] = useState([]);
     const [isRated, setisRated] = useState(0);
     const [myRateScore, setmyRateScore] = useState(null);
+
+    const token = localStorage.getItem('token');
  
     const data = [
         '/assets/img/recipe1.png',
@@ -153,7 +155,6 @@ const RecipeDetail = () => {
      
 
 
-    const token = localStorage.getItem('token');
 
     React.useEffect(()=>{ 
         getDetial(token,cur_recipeId,setPhotoList,setTitle,setrateScore,settimeDuration,setintroduction,setingredients,setmethod,settags,setnickName, setComments,setmyRateScore)
@@ -166,10 +167,35 @@ const RecipeDetail = () => {
     const handleOnchange = (e) => {
         setNewComments(e.target.value)
     }
-    const sentScore = (rate) => {
+    const sentScore = (token,rate ) => {
         console.log('xxxxxxxxxxxxxxxxxxxxxI click',rate)
         setmyRateScore(rate)
         setisRated(1)
+
+        const payload = JSON.stringify({
+            myRateScore: rate,
+            recipeId: cur_recipeId
+          });
+
+        const result = FetchFunc(`recipe/rate`, 'Post', token, payload);
+            console.log('token is :',token)
+            result.then((data) => {
+            console.log(data);
+            if (data.status === 200) {
+                data.json().then(res => {
+                
+                
+                
+                console.log('xxxxxxxxxxxxxxxxxxxxxxxx rate post success');
+
+                // console.log('res.recipe_lists  ',res.recipe_lists)
+                })
+            }
+        })
+
+
+
+
     }
 
     return (
@@ -232,7 +258,7 @@ const RecipeDetail = () => {
                                                     </span>}
 
                         </span>
-                        {isRated?<Tag color="#87d068">Your score</Tag>:<Button onClick={() => sentScore(rate)}style={ { backgroundColor: '#be2a77', color: '#fff' } } size='small'>Submit</Button>}
+                        {isRated?<Tag color="#87d068">Your score</Tag>:<Button onClick={() => sentScore(token, rate)}style={ { backgroundColor: '#be2a77', color: '#fff' } } size='small'>Submit</Button>}
                         
                     </div>
 
