@@ -32,10 +32,16 @@ function getRecipe(token, userId, setRecipes, recipes) {
 export default function MyRecipe() {
 
     const classes = useStyles();
-    const url = window.location.href.split('/')
-    const recipeId = url[url.length - 1]
+    // const url = window.location.href.split('/')
+    // const recipeId = url[url.length - 1]
     const [recipes, setRecipes] = React.useState([])
+    const token = localStorage.getItem('token')
+    const userId = localStorage.getItem('userId')
     console.log(recipeId)
+
+    React.useEffect(() => {
+        etRecipe(token, userId, setRecipes, recipes)
+    })
 
     return (
         <React.Fragment>
