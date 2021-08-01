@@ -14,6 +14,7 @@ function getRecipe(token, userId, setRecipes, recipes) {
         if (data === 200) {
             data.json().then(res => {
                 const total = res.total
+                console.log(total)
                 for (var i = 0; i < total; i++) {
                     var info = {
                         recipeId: res.recipe_lists[i].recipeId,
@@ -21,6 +22,7 @@ function getRecipe(token, userId, setRecipes, recipes) {
                         photo: res.recipe_lists[i].recipePhotos[0],
                         title: res.recipe_lists[i].title,
                     }
+                    console.log(info)
                     setRecipes(ele => [...ele, info]);
                 }
                 console.log(recipes)
