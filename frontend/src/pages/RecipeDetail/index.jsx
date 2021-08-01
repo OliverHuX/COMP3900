@@ -79,6 +79,7 @@ function getDetial(token,cur_recipeId,
                             </Tooltip>
                         ),
                     }
+                    console.log(payload)
                     setComments(coms => [...coms, payload])
                 }
 
@@ -135,7 +136,7 @@ const RecipeDetail = () => {
     React.useEffect(()=>{ 
         getDetial(token,cur_recipeId,setPhotoList,setTitle,setrateScore,settimeDuration,setintroduction,setingredients,setmethod,settags,setnickName, setComments)
       },[])
-      
+    console.log(comments)
     //   let d = [...photolist];
     //   console.log('sssssssssssssssssssss',photolist)
       
