@@ -5,16 +5,11 @@ import FetchFunc from './fetchFunc';
 import SelectInput from '@material-ui/core/Select/SelectInput';
 
 
-
-const GotoDetial = (cur_recipeId,history )=>{
-    history.push('/home/recipedetail/' + cur_recipeId)
-  }
-
-function getInfo(token,setData) {
+function getInfo(token,setData,cur_serach) {
 
       // post the request
       console.log(token);
-      const result = FetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=Japanese`, 'GET', token, null);
+      const result = FetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=${cur_serach}`, 'GET', token, null);
       console.log(result)
       result.then((data) => {
         console.log(data);
@@ -44,24 +39,17 @@ const data1 = [
 ]
 const Searchresult = () => {
 
-  // const [fillheart, setFillHeart] = useState(0); // }
-  // const FillHeart = () => {
-  //     if(fillheart==0){
-  //       setFillHeart(1)
-  //     }
-  //     if(fillheart==1){
-  //       setFillHeart(0)
-  //     }
-  // };
+
+    const url = window.location.href.split('/')
+    var cur_serach = url[url.length - 1]
 
 
-
-
+ 
   const [recipelist,setData] = useState([])
   const token = localStorage.getItem('token');
   React.useEffect(()=>{ 
-    getInfo(token,setData)
-  },[])
+    getInfo(token,setData,cur_serach)
+  },[cur_serach])
   // console.log(data1[0])
   
   // console.log('recipelist is  ',recipelist)
@@ -126,7 +114,7 @@ const Searchresult = () => {
         
         <h1>
             
-            <h2 className='subtitle'>Japanese Food Recipe</h2>
+            <h2 className='subtitle'>Search {cur_serach} Results</h2>
             <p style={ { textAlign: 'center',fontSize:20 } }>simple decorationsimple decorationsimple decoration</p>
             {/* <FoodList data={recipelist} FillHeart={FillHeart} fillheart = {fillheart}/> */}
             <FoodList data={ recipelist} like={like} />
