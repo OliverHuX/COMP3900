@@ -480,11 +480,11 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public ResponseEntity<?> visitorGetRecipeList(String recipeId,
-                                                  String creatorId,
-                                                  String searchContent,
-                                                  String searchTags,
-                                                  Integer pageNum,
-                                                  Integer pageSize) {
+                                                               String creatorId,
+                                                               String searchContent,
+                                                               String searchTags,
+                                                               Integer pageNum,
+                                                               Integer pageSize) {
 
         try {
             List<Recipe> topLikesList = (List<Recipe>) redisTemplate.opsForValue().get("topLikesList");
@@ -492,20 +492,18 @@ public class RecipeServiceImpl implements RecipeService {
             List<Recipe> randomRecipeList = (List<Recipe>) redisTemplate.opsForValue().get("randomRecipeList");
             List<Recipe> easyRecipeList = (List<Recipe>) redisTemplate.opsForValue().get("easyRecipeList");
             LinkedHashMap<String, Object> resultMap = new LinkedHashMap<>();
-            resultMap.put("top_likes_list", topLikesList);
-            resultMap.put("top_rates_list", topRateList);
-            resultMap.put("random_recipe_list", randomRecipeList);
-            resultMap.put("easy_recipe_list", easyRecipeList);
-            return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, resultMap);
+            if (topLikesList != null && topRateList != null && randomRecipeList != null && easyRecipeList != null) {
+                resultMap.put("top_likes_list", topLikesList);
+                resultMap.put("top_rates_list", topRateList);
+                resultMap.put("random_recipe_list", randomRecipeList);
+                resultMap.put("easy_recipe_list", easyRecipeList);
+                return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, resultMap);
+            }
         } catch (Exception ignored) {
 
         }
 
-        List<String> searchTagList = null;
-        if (searchTags != null) {
-            searchTagList = Arrays.asList(searchTags.split(","));
-        }
-        List<Recipe> recipeList = recipeMapper.getVisitorRecipeList(recipeId, creatorId, searchContent, searchTagList, pageNum, pageSize);
+        List<Recipe> recipeList = recipeMapper.getVisitorRecipeList(recipeId, creatorId);
         for (Recipe recipe : recipeList) {
             List<String> recipePhotos = new ArrayList<>();
             List<String> fileNameList = recipeMapper.getFileNameListByRecipeId(recipe.getRecipeId());
@@ -525,14 +523,23 @@ public class RecipeServiceImpl implements RecipeService {
         }
 
         recipeList.sort((o1, o2) -> o1.getLikes() - o2.getLikes());
-        List<Recipe> topLikesList = recipeList.subList(0, size);
+        List<Recipe> topLikesList = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            topLikesList.add(recipeList.get(i));
+        }
         recipeList.sort((o1, o2) -> o1.getRateScore().compareTo(o2.getRateScore()));
-        List<Recipe> topRateList = recipeList.subList(0, size);
+        List<Recipe> topRateList = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            topRateList.add(recipeList.get(i));
+        }
         recipeList.sort((o1, o2) -> o1.getTimeDuration() - o2.getTimeDuration());
-        List<Recipe> easyRecipeList = recipeList.subList(0, size);
+        List<Recipe> easyRecipeList = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            easyRecipeList.add(recipeList.get(i));
+        }
 
         recipeList.removeAll(topLikesList);
-        recipeList.removeAll(topLikesList);
+        recipeList.removeAll(topRateList);
         recipeList.removeAll(easyRecipeList);
 
         List<Recipe> randomRecipeList = new ArrayList<>();

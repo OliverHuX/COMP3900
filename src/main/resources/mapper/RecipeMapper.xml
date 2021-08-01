@@ -323,18 +323,6 @@
         left join recipe.rate rr on rr.recipe_id = r.recipe_id
         <where>
             r.is_privacy = 0
-            <if test="tagList != null">
-                and tr.tag_name in
-                <foreach collection="tagList" item="tagName" open="(" close=")" separator=",">
-                    #{tagName}
-                </foreach>
-            </if>
-            <if test="searchContent != null">
-                and (r.title like concat('%', #{searchContent,jdbcType=VARCHAR}, '%') or r.introduction like concat('%',
-                #{searchContent,jdbcType=VARCHAR}, '%') or r.ingredients like concat('%',
-                #{searchContent,jdbcType=VARCHAR}, '%') or r.method like concat('%', #{searchContent,jdbcType=VARCHAR},
-                '%'))
-            </if>
             <if test="creatorId != null">
                 and r.user_id = #{creatorId, jdbcType=VARCHAR}
             </if>
