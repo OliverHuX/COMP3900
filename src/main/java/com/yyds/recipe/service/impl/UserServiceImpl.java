@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
@@ -51,9 +50,6 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private MinioUtil minioUtil;
-
-    @Autowired
-    private FreeMarkerConfigurer configurer;
 
     @Value("${spring.mail.username}")
     private String mailSenderAddress;
