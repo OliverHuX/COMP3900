@@ -95,7 +95,8 @@ const Searchresult = (props) => {
             data.json().then(res => {
 
               console.log('request success');
-              history.push('/home/searchresult/' + value)
+              // history.push('/home/searchresult/' + value)
+              window.location.href = '/home/searchresult/' + value;
             })
           }
         })
