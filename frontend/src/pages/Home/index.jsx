@@ -116,7 +116,7 @@ export default function Home  ()  {
         console.log(fileList)
     };
     const handleClick = () => {
-        setIsLoading(true)
+        
         var FormData = require('form-data');
         var formData = new FormData();
 
@@ -146,6 +146,7 @@ export default function Home  ()  {
 
     
         if(fileList!==undefined& title !== "" & introduction !==  "" & ingredients!== "" & method!== "" & tags_select!== "" & timeDuration!=="" & timeDuration < 1000){
+                setIsLoading(true)
                 axios.post(
                         'http://localhost:8080/recipe/postRecipe',
                         formData,
