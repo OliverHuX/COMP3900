@@ -55,7 +55,7 @@ export default function Comments({ comments }) {
                 <li>
                     <Comment
                         author={item.author}
-                        avatar={item.avatar}
+                        avatar={URL.createObjectURL(item.avatar)}
                         content={item.content}
                         datetime={item.datetime}
                     />
