@@ -56,4 +56,6 @@ public interface RecipeMapper {
     void deleteTagsByRecipe(Recipe recipe);
 
     List<Recipe> getVisitorRecipeList(String recipeId, String creatorId, String searchContent, List<String> tagList, Integer pageNum, Integer pageSize);
+
+    List<String> getVideoFileList(String recipeId);
 }

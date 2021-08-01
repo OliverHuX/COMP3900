@@ -345,4 +345,10 @@
         group by r.recipe_id;
     </select>
 
+    <select id="getVideoFileList" resultType="java.lang.String">
+        select file_name
+        from recipe.video
+        where recipe_id = #{recipeId}
+    </select>
+
 </mapper>

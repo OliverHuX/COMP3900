@@ -311,6 +311,13 @@ public class RecipeServiceImpl implements RecipeService {
                 recipePhotos.add(fileUrl);
             }
             recipe.setRecipePhotos(recipePhotos);
+            List<String> videoList = recipeMapper.getVideoFileList(recipe.getRecipeId());
+            List<String> recipeVideoList = new ArrayList<>();
+            for (String videoName : videoList) {
+                String videoUrl = aliyunOSSUtil.getUrl(bucketName, RECIPE_VIDEO_FOLDER, videoName);
+                recipeVideoList.add(videoUrl);
+            }
+            recipe.setRecipeVideos(recipeVideoList);
             List<String> tags = recipeMapper.getTagListByRecipeId(recipe.getRecipeId());
             recipe.setTags(tags);
 
