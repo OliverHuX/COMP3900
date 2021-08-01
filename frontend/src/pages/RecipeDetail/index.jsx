@@ -1,6 +1,6 @@
 import React, { useState, createElement } from 'react'
 import './index.css'
-import { Layout, Modal, Row, Col, Card, Carousel, Button, Input, Form, Upload, Select, message, Comment, Avatar, Tooltip, List, Alert } from 'antd';
+import { Layout, Modal, Row, Col, Card, Carousel, Button, Input, Form, Upload, Select, message, Comment, Avatar, Tooltip, List, Alert, Image } from 'antd';
 import { TagsOutlined, PrinterOutlined, StarFilled, StarOutlined, ClockCircleFilled, CheckCircleFilled, ToolFilled } from '@ant-design/icons';
 import FoodList from '../../components/FoodList';
 import StyledHeader from '../../components/StyledHeader'
@@ -77,8 +77,8 @@ function getDetial(token,cur_recipeId,
                 for (var key in res.recipe_lists[0].comments) {
                     var comment = res.recipe_lists[0].comments[key];
                     var payload = {
-                        author: comment.nickName,
-                        avatar: comment.profilePhoto,
+                        author: (<Image src={comment.nickName} />),
+                        avatar: URL.createObjectURL(comment.profilePhoto),
                         content: (
                             <p>
                             {comment.content}
@@ -145,7 +145,7 @@ const RecipeDetail = () => {
     const token = localStorage.getItem('token');
 
     React.useEffect(()=>{ 
-        getDetial(token,cur_recipeId,setPhotoList,setTitle,setrateScore,settimeDuration,setintroduction,setingredients,setmethod,settags,setnickName, setComments)
+        // getDetial(token,cur_recipeId,setPhotoList,setTitle,setrateScore,settimeDuration,setintroduction,setingredients,setmethod,settags,setnickName, setComments)
       },[])
     console.log(comments)
     //   let d = [...photolist];
@@ -235,7 +235,7 @@ const RecipeDetail = () => {
                 <Comment
                     avatar={
                         <Avatar
-                        src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+                        src={<Image src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
                         alt="Han Solo"
                         />
                     }
