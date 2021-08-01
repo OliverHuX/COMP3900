@@ -485,30 +485,26 @@ public class RecipeServiceImpl implements RecipeService {
                                                   String searchTags,
                                                   Integer pageNum,
                                                   Integer pageSize) {
-        if (Boolean.TRUE.equals(redisTemplate.hasKey("visitorRecipeList"))) {
-            List<Recipe> visitorRecipeList = null;
-            try {
-                visitorRecipeList = (List<Recipe>) redisTemplate.opsForValue().get("visitorRecipeList");
-            } catch (Exception e) {
-                return ResponseUtil.getResponse(ResponseCode.REDIS_ERROR, null, null);
-            }
-            HashMap<String, Object> resultMap = new HashMap<>();
-            resultMap.put("recipe_lists", visitorRecipeList);
-            resultMap.put("total", visitorRecipeList.size());
+
+        try {
+            List<Recipe> topLikesList = (List<Recipe>) redisTemplate.opsForValue().get("topLikesList");
+            List<Recipe> topRateList = (List<Recipe>) redisTemplate.opsForValue().get("topRateList");
+            List<Recipe> randomRecipeList = (List<Recipe>) redisTemplate.opsForValue().get("randomRecipeList");
+            List<Recipe> easyRecipeList = (List<Recipe>) redisTemplate.opsForValue().get("easyRecipeList");
+            LinkedHashMap<String, Object> resultMap = new LinkedHashMap<>();
+            resultMap.put("top_likes_list", topLikesList);
+            resultMap.put("top_rates_list", topRateList);
+            resultMap.put("random_recipe_list", randomRecipeList);
+            resultMap.put("easy_recipe_list", easyRecipeList);
             return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, resultMap);
+        } catch (Exception ignored) {
+
         }
 
-        if (pageNum == null || pageNum <= 0) {
-            pageNum = 1;
-        }
-        if (pageSize == null || pageSize >= 9) {
-            pageSize = 9;
-        }
         List<String> searchTagList = null;
         if (searchTags != null) {
             searchTagList = Arrays.asList(searchTags.split(","));
         }
-        PageHelper.startPage(pageNum, pageSize, true);
         List<Recipe> recipeList = recipeMapper.getVisitorRecipeList(recipeId, creatorId, searchContent, searchTagList, pageNum, pageSize);
         for (Recipe recipe : recipeList) {
             List<String> recipePhotos = new ArrayList<>();
@@ -520,18 +516,48 @@ public class RecipeServiceImpl implements RecipeService {
             recipe.setRecipePhotos(recipePhotos);
             List<String> tags = recipeMapper.getTagListByRecipeId(recipe.getRecipeId());
             recipe.setTags(tags);
-
         }
-        PageInfo<Recipe> recipePageInfo = new PageInfo<>(recipeList);
-        HashMap<String, Object> resultMap = new HashMap<>();
+
+        int size = 3;
+        int recipeListSize = recipeList.size();
+        if (size > recipeListSize) {
+            size = recipeListSize;
+        }
+
+        recipeList.sort((o1, o2) -> o1.getLikes() - o2.getLikes());
+        List<Recipe> topLikesList = recipeList.subList(0, size);
+        recipeList.sort((o1, o2) -> o1.getRateScore().compareTo(o2.getRateScore()));
+        List<Recipe> topRateList = recipeList.subList(0, size);
+        recipeList.sort((o1, o2) -> o1.getTimeDuration() - o2.getTimeDuration());
+        List<Recipe> easyRecipeList = recipeList.subList(0, size);
+
+        recipeList.removeAll(topLikesList);
+        recipeList.removeAll(topLikesList);
+        recipeList.removeAll(easyRecipeList);
+
+        List<Recipe> randomRecipeList = new ArrayList<>();
+        Random random = new Random();
+
+        for (int i = 0; i < size; i++) {
+            int index = random.nextInt(recipeList.size());
+            Recipe temp = recipeList.get(index);
+            randomRecipeList.add(temp);
+            recipeList.remove(temp);
+        }
         ValueOperations<String, Serializable> opsForValue = redisTemplate.opsForValue();
         try {
-            opsForValue.set("visitorRecipeList", (Serializable) recipeList, 30, TimeUnit.MINUTES);
+            opsForValue.set("topLikesList", (Serializable) topLikesList, 10, TimeUnit.MINUTES);
+            opsForValue.set("topRatesList", (Serializable) topRateList, 10, TimeUnit.MINUTES);
+            opsForValue.set("randomRecipeList", (Serializable) randomRecipeList, 10, TimeUnit.MINUTES);
+            opsForValue.set("easyRecipeList", (Serializable) easyRecipeList, 10, TimeUnit.MINUTES);
         } catch (Exception e) {
             return ResponseUtil.getResponse(ResponseCode.REDIS_ERROR, null, null);
         }
-        resultMap.put("recipe_lists", recipeList);
-        resultMap.put("total", recipePageInfo.getTotal());
+        LinkedHashMap<String, Object> resultMap = new LinkedHashMap<>();
+        resultMap.put("top_likes_list", topLikesList);
+        resultMap.put("top_rates_list", topRateList);
+        resultMap.put("random_recipe_list", randomRecipeList);
+        resultMap.put("easy_recipe_list", easyRecipeList);
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, resultMap);
     }
 }
