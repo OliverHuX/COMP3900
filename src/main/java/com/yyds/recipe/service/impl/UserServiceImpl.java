@@ -25,8 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.HashMap;
@@ -49,13 +47,15 @@ public class UserServiceImpl implements UserService {
     private JavaMailSender mailSender;
 
     @Autowired
-    private MinioUtil minioUtil;
+    private AliyunOSSUtil aliyunOSSUtil;
 
     @Value("${spring.mail.username}")
     private String mailSenderAddress;
 
-    @Value("${minio.bucket.profile.photo}")
-    private String profilePhotoBucketName;
+    @Value("${aliyun.oss.bucketName}")
+    private String bucketName;
+
+    private final static String PROFILE_PHOTO_FOLDER = "profile-photos/";
 
     private static final String PASSWORD_REGEX_PATTERN = "^(?![0-9]+$)(?![a-z]+$)(?![A-Z]+$)(?!([^(0-9a-zA-Z)])+$).{6,20}$";
     private static final int PASSWORD_LENGTH = 6;
@@ -190,17 +190,18 @@ public class UserServiceImpl implements UserService {
         }
 
         if (profilePhoto != null) {
-            String originalFilename = profilePhoto.getOriginalFilename();
-            String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
-            String contentType = profilePhoto.getContentType();
-            InputStream inputStream = null;
-            try {
-                inputStream = profilePhoto.getInputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            String photoName = UUIDGenerator.generateUUID() + suffix;
-            minioUtil.putObject(profilePhotoBucketName, photoName, contentType, inputStream);
+            // String originalFilename = profilePhoto.getOriginalFilename();
+            // String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+            // String contentType = profilePhoto.getContentType();
+            // InputStream inputStream = null;
+            // try {
+            //     inputStream = profilePhoto.getInputStream();
+            // } catch (IOException e) {
+            //     e.printStackTrace();
+            // }
+            // String photoName = UUIDGenerator.generateUUID() + suffix;
+            // minioUtil.putObject(profilePhotoBucketName, photoName, contentType, inputStream);
+            String photoName = aliyunOSSUtil.uploadObject(profilePhoto, bucketName, PROFILE_PHOTO_FOLDER);
             user.setProfilePhoto(photoName);
         }
 
@@ -364,7 +365,7 @@ public class UserServiceImpl implements UserService {
 
         String profilePhoto = user.getProfilePhoto();
         if (profilePhoto != null) {
-            String photoUrl = minioUtil.presignedGetObject(profilePhotoBucketName, profilePhoto, 7);
+            String photoUrl = profilePhoto = aliyunOSSUtil.getUrl(bucketName, PROFILE_PHOTO_FOLDER, profilePhoto);
             user.setProfilePhoto(photoUrl);
         }
 
@@ -382,7 +383,7 @@ public class UserServiceImpl implements UserService {
             String photoName = user.getProfilePhoto();
             String profilePhoto = null;
             try {
-                profilePhoto = minioUtil.presignedGetObject(profilePhotoBucketName, photoName, 7);
+                profilePhoto = aliyunOSSUtil.getUrl(bucketName, PROFILE_PHOTO_FOLDER, photoName);
             } catch (Exception ignored) {
             }
             user.setProfilePhoto(profilePhoto);
@@ -401,7 +402,7 @@ public class UserServiceImpl implements UserService {
             String photoName = user.getProfilePhoto();
             String profilePhoto = null;
             try {
-                profilePhoto = minioUtil.presignedGetObject(profilePhotoBucketName, photoName, 7);
+                profilePhoto = aliyunOSSUtil.getUrl(bucketName, PROFILE_PHOTO_FOLDER, photoName);
             } catch (Exception ignored) {
             }
             user.setProfilePhoto(profilePhoto);
