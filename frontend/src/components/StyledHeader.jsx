@@ -23,7 +23,7 @@ const { Search } = Input;
 // }
 
 const Searchresult = (props) => {
-    const [userId, setId] = React.useState('123')
+    const userId = localStorage.getItem('userId');
     const menu = (
         <Menu>
             <Menu.Item>

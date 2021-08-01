@@ -7,6 +7,7 @@ export default function logout (token) {
       if (data.status === 200) {
         console.log('Logged out!');
         localStorage.removeItem('token');
+        localStorage.removeItem('userId');
         window.location.href = '/';
       } else {
         data.json().then(result => {
