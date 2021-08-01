@@ -9,4 +9,13 @@
         select t.name
         from recipe.tag_list t;
     </select>
+
+    <insert id="addTagsList" parameterType="java.lang.String">
+        insert into recipe.tag_list(name)
+        values
+        <foreach collection="tagList" item="tag" separator=",">
+            (#{tag,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
 </mapper>

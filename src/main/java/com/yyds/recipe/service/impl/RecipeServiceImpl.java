@@ -6,6 +6,7 @@ import com.yyds.recipe.exception.AuthorizationException;
 import com.yyds.recipe.exception.MySqlErrorException;
 import com.yyds.recipe.exception.response.ResponseCode;
 import com.yyds.recipe.mapper.RecipeMapper;
+import com.yyds.recipe.mapper.TagMapper;
 import com.yyds.recipe.mapper.UserMapper;
 import com.yyds.recipe.model.Comment;
 import com.yyds.recipe.model.Recipe;
@@ -41,6 +42,9 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Autowired
     private RecipeMapper recipeMapper;
+
+    @Autowired
+    private TagMapper tagMapper;
 
     @Autowired
     private AliyunOSSUtil aliyunOSSUtil;
@@ -113,6 +117,15 @@ public class RecipeServiceImpl implements RecipeService {
         // insert into recipe table
         List<String> tagList = recipe.getTags();
         try {
+            List<String> databaseTagsList = tagMapper.getTagsList();
+            List<String> newTagsList = new ArrayList<>();
+            for (String tag : tagList) {
+                if (!databaseTagsList.contains(tag)) {
+                    newTagsList.add(tag);
+                }
+            }
+            tagMapper.addTagsList(tagList);
+
             recipeMapper.saveRecipe(recipe);
             recipeMapper.saveTagRecipe(recipeId, tagList);
         } catch (Exception e) {
@@ -480,11 +493,11 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public ResponseEntity<?> visitorGetRecipeList(String recipeId,
-                                                               String creatorId,
-                                                               String searchContent,
-                                                               String searchTags,
-                                                               Integer pageNum,
-                                                               Integer pageSize) {
+                                                  String creatorId,
+                                                  String searchContent,
+                                                  String searchTags,
+                                                  Integer pageNum,
+                                                  Integer pageSize) {
 
         try {
             List<Recipe> topLikesList = (List<Recipe>) redisTemplate.opsForValue().get("topLikesList");
