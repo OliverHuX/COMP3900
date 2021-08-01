@@ -74,6 +74,7 @@ export default function EditRecipe () {
     const [method, setMethod] = React.useState('');
     const [ingre, setIngre] = React.useState('');
     const [fileList, setFileList] = React.useState();
+    const [open, setOpen] = React.useState(true)
 
     const handleTitle = (e) => {
         setTitle(e.target.value)
