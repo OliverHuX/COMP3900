@@ -35,6 +35,7 @@ function signin(email, password, history, remember) {
           localStorage.setItem('email', email)
         }
         console.log(res.token);
+        localStorage.setItem('userId', res.userId);
         localStorage.setItem('token', res.token);
         history.push('./home')
       })
@@ -59,7 +60,7 @@ export default function SignIn() {
   const [email, setEmailInputs] = React.useState(localStorage.getItem('email'));
   const [passWord, setPasswordInputs] = React.useState('');
   const [msg, setMsg] = React.useState('吃屎吧你！');
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
   const [remember, setRemember] = React.useState(false)
   const history = useHistory();
 
