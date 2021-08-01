@@ -1,6 +1,6 @@
 import React, { useState, createElement } from 'react'
 import './index.css'
-import { Layout, Modal, Row, Col, Card, Carousel, Button, Input, Form, Upload, Select, message, Comment, Avatar, Tooltip, List } from 'antd';
+import { Layout, Modal, Row, Col, Card, Carousel, Button, Input, Form, Upload, Select, message, Comment, Avatar, Tooltip, List, Alert } from 'antd';
 import { TagsOutlined, PrinterOutlined, StarFilled, StarOutlined, ClockCircleFilled, CheckCircleFilled, ToolFilled } from '@ant-design/icons';
 import FoodList from '../../components/FoodList';
 import StyledHeader from '../../components/StyledHeader'
@@ -21,8 +21,20 @@ const { Option } = Select;
 const { TextArea } = Input;
 const { Meta } = Card;
 
-function addComments(token) {
-    const result = FetchFunc('recipe/comment', 'POST', token, )
+function addComments(token, recipeId, NewComments, setNewComments) {
+    const payload = JSON.stringify({
+        recipeId: recipeId,
+        content: NewComments
+    });
+    const result = FetchFunc('recipe/comment', 'POST', token, payload);
+    result.then(data => {
+        if (data.status === 200) {
+            setNewComments('')
+            return <>
+                <Alert message="Success Tips" type="success" showIcon closable />
+            </>
+        }
+    })
 } 
 // function getRecipeDetail(){
 //     const result = fetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=${props.}`)
@@ -111,6 +123,7 @@ const RecipeDetail = () => {
     const url = window.location.href.split('/')
     const cur_recipeId = url[url.length - 1]
     const [rate, setRate] = useState(0)
+    const [newComments, setNewComments] = useState('');
     const [photolist, setPhotoList] = useState([]);
     const [title, setTitle] = useState('');
     const [rateScore, setrateScore] = useState('');
@@ -141,13 +154,8 @@ const RecipeDetail = () => {
       
 
     const handleOnchange = (e) => {
-        setComments(e.target.value)
+        setNewComments(e.target.value)
     }
-
-    const handleSubmitting = () => {
-        setComments('')
-    }
-
 
     return (
         <div>
@@ -237,7 +245,7 @@ const RecipeDetail = () => {
                                 <TextArea rows={4} onChange={e => handleOnchange(e)} value={comments} />
                                 </Form.Item>
                                 <Form.Item>
-                                <Button htmlType="submit" onClick={() => handleSubmitting()} type="primary">
+                                <Button htmlType="submit" onClick={() => addComments(token, cur_recipeId, newComments, setNewComments)} type="primary">
                                     Add Comment
                                 </Button>
                             </Form.Item>
