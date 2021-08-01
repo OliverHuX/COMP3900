@@ -5,8 +5,11 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import FetchFunc from './fetchFunc';
 import { useStyles } from './Style';
+import axios from 'axios';
 
 function getRecipe(token, recipeId, setTitle, setTime, setIntro, setIngre) {
     const result = FetchFunc('recipe/recipe_list?pageNum=1&pageSize=9&search=' + recipeId, 'GET', token, null);
@@ -23,7 +26,42 @@ function getRecipe(token, recipeId, setTitle, setTime, setIntro, setIngre) {
     })
 }
 
-// function updateRecipe() {}
+function updateRecipe(title, introduction, ingredients, method, timeDuration, fileList ,token) {
+
+    var formData = new FormData();
+    if(fileList !== undefined){
+        for(let i=0;i<fileList.length;i++){
+            formData.append('uploadPhotos', fileList[i]);
+        }
+    }
+    
+    formData.append('jsonData',new Blob ([JSON.stringify({
+        title: title,
+        introduction: introduction,
+        ingredients: ingredients,
+        method: method,
+        timeDuration: timeDuration
+        })], {type:"application/json"}));
+
+    axios.post(
+        'http://localhost:8080/recipe/update',
+        formData,
+        {
+            headers: {
+                "token": token, //Authorization
+                "Content-Type": "multipart/form-data",
+                "type": "formData"
+            },
+        }
+    )
+    .then(res => {
+        console.log(`Success` + res.data);
+    })
+    .catch(err => {
+        console.log(err);
+    })
+
+}
 
 export default function EditRecipe () {
     const url = window.location.href.split('/')
@@ -35,6 +73,7 @@ export default function EditRecipe () {
     const [intro, setIntro] = React.useState('');
     const [method, setMethod] = React.useState('');
     const [ingre, setIngre] = React.useState('');
+    const [fileList, setFileList] = React.useState();
 
     const handleTitle = (e) => {
         setTitle(e.target.value)
@@ -50,6 +89,9 @@ export default function EditRecipe () {
     }
     const handleMethod = (e) => {
         setMethod(e.target.value)
+    }
+    const handleUpload = (e) => {
+        setFileList(e.target.files)
     }
 
     React.useEffect(() => {
@@ -82,6 +124,9 @@ export default function EditRecipe () {
                         label="Time"
                         fullWidth
                         type='number'
+                        InputProps={{
+                            endAdornment: <InputAdornment position="end">Min(s)</InputAdornment>,
+                        }}
                         onChange={(e) => handleTime(e)}
                     />
                     </Grid>
@@ -123,11 +168,32 @@ export default function EditRecipe () {
                     </Grid>
                 </Grid>
             <React.Fragment>
+                <input
+                    accept="image/*"
+                    className={classes.input}
+                    id="upload-avatar"
+                    type="file"
+                    multiple
+                    onChange={e => handleUpload(e)}
+                />
+                <label htmlFor="upload-avatar">
+                    <Button
+                        className={classes.button}
+                        variant="contained"
+                        color="primary"
+                        component="span"
+                        fullWidth
+                        endIcon={<PhotoCamera />}
+                    >
+                        Upload
+                    </Button>
+                </label>
                 <Button
                     variant="contained"
                     color="primary"
                     fullWidth
                     className={classes.button}
+                    onClick = {() => updateRecipe(title, intro, ingre, method, time, fileList ,token)}
                     >
                     Save
                 </Button>
