@@ -73,7 +73,7 @@ function getDetial(token,cur_recipeId,
 
                 setnickName(res.recipe_lists[0].nickName)
                 console.log('I got the recipe ditails',res.recipe_lists[0].tags)
-                
+                console.log(res.comments)
                 for (var comment in res.comments) {
                     var payload = {
                         author: comment.nickName,
