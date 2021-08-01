@@ -111,7 +111,6 @@ const RecipeDetail = () => {
     const url = window.location.href.split('/')
     const cur_recipeId = url[url.length - 1]
     const [rate, setRate] = useState(0)
-    const [comments, setComments] = useState('');
     const [photolist, setPhotoList] = useState([]);
     const [title, setTitle] = useState('');
     const [rateScore, setrateScore] = useState('');
