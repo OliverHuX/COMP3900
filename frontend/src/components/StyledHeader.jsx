@@ -5,6 +5,8 @@ import { DownOutlined, LogoutOutlined } from '@ant-design/icons';
 import FetchFunc from './fetchFunc';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import logout from './logout';
+import { useHistory } from 'react-router-dom';
+
 
 const { Header} = Layout;
 const { Search } = Input;
@@ -20,7 +22,7 @@ const { Search } = Input;
 //   })
 // }
 
-const StyledHeader = (props) => {
+const Searchresult = (props) => {
     const [userId, setId] = React.useState('123')
     const menu = (
         <Menu>
@@ -71,7 +73,12 @@ const StyledHeader = (props) => {
 
 
     //                search 发送请求
+    const history = useHistory()
     const onSearch = value => {
+
+          
+          
+      
           console.log(value);
 
           // axios.get('http://localhost:8080/recipe/recipe_list?pageNum=1&pageSize=9&search=${value}').then(
@@ -80,13 +87,15 @@ const StyledHeader = (props) => {
           // )
     
       // post the request
-        const result = FetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=${value}`, 'GET', null, null);
+        const result = FetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=${value}`, 'GET', token, null);
         console.log(result)
         result.then((data) => {
           console.log(data);
           if (data.status === 200) {
             data.json().then(res => {
+
               console.log('request success');
+              history.push('/home/searchresult/' + value)
             })
           }
         })
@@ -115,4 +124,4 @@ const StyledHeader = (props) => {
     </Header>
   )
 }
-export default StyledHeader;
+export default Searchresult;

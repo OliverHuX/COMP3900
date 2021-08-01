@@ -16,6 +16,7 @@ import MyLikes from '../MyLikes';
 import { Switch, Route } from 'react-router-dom';
 import Main from '../Main';
 import axios from 'axios';
+import Searchresult from '../../components/Searchresult';
 
 
 const FormData = require('form-data')
@@ -39,6 +40,7 @@ export default function Home  ()  {
     //表单数据收集
     const token = localStorage.getItem('token')
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [fileList, setFileList] = useState() 
     const [title, setTitleInputs] = React.useState('');
     const [tags_list, setTags_listInputs] = React.useState();
@@ -87,8 +89,7 @@ export default function Home  ()  {
         setIsModalVisible(false);
     };
     const onFinish = async (values) => {
-        form.resetFields()
-        setIsModalVisible(false);
+        
 
     };
     // var children = [];
@@ -111,7 +112,7 @@ export default function Home  ()  {
         console.log(fileList)
     };
     const handleClick = () => {
-        
+        setIsLoading(true)
         var FormData = require('form-data');
         var formData = new FormData();
 
@@ -153,6 +154,9 @@ export default function Home  ()  {
                         }
                     )
                     .then(res => {
+                        setIsLoading(false)
+                        form.resetFields()
+                        setIsModalVisible(false);
                         console.log(`Success` + res.data);
                         alert(' Congratulations, your recipe submit successfully!')  
                         
@@ -186,7 +190,11 @@ export default function Home  ()  {
                     <Route path='/home/janpnesefood' exact>
                         <JapaneseFood/>
                     </Route>
-                    <Route path='/home/recipedetail/:cur_recipeId' >
+                    <Route path='/home/searchresult/:cur_recipeId' exact>
+                        <UpCircleOutlined className='upload' onClick={ showModal } />
+                        <Searchresult /> 
+                    </Route>
+                    <Route path='/home/recipedetail/:cur_recipeId' exact>
                         <UpCircleOutlined className='upload' onClick={ showModal } />
                         <RecipeDetail /> 
                     </Route>
@@ -321,6 +329,7 @@ export default function Home  ()  {
                         <Button
                             type="primary"
                             htmlType="submit"
+                            loading={isLoading}
                             onClick={() => handleClick() }
                         >
                             submit
