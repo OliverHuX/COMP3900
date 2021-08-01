@@ -27,7 +27,7 @@ export default function RecipeCard ({ recipeId, title, intro, photo }) {
             <Card className={classes.card}>
             <CardMedia
                 className={classes.cardMedia}
-                image={require(photo)}
+                image={photo}
                 title="Image title"
             />
             <CardContent className={classes.cardContent}>

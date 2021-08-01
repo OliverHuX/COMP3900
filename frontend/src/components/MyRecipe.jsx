@@ -7,14 +7,13 @@ import FetchFunc from './fetchFunc';
 import { useStyles } from './Style';
 
 // const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-
+// pageNum=1&pageSize=9&search=
 function getRecipe(token, userId, setRecipes, recipes) {
-    const result = FetchFunc('recipe/recipe_list?pageNum=1&pageSize=9&search=' + userId, 'GET', token, null);
+    const result = FetchFunc('recipe/recipe_list?userId=' + userId, 'GET', token, null);
     result.then(data => {
-        if (data === 200) {
+        if (data.status === 200) {
             data.json().then(res => {
                 const total = res.total
-                console.log(total)
                 for (var i = 0; i < total; i++) {
                     var info = {
                         recipeId: res.recipe_lists[i].recipeId,
@@ -25,10 +24,10 @@ function getRecipe(token, userId, setRecipes, recipes) {
                     console.log(info)
                     setRecipes(ele => [...ele, info]);
                 }
-                console.log(recipes)
             })
         }
     })
+    .catch(err => console.error('Caught error: ', err))
 }
 
 export default function MyRecipe() {
