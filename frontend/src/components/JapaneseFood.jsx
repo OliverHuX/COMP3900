@@ -9,7 +9,7 @@ function getInfo(token,setData) {
 
       // post the request
       console.log(token);
-      const result = FetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=Chinese`, 'GET', token, null);
+      const result = FetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=Japanese`, 'GET', token, null);
       console.log(result)
       result.then((data) => {
         console.log(data);

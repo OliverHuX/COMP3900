@@ -1,7 +1,7 @@
 import React, { useState, createElement } from 'react'
 import './index.css'
 import { Layout, Modal, Row, Col, Card, Carousel, Button, Input, Form, Upload, Select, message, Comment, Avatar, Tooltip, List, Alert, Image } from 'antd';
-import { TagsOutlined, PrinterOutlined, StarFilled, StarOutlined, ClockCircleFilled, CheckCircleFilled, ToolFilled } from '@ant-design/icons';
+import { TagsOutlined, PrinterOutlined, StarFilled, StarOutlined, ClockCircleFilled, CheckCircleFilled, ToolFilled, ConsoleSqlOutlined } from '@ant-design/icons';
 import FoodList from '../../components/FoodList';
 import StyledHeader from '../../components/StyledHeader'
 import ChineseFood from '../../components/ChineseFood'
@@ -163,8 +163,8 @@ const RecipeDetail = () => {
     const handleOnchange = (e) => {
         setNewComments(e.target.value)
     }
-    const sentScore = () => {
-        
+    const sentScore = (rate) => {
+        console.log('xxxxxxxxxxxxxxxxxxxxxI click',rate)
 
     }
 
@@ -177,7 +177,7 @@ const RecipeDetail = () => {
                         
                         photolist.map((i)=>(
                             <div>       
-                                <img style={{maxWidth:500, height:'auto'}} src= {i} alt="" />
+                                <img style={{maxWidth:500, maxHeight:400, object_fit:'contain' }} src= {i} alt="" />
                             </div>                          
                             ))       
                         }
@@ -209,7 +209,7 @@ const RecipeDetail = () => {
                                 )
                             }
                         </span>
-                        <Button style={ { backgroundColor: '#be2a77', color: '#fff' } } size='small'>Confirm</Button>
+                        <Button onClick={() => sentScore(rate)}style={ { backgroundColor: '#be2a77', color: '#fff' } } size='small'>Confirm</Button>
                     </div>
 
                     <div className='icons'>

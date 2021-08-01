@@ -29,6 +29,7 @@ const { Meta } = Card;
 
 
 
+
 export default function Home  ()  {
 
     
@@ -71,6 +72,7 @@ export default function Home  ()  {
 
 
     }
+    const [form] = Form.useForm();
 
     const showModal = () => {
         setIsModalVisible(true);
@@ -85,6 +87,7 @@ export default function Home  ()  {
         setIsModalVisible(false);
     };
     const onFinish = async (values) => {
+        form.resetFields()
         setIsModalVisible(false);
 
     };
@@ -209,6 +212,7 @@ export default function Home  ()  {
             <Modal footer={ null } title="Upload Recipe" visible={ isModalVisible } onOk={ handleOk } onCancel={ handleCancel }>
                 <Form
                     name="basic"
+                    form = {form}
                     labelCol={ { span: 8, } }
                     wrapperCol={ { span: 14 } }
                     initialValues={ { remember: true } }
@@ -243,7 +247,9 @@ export default function Home  ()  {
                         label="recipe title"
                         name="title"
                         hasFeedback
-                        rules={ [{ required: true, message: 'Need input recipe title!' }] }
+                        rules={ [{ required: true, message: 'Need input recipe title!' },{
+                            max: 50,
+                            message: 'Your Titil is too long!', },] }
                         onChange={ (e) => setTitleInputs(e.target.value) }
                     >
                         <Input />
@@ -279,7 +285,10 @@ export default function Home  ()  {
                         label="Introduction"
                         name="Introduction"
                         hasFeedback
-                        rules={ [{ required: true, message: 'Need input Introduction!' }] }
+                        rules={ [{ required: true, message: 'Need input Introduction!' },{
+                            max: 350,
+                            message: 'Your introduction is too long!', },
+                            ] }
                         onChange={ (e) => setIntroductionInputs(e.target.value) }
                         
                     >
