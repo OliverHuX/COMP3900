@@ -124,7 +124,9 @@ public class RecipeServiceImpl implements RecipeService {
                     newTagsList.add(tag);
                 }
             }
-            tagMapper.addTagsList(tagList);
+            if (newTagsList.size() != 0) {
+                tagMapper.addTagsList(newTagsList);
+            }
 
             recipeMapper.saveRecipe(recipe);
             recipeMapper.saveTagRecipe(recipeId, tagList);

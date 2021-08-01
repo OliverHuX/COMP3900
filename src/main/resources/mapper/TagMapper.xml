@@ -13,7 +13,7 @@
     <insert id="addTagsList" parameterType="java.lang.String">
         insert into recipe.tag_list(name)
         values
-        <foreach collection="tagList" item="tag" separator=",">
+        <foreach collection="list" item="tag" separator=",">
             (#{tag,jdbcType=VARCHAR})
         </foreach>
     </insert>
