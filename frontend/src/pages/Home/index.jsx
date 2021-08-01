@@ -17,6 +17,7 @@ import { Switch, Route } from 'react-router-dom';
 import Main from '../Main';
 import axios from 'axios';
 import Searchresult from '../../components/Searchresult';
+import Cake from '../../components/Cake';
 
 
 const FormData = require('form-data')
@@ -190,8 +191,11 @@ export default function Home  ()  {
                     <Route path='/home/janpnesefood' exact>
                         <JapaneseFood/>
                     </Route>
+                    <Route path='/home/cake' exact>
+                        <Cake/>
+                    </Route>
                     <Route path='/home/searchresult/:cur_recipeId' exact>
-                        <UpCircleOutlined className='upload' onClick={ showModal } />
+                        
                         <Searchresult /> 
                     </Route>
                     <Route path='/home/recipedetail/:cur_recipeId' exact>

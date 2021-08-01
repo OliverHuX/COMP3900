@@ -9,7 +9,7 @@ function getInfo(token,setData) {
 
       // post the request
       console.log(token);
-      const result = FetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=Chinese`, 'GET', token, null);
+      const result = FetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=cake`, 'GET', token, null);
       console.log(result)
       result.then((data) => {
         console.log(data);
@@ -37,7 +37,7 @@ const data1 = [
   { recipePhotos:['/assets/img/recipe2.png'],isLiked:1,likes:20, title: 'BBB', introduction: 'BBBsimple decoration', timeDuration: '20', rateScore: 3 },
   { recipePhotos: ['/assets/img/recipe3.png'],isLiked:0,likes:100, title: 'CCC', introduction: 'CCCsimple decoration', timeDuration: '25', rateScore: 5 },
 ]
-const ChineseFood = () => {
+const Cake = () => {
 
   // const [fillheart, setFillHeart] = useState(0); // }
   // const FillHeart = () => {
@@ -121,7 +121,7 @@ const ChineseFood = () => {
         
         <h1>
             
-            <h2 className='subtitle'>Chinese Food </h2>
+            <h2 className='subtitle'>Cake Recipe</h2>
             <p style={ { textAlign: 'center',fontSize:20 } }>Here are the recipe you want: </p>
             {/* <FoodList data={recipelist} FillHeart={FillHeart} fillheart = {fillheart}/> */}
             <FoodList data={ recipelist} like={like} />
@@ -129,4 +129,4 @@ const ChineseFood = () => {
     )
 }
 
-export default ChineseFood
+export default Cake

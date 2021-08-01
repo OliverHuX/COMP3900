@@ -51,7 +51,8 @@ function getDetial(token,cur_recipeId,
                     settags,
                     setnickName,
                     setComments,
-                    setmyRateScore
+                    setmyRateScore,
+                    setisRated
                     ) {
 
     const result = FetchFunc(`recipe/recipe_list?recipeId=${cur_recipeId}`, 'GET', token,null);
@@ -60,6 +61,7 @@ function getDetial(token,cur_recipeId,
         if (data.status === 200) {
             
             data.json().then(res => {
+                setisRated(res.recipe_lists[0].isRated)
                 setmyRateScore(res.recipe_lists[0].myRateScore)
                 setrateScore(res.recipe_lists[0].rateScore)
                 setPhotoList( res.recipe_lists[0].recipePhotos)
@@ -157,7 +159,7 @@ const RecipeDetail = () => {
 
 
     React.useEffect(()=>{ 
-        getDetial(token,cur_recipeId,setPhotoList,setTitle,setrateScore,settimeDuration,setintroduction,setingredients,setmethod,settags,setnickName, setComments,setmyRateScore)
+        getDetial(token,cur_recipeId,setPhotoList,setTitle,setrateScore,settimeDuration,setintroduction,setingredients,setmethod,settags,setnickName, setComments,setmyRateScore,setisRated)
       },[])
     console.log(comments)
     //   let d = [...photolist];
@@ -169,11 +171,10 @@ const RecipeDetail = () => {
     }
     const sentScore = (token,rate ) => {
         console.log('xxxxxxxxxxxxxxxxxxxxxI click',rate)
-        setmyRateScore(rate)
         setisRated(1)
 
         const payload = JSON.stringify({
-            myRateScore: rate,
+            rateScore: rate,
             recipeId: cur_recipeId
           });
 

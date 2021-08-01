@@ -5,7 +5,7 @@ import FetchFunc from './fetchFunc';
 import SelectInput from '@material-ui/core/Select/SelectInput';
 
 
-function getInfo(token,setData,cur_serach) {
+function getInfo(token,setData,cur_serach,setShow) {
 
       // post the request
       console.log(token);
@@ -15,8 +15,14 @@ function getInfo(token,setData,cur_serach) {
         console.log(data);
         if (data.status === 200) {
           data.json().then(res => {
+            if(res.total!==0){
+                setShow(1)
+                setData(data => [...data, res.recipe_lists])
+            }else{
+                setShow(0)
+            }
             
-            setData(data => [...data, res.recipe_lists])
+            
             
             // console.log('res content', res);
 
@@ -46,9 +52,10 @@ const Searchresult = () => {
 
  
   const [recipelist,setData] = useState([])
+  const [show,setShow] = useState([])
   const token = localStorage.getItem('token');
   React.useEffect(()=>{ 
-    getInfo(token,setData,cur_serach)
+    getInfo(token,setData,cur_serach,setShow)
   },[cur_serach])
   // console.log(data1[0])
   
@@ -109,16 +116,18 @@ const Searchresult = () => {
   }
   
 
-   return (
+   return ( <div> 
+                {show?                        
+                        <h1>
+                            
+                            <h2 className='subtitle'>Search {cur_serach} Results</h2>
+                            <p style={ { textAlign: 'center',fontSize:20 } }>simple decorationsimple decorationsimple decoration</p>
+                            {/* <FoodList data={recipelist} FillHeart={FillHeart} fillheart = {fillheart}/> */}
+                            <FoodList data={ recipelist} like={like} />
+                        </h1>:
+                        <h2 className='subtitle'>Ops! seems no results for {cur_serach}!</h2>}
 
-        
-        <h1>
-            
-            <h2 className='subtitle'>Search {cur_serach} Results</h2>
-            <p style={ { textAlign: 'center',fontSize:20 } }>simple decorationsimple decorationsimple decoration</p>
-            {/* <FoodList data={recipelist} FillHeart={FillHeart} fillheart = {fillheart}/> */}
-            <FoodList data={ recipelist} like={like} />
-        </h1>
+            </div>
     )
 }
 
