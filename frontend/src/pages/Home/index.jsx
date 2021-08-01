@@ -18,6 +18,7 @@ import Main from '../Main';
 import axios from 'axios';
 import Searchresult from '../../components/Searchresult';
 import Cake from '../../components/Cake';
+import { TextPopup } from '../../components/TextPopup';
 
 
 const FormData = require('form-data')
@@ -51,6 +52,8 @@ export default function Home  ()  {
     const [method, setMethodInputs] = React.useState('');
 
     const [timeDuration, setTimeDurationInputs] = React.useState('');
+
+    const [open, setOpen] = React.useState(false);
 
     //var imagedata = document.querySelector('input[type ="file"]').files[0];
 
@@ -159,7 +162,7 @@ export default function Home  ()  {
                         form.resetFields()
                         setIsModalVisible(false);
                         console.log(`Success` + res.data);
-                        alert(' Congratulations, your recipe submit successfully!')  
+                        setOpen(true)
                         
                     })
                     .catch(err => {
@@ -328,7 +331,12 @@ export default function Home  ()  {
                         
                         <TextArea ></TextArea>
                     </Form.Item>
-                    
+                    <TextPopup
+                    open={ open }
+                    setOpen={ setOpen }
+                    title='Congratulations'
+                    msg={'Your recipe has been Submit Successfully'}
+                    />
                     <Form.Item style={ { marginTop: 20 } } wrapperCol={ { offset: 6, span: 8 } }>
                         <Button
                             type="primary"
@@ -343,6 +351,7 @@ export default function Home  ()  {
                 </Form>
             </Modal>
         </div>
+        
     </Layout>
 
 }
