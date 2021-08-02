@@ -235,7 +235,7 @@ const RecipeDetail = () => {
                                                             {
                                                                 
                                                                     (new Array(5)).fill('').map((val, i) => {
-                                                                        if (i < myRateScore) {
+                                                                        if (i < rate) {
                                                                             return <StarFilled  style={ { color: '#f4bf1f' } } />
                                                                         } else {
                                                                             return <StarOutlined  style={ { color: '#f4bf1f' } } />

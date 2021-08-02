@@ -1,14 +1,17 @@
 import React, { useState } from 'react'
 import { Row, Col, Card,Alert, Button, Space  } from 'antd';
 import { NavLink as Link } from 'react-router-dom'
-import { FieldTimeOutlined, HeartOutlined, HeartFilled,StarFilled } from '@ant-design/icons';
+import { FieldTimeOutlined, HeartOutlined, HeartFilled,StarFilled, ImportOutlined } from '@ant-design/icons';
 import FoodList from '../../components/FoodList';
 import FetchFunc from '../../components/fetchFunc';
 import { useHistory } from 'react-router-dom';
+import Main_1 from './Main_1';
+import Main_2 from './Main_2';
 const { Meta } = Card;
 
 const cur_recipeId = '53702903163a4556b664ef0cd9947662'
 function getInfo(token,setData,setData1,setData2) {
+  
 
     // post the request
     console.log('token now is ', token);
@@ -22,7 +25,7 @@ function getInfo(token,setData,setData1,setData2) {
           // console.log('res.top_likes_list content', res.top_likes_list);
           // console.log('res.top_likes_list.list content', res.top_likes_list.list);
           // console.log('res.top_likes_list content', res.top_likes_list.list.recipeId);
-          setData(data => [...data, res.top_likes_list.list])
+          setData(data => [...data, res.easy_recipe_list.list])
           console.log('xxxxxxxxxxxxxxxxxxxxx', data);
           setData1(data => [...data, res.top_rates_list.list])
           setData2(data => [...data, res.random_recipe_list.list])
@@ -143,7 +146,7 @@ const Main = () => {
                 </div>
             </Col>
             <Col span={ 10 } offset={ 1 }>
-                <h1 style={ { textAlign: 'center' } }><Link to='/home/foodlist' className='gomore'>Easy Dinners</Link></h1>
+                <h1 style={ { textAlign: 'center' } }><Link to='/home/foodlist' className='gomore'>Easy Cook</Link></h1>
                 <div className="dinnerList">
                     {
                         data.map((foods) => (
@@ -179,11 +182,8 @@ const Main = () => {
                 </div>
             </Col>
         </Row>
-        <h2 className='subtitle'>Top rate recipe</h2>
-            <FoodList data={ toprates } like={like} />
-
-        <h2 className='subtitle'>More recipe are here! </h2>
-            <FoodList data={randoms } like={like} />
+        <Main_1 />
+        <Main_2/>
     </div>
     )
 }
