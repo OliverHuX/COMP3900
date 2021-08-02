@@ -76,10 +76,37 @@ const Main = () => {
           //   closable
           // />
           setOpen(true)
+          
         
     }
     else{
       history.push('/home/recipedetail/' + cur_recipeId)
+    }
+      // history.push('/home/recipedetail/' + cur_recipeId)
+    }
+
+    const GotoDetial1 = ()=>{
+      // console.log('xxxxxxxxxxxxx', token)
+      if (token=== null){
+       
+          //   <Alert
+          //   message="Warning Text"
+          //   type="warning"
+          //   action={
+          //     <Space>
+          //       <Button size="small" type="ghost">
+          //         Done
+          //       </Button>
+          //     </Space>
+          //   }
+          //   closable
+          // />
+          setOpen(true)
+          history.push('/' )
+        
+    }
+    else{
+      history.push('/home/searchresult/easy' )
     }
       // history.push('/home/recipedetail/' + cur_recipeId)
     }
@@ -252,7 +279,7 @@ const like2 = (i)=>{
                 </div>
             </Col>
             <Col span={ 10 } offset={ 1 }>
-                <h1 style={ { textAlign: 'center' } }><Link to='/home/foodlist' className='gomore'>Easy Cook</Link></h1>
+                <h1 style={ { textAlign: 'center' } }><Link onClick={()=>GotoDetial1()} to='/home/searchresult/easy' className='gomore'>Easy Cook</Link></h1>
                 <div className="dinnerList">
                     {
                         data.map((foods) => (

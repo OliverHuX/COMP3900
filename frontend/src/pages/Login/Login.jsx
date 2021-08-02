@@ -129,10 +129,14 @@ export default function SignIn() {
                 title='你瞅啥！'
                 msg={msg}
               />
+
               <Grid container>
+              <Link href="/home" variant="body4">
+                    { "Jump it! I just want have a look!" }
+                  </Link>
                 <Grid item className={ classes.marginBtm }>
-                  <Link href="/register" variant="body2">
-                    { "Don't have an account? Sign Up" }
+                  <Link href="/register" variant="body1">
+                    { "                            Don't have an account? Sign Up" }
                   </Link>
                 </Grid>
               </Grid>
