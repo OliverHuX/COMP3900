@@ -186,11 +186,11 @@ export default function Home  ()  {
                         <Main />
                     </Route>
                     <Route path='/home/foodlist' exact>
-                        <UpCircleOutlined className='upload' onClick={ showModal } />   
+
                         <FoodList />
                     </Route>
                     <Route path='/home/chinesefood' exact>
-                        <UpCircleOutlined className='upload' onClick={ showModal } />
+
                         <ChineseFood /> 
                     </Route>
                     <Route path='/home/janpnesefood' exact>
@@ -204,7 +204,7 @@ export default function Home  ()  {
                         <Searchresult /> 
                     </Route>
                     <Route path='/home/recipedetail/:cur_recipeId' exact>
-                        <UpCircleOutlined className='upload' onClick={ showModal } />
+
                         <RecipeDetail /> 
                     </Route>
                     <Route path='/home/editrecipe/:recipeId' exact>

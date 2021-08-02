@@ -5,6 +5,7 @@ import { FieldTimeOutlined, HeartOutlined, HeartFilled,StarFilled, ImportOutline
 import FoodList from '../../components/FoodList';
 import FetchFunc from '../../components/fetchFunc';
 import { useHistory } from 'react-router-dom';
+import { TextPopup } from '../../components/TextPopup';
 
 const { Meta } = Card;
 
@@ -46,6 +47,7 @@ function getInfo(token,setData,setData1,setData2) {
 //     { recipePhotos: ['/assets/img/recipe1.png','/assets/img/recipe3.png'],isLiked:0,likes:10, title: 'AAA', introduction: 'AAAsimple decoration', timeDuration: '15', rateScore: 2 },
 //   ]
 const Main = () => {
+    const [open, setOpen] = React.useState(false);
     const history = useHistory()
     const [data,setData] = useState([])
     const [toprates,setData1] = useState([])
@@ -73,7 +75,7 @@ const Main = () => {
           //   }
           //   closable
           // />
-          alert(' You need Login first !')  
+          setOpen(true)
         
     }
     else{
@@ -233,6 +235,12 @@ const like2 = (i)=>{
 }
     return (<div>
         <Row>
+                                  <TextPopup
+                                    open={ open }
+                                    setOpen={ setOpen }
+                                    title='Sorry'
+                                    msg={'Your need to login to do this action :) !'}
+                                    />
             <Col span={ 13 } className='rec'>
                 <img style={ { width: '100%' } } src='/assets/img/recipe1.png' alt="" />
                 <div className='deco'>
