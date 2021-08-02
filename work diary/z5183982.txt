@@ -56,7 +56,7 @@ Week 8
 
 Week 9
 
-1. Implement photo and video upload and donwload
+1. Implement photo and video upload and download
 
 2. Using OSS server to store
 
