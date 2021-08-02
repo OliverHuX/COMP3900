@@ -161,9 +161,10 @@ export default function Home  ()  {
                     .then(res => {
                         setIsLoading(false)
                         form.resetFields()
-                        setIsModalVisible(false);
-                        console.log(`Success` + res.data);
                         setOpen(true)
+                        // setIsModalVisible(false);
+                        console.log(`Success` + res.data);
+                        
                         
                     })
                     .catch(err => {
