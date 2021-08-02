@@ -16,11 +16,7 @@ import FetchFunc from '../../components/fetchFunc';
 import StyledHeader from '../../components/StyledHeader'
 import { TextPopup } from '../../components/TextPopup';
 
-function signin(email, password, history, remember) {
-  // history.push('./home')   // 跳过登录， 测试
-  // return;         // 跳过登录 测试
-  // console.log('incomplete' + email + password);
-  // const path = 'login'
+function signin(email, password, history, remember, setOpen, setMsg) {
   const payload = JSON.stringify({
     email: email,
     password: password
@@ -39,17 +35,32 @@ function signin(email, password, history, remember) {
         localStorage.setItem('token', res.token);
         history.push('./home')
       })
+    } else {
+      if (data.status === 600 || data.status === 666) {
+        setMsg('Input is incorrect!');
+      } else if (data.status === 601) {
+        setMsg('Email already exists!');
+      } else if (data.status === 602) {
+        setMsg('Email is not valid!');
+      } else if (data.status === 603) {
+        setMsg('Password is not valid!');
+      } else if (data.status === 604) {
+        setMsg('Email or password is incorrect!')
+      } else if (data.status === 605) {
+        setMsg('Please verify your Email!')
+      } else if (data.status === 609) {
+        setMsg('Some error happen!')
+      } else if (data.status === 610) {
+        setMsg('Recipe does not exist!')
+      } else if (data.status === 611) {
+        setMsg('User is not as subscriber!')
+      } else if (data.status === 622) {
+        setMsg('Following user does not exist!')
+      } else if (data.status === 623) {
+        setMsg('User ID is not found!')
+      }
+      setOpen(true)
     }
-    // if (data.code === 200) {
-    //   data.json().then(res => {
-    //     console.log(res)
-    //     console.log(res.data)
-    //     // console.log(res.err)
-    //     if (res.code === 0) {
-    //       history.push('./home')
-    //     }
-    //   })
-    // }
   })
   .catch(err => console.error('Caught error: ', err))
 
@@ -60,14 +71,16 @@ export default function SignIn() {
   const classes = myStyles();
   const [email, setEmailInputs] = React.useState(localStorage.getItem('email'));
   const [passWord, setPasswordInputs] = React.useState('');
-  const [msg, setMsg] = React.useState('吃屎吧你！');
+  const [msg, setMsg] = React.useState('');
   const [open, setOpen] = React.useState(false);
-  const [remember, setRemember] = React.useState(false)
+  const [remember, setRemember] = React.useState(false);
+  const [code, setCode] = React.useState(null)
   const history = useHistory();
 
   const handleRemember = () => {
     setRemember(!remember)
   }
+
 
   return (
     // <div className={classes.size}>
@@ -119,15 +132,16 @@ export default function SignIn() {
                 variant="contained"
                 color="primary"
                 className={ classes.submit }
-                onClick={ () => signin(email, passWord, history, remember) }
+                onClick={ () => signin(email, passWord, history, remember, setOpen, setMsg) }
               >
                 Sign In
               </Button>
               <TextPopup
                 open={ open }
                 setOpen={ setOpen }
-                title='你瞅啥！'
+                title='Error'
                 msg={msg}
+                newButton={false}
               />
 
               <Grid container>
