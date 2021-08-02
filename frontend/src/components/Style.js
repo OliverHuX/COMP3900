@@ -24,9 +24,7 @@ const useStyles = makeStyles((theme) => ({
     },
     paper3: {
       display: 'flex',
-      // alignItems: 'center',
       left: '36%',
-      // right: '50%',
     },
     form: {
         width: '100%',
