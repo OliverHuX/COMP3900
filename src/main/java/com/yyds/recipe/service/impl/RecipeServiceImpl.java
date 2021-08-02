@@ -567,7 +567,7 @@ public class RecipeServiceImpl implements RecipeService {
         for (int i = 0; i < size; i++) {
             topRateList.add(recipeList.get(i));
         }
-        recipeList.sort((o1, o2) -> o2.getTimeDuration() - o1.getTimeDuration());
+        recipeList.sort((o1, o2) -> o1.getTimeDuration() - o2.getTimeDuration());
         List<Recipe> easyRecipeList = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             easyRecipeList.add(recipeList.get(i));

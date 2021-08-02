@@ -162,7 +162,7 @@
                 and rl.user_id = #{userId}) > 0
             </if>
         </where>
-        group by r.recipe_id;
+        group by r.recipe_id
     </select>
 
     <select id="getMyRecipeList" resultMap="RecipeResultMap">
@@ -179,7 +179,7 @@
         from recipe.recipe r
                  left join recipe.like l on r.recipe_id = l.recipe_id
         where r.user_id = #{userId}
-        group by r.recipe_id;
+        group by r.recipe_id
     </select>
 
     <select id="getFileNameListByRecipeId" resultType="java.lang.String">
