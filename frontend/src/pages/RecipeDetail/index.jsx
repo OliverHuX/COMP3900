@@ -297,23 +297,6 @@ const RecipeDetail = () => {
                 </div>
             </div>
             <Comments comments={comments}/>
-            {/* <div>
-            <List
-                header={`${comments.length} replies`}
-                itemLayout="horizontal"
-                dataSource={comments}
-                renderItem={item => (
-                <li>
-                    <Comment
-                        author={item.author}
-                        avatar={item.avatar}
-                        content={item.content}
-                        datetime={item.datetime}
-                    />
-                </li>
-                )}
-            />
-            </div> */}
             <div>
                 {/* {comments.length > 0 && <CommentList comments={comments} />} */}
                 <Comment

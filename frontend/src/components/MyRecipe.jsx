@@ -5,7 +5,9 @@ import Container from '@material-ui/core/Container';
 import RecipeCard from './RecipeCard';
 import FetchFunc from './fetchFunc';
 import { useStyles } from './Style';
+import { grey } from '@material-ui/core/colors';
 
+var timer = null;
 // const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 // pageNum=1&pageSize=9&search=
 function getRecipe(token, userId, setRecipes) {
@@ -35,14 +37,30 @@ export default function MyRecipe() {
     const classes = useStyles();
     // const url = window.location.href.split('/')
     // const recipeId = url[url.length - 1]
-    const [recipes, setRecipes] = React.useState([])
-    const token = localStorage.getItem('token')
-    const userId = localStorage.getItem('userId')
+    const [recipes, setRecipes] = React.useState([]);
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+    const [msg, setMsg] = React.useState('Loading...');
+    const [sec, setSec] = React.useState(10);
     console.log(recipes.length)
 
     React.useEffect(() => {
         getRecipe(token, userId, setRecipes)
+        timer = window.setInterval(() => {
+            setSec(s => s - 1);
+        }, 1000);
     }, [])
+
+    React.useEffect(() => {
+        if (sec <= 0) {
+            clearInterval(timer);
+            setMsg('You haven\'t upload any recipes')
+        }
+        if (recipes.length != 0) {
+            clearInterval(timer);
+        }
+    }, [sec])
+
 
     return (
         <React.Fragment>
@@ -54,7 +72,7 @@ export default function MyRecipe() {
                     <RecipeCard recipeId={recipe.recipeId} intro={recipe.intro} title={recipe.title} photo={recipe.photo} />
                 ))}
             </Grid> : <div className={classes.paper}>
-                <h1>You haven't upload any recipes</h1>
+                <h1 style = {{ color: grey[400] }}>{msg}</h1>
                 </div>}
             </Container>
         </main>

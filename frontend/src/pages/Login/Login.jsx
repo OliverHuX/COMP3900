@@ -33,6 +33,7 @@ function signin(email, password, history, remember, setOpen, setMsg) {
         console.log(res.token);
         localStorage.setItem('userId', res.userId);
         localStorage.setItem('token', res.token);
+        localStorage.setItem('avatar', res.profilePhoto);
         history.push('./home')
       })
     } else if (data.status === 601) {
@@ -72,7 +73,6 @@ export default function SignIn() {
   const [msg, setMsg] = React.useState('');
   const [open, setOpen] = React.useState(false);
   const [remember, setRemember] = React.useState(false);
-  const [code, setCode] = React.useState(null)
   const history = useHistory();
 
   const handleRemember = () => {
