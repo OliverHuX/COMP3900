@@ -96,7 +96,7 @@ const StyledHeader = (props) => {
     const onSearch = value => {
 
           
-          
+          GotoDetial()
       
           console.log(value);
 
@@ -162,7 +162,7 @@ const StyledHeader = (props) => {
           cur !==''&&(
 
           <div>{token===null && <Button type="primary"  onClick={() => gotoSignin()} >Sign In</Button>}</div>
-          )}  
+          )}
 
 
           {token && <Avatar src={avatar} onClick={() => handleClick()}/>}
