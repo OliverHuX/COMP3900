@@ -1,42 +1,35 @@
 package com.yyds.recipe.service.impl;
 
+import com.yyds.recipe.exception.AuthorizationException;
+import com.yyds.recipe.exception.MySqlErrorException;
+import com.yyds.recipe.exception.response.ResponseCode;
 import com.yyds.recipe.mapper.UserMapper;
-import com.yyds.recipe.model.LoginUser;
+import com.yyds.recipe.model.Follow;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.UserService;
-import com.yyds.recipe.utils.JwtUtil;
-import com.yyds.recipe.utils.SaltGenerator;
-import com.yyds.recipe.utils.UUIDGenerator;
-import com.yyds.recipe.utils.UserSession;
-import com.yyds.recipe.vo.ErrorCode;
-import com.yyds.recipe.vo.ServiceVO;
-import com.yyds.recipe.vo.SuccessCode;
-import lombok.SneakyThrows;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.IncorrectCredentialsException;
-import org.apache.shiro.authc.UnknownAccountException;
-import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.crypto.hash.Md5Hash;
-import org.apache.shiro.subject.Subject;
+import com.yyds.recipe.utils.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.HashMap;
-import java.util.Random;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
@@ -53,36 +46,43 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private JavaMailSender mailSender;
 
+    @Autowired
+    private AliyunOSSUtil aliyunOSSUtil;
+
     @Value("${spring.mail.username}")
     private String mailSenderAddress;
+
+    @Value("${aliyun.oss.bucketName}")
+    private String bucketName;
+
+    private final static String PROFILE_PHOTO_FOLDER = "profile-photos/";
 
     private static final String PASSWORD_REGEX_PATTERN = "^(?![0-9]+$)(?![a-z]+$)(?![A-Z]+$)(?!([^(0-9a-zA-Z)])+$).{6,20}$";
     private static final int PASSWORD_LENGTH = 6;
     private static final String EMAIL_REGEX_PATTEN = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
+    private static final String EMAIL_VERIFY_TOKEN_PREFIX = "email verify: ";
 
-    // TODO: transactional does not work
-    @Transactional
     @Override
-    public ServiceVO<?> register(User user, HttpSession httpSession, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> register(User user, HttpServletRequest request, HttpServletResponse response) {
 
         // check email if exist
         if (userMapper.getUserByEmail(user.getEmail()) != null) {
-            return new ServiceVO<>(ErrorCode.EMAIL_ALREADY_EXISTS_ERROR, ErrorCode.EMAIL_ALREADY_EXISTS_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_ALREADY_EXISTS_ERROR, null, null);
         }
 
         if (user.getFirstName() == null || user.getLastName() == null || user.getGender() == null
                 || user.getEmail() == null || user.getPassword() == null || user.getBirthdate() == null) {
-            return new ServiceVO<>(ErrorCode.BUSINESS_PARAMETER_ERROR, ErrorCode.BUSINESS_PARAMETER_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.PARAMETER_ERROR, null, null);
         }
 
         // check email
         if (!user.getEmail().matches(EMAIL_REGEX_PATTEN)) {
-            return new ServiceVO<>(ErrorCode.EMAIL_REGEX_ERROR, ErrorCode.EMAIL_REGEX_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_REGEX_ERROR, null, null);
         }
 
         // check password
         if (!user.getPassword().matches(PASSWORD_REGEX_PATTERN)) {
-            return new ServiceVO<>(ErrorCode.PASSWORD_REGEX_ERROR, ErrorCode.PASSWORD_REGEX_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.PASSWORD_REGEX_ERROR, null, null);
         }
 
         if (user.getNickName() == null) {
@@ -91,25 +91,28 @@ public class UserServiceImpl implements UserService {
 
         String userId = UUIDGenerator.createUserId();
         user.setUserId(userId);
+        user.setPassword(BcryptPasswordUtil.encodePassword(user.getPassword()));
         user.setCreateTime(String.valueOf(System.currentTimeMillis()));
-
-        String salt = SaltGenerator.getSalt();
-        user.setSalt(salt);
-        Md5Hash md5Hash = new Md5Hash(user.getPassword(), salt, 1024);
-        user.setPassword(md5Hash.toHex());
 
         // JWT
         HashMap<String, String> payload = new HashMap<>();
         payload.put("userId", user.getUserId());
         payload.put("email", user.getEmail());
-        String userToken = JwtUtil.createToken(payload);
+        String registerToken = EMAIL_VERIFY_TOKEN_PREFIX + JwtUtil.createToken(payload);
+
+        Boolean isRegistered = redisTemplate.hasKey(registerToken);
+        if (isRegistered == null) {
+            return ResponseUtil.getResponse(ResponseCode.REDIS_ERROR, null, null);
+        }
+        if (isRegistered) {
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_VERIFY_ERROR, null, null);
+        }
 
         // set in redis
         ValueOperations<String, Serializable> opsForValue = redisTemplate.opsForValue();
-        opsForValue.set(userToken, user, 30, TimeUnit.MINUTES);
+        opsForValue.set(registerToken, user, 30, TimeUnit.MINUTES);
 
         // send email
-        // TODO: test email and smtp
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
@@ -118,148 +121,308 @@ public class UserServiceImpl implements UserService {
             mimeMessageHelper.setTo(user.getEmail());
             mimeMessageHelper.setText("<b>Dear <code>" + user.getNickName() + "</code></b>,<br><p>Welcome to </p><b>YYDS</b>! Please verify" +
                     " your account within <b>30 minutes</b> following this link: localhost:8080/emailVerify/" +
-                    userToken + "</code></p>", true);
+                    registerToken + "</code></p>", true);
             mailSender.send(mimeMessage);
         } catch (Exception e) {
-            redisTemplate.delete(userToken);
-            return new ServiceVO<>(ErrorCode.MAIL_SERVER_ERROR, ErrorCode.MAIL_SERVER_ERROR_MESSAGE);
+            redisTemplate.delete(registerToken);
+            return ResponseUtil.getResponse(ResponseCode.MAIL_SERVER_ERROR, null, null);
         }
 
-        HashMap<String, Object> resultMap = new HashMap<>();
-        resultMap.put("token", userToken);
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, resultMap);
-
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
     @Override
-    public ServiceVO<?> loginUser(LoginUser loginUser, HttpSession httpSession, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> loginUser(User loginUser, HttpServletRequest request, HttpServletResponse response) {
 
-        Subject subject = SecurityUtils.getSubject();
-
-        try {
-            subject.login(new UsernamePasswordToken(loginUser.getEmail(), loginUser.getPassword()));
-        } catch (UnknownAccountException e) {
-            System.out.println("email error or not exist");
-            return new ServiceVO<>(ErrorCode.EMAIL_NOT_EXISTS_ERROR, ErrorCode.EMAIL_NOT_EXISTS_ERROR_MESSAGE);
-        } catch (IncorrectCredentialsException e) {
-            System.out.println("password error");
-            return new ServiceVO<>(ErrorCode.PASSWORD_INCORRECT_ERROR, ErrorCode.PASSWORD_INCORRECT_ERROR_MESSAGE);
+        User user = userMapper.getUserByEmail(loginUser.getEmail());
+        if (user == null) {
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_OR_PASSWORD_ERROR, null, null);
+        }
+        if (!BcryptPasswordUtil.passwordMatch(loginUser.getPassword(), user.getPassword())) {
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_OR_PASSWORD_ERROR, null, null);
         }
 
         String email = loginUser.getEmail();
         String userId = userMapper.getUserIdByEmail(email);
-        HashMap<String, Object> resultMap = new HashMap<>();
-        resultMap.put("userId", userId);
+        HashMap<String, String> payload = new HashMap<>();
+        payload.put("email", email);
+        payload.put("userId", userId);
+        String token = JwtUtil.createToken(payload);
 
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, resultMap);
+        try {
+            ValueOperations<String, Serializable> opsForValue = redisTemplate.opsForValue();
+            opsForValue.set(token, user, Duration.ofHours(12));
+        } catch (Exception e) {
+            return ResponseUtil.getResponse(ResponseCode.REDIS_ERROR, null, null);
+        }
+
+        LinkedHashMap<String, Object> body = new LinkedHashMap<>();
+        body.put("userId", user.getUserId());
+        body.put("token", token);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("token", token);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, httpHeaders, body);
 
     }
 
     @Override
-    public ServiceVO<?> logoutUser(String userId, HttpSession httpSession, HttpServletResponse response) {
-        Subject subject = SecurityUtils.getSubject();
-        subject.logout();
-        // TODO: have not deal session and cookie
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
+    public ResponseEntity<?> logoutUser(HttpServletRequest request, HttpServletResponse response) {
+        String token = request.getHeader("token");
+        redisTemplate.delete(token);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
     @Override
     @Transactional
-    public ServiceVO<?> editUser(User user) {
+    public ResponseEntity<?> editUser(MultipartFile profilePhoto, User user, HttpServletRequest request, HttpServletResponse response) {
+
+        String token = request.getHeader("token");
+
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        user.setUserId(userId);
 
         if (userMapper.getUserByUserId(user.getUserId()) == null) {
-            return new ServiceVO<>(ErrorCode.USERID_NOT_FOUND_ERROR, ErrorCode.USERID_NOT_FOUND_ERROR_MESSAGE);
+            throw new AuthorizationException();
         }
 
         if (user.getUserId() == null || (user.getGender() != null && (user.getGender() > 2 || user.getGender() < 0))) {
-            return new ServiceVO<>(ErrorCode.BUSINESS_PARAMETER_ERROR, ErrorCode.BUSINESS_PARAMETER_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.PARAMETER_ERROR, null, null);
+        }
+
+        if (profilePhoto != null) {
+            // String originalFilename = profilePhoto.getOriginalFilename();
+            // String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+            // String contentType = profilePhoto.getContentType();
+            // InputStream inputStream = null;
+            // try {
+            //     inputStream = profilePhoto.getInputStream();
+            // } catch (IOException e) {
+            //     e.printStackTrace();
+            // }
+            // String photoName = UUIDGenerator.generateUUID() + suffix;
+            // minioUtil.putObject(profilePhotoBucketName, photoName, contentType, inputStream);
+            String photoName = aliyunOSSUtil.uploadObject(profilePhoto, bucketName, PROFILE_PHOTO_FOLDER);
+            user.setProfilePhoto(photoName);
         }
 
         try {
             userMapper.editUser(user);
         } catch (Exception e) {
-            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
         }
-
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
 
     @Override
-    public ServiceVO<?> editPassword(String oldPassword, String newPassword, String userId) {
+    public ResponseEntity<?> editPassword(String oldPassword, String newPassword, HttpServletRequest request, HttpServletResponse response) {
 
+        String token = request.getHeader("token");
+
+        if (StringUtils.isEmpty(token)) {
+            throw new AuthorizationException();
+        }
+
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
         if (userMapper.getUserByUserId(userId) == null) {
-            return new ServiceVO<>(ErrorCode.USERID_NOT_FOUND_ERROR, ErrorCode.USERID_NOT_FOUND_ERROR_MESSAGE);
+            throw new AuthorizationException();
         }
 
         if (newPassword.length() < PASSWORD_LENGTH || !newPassword.matches(PASSWORD_REGEX_PATTERN)) {
-            return new ServiceVO<>(ErrorCode.PASSWORD_REGEX_ERROR, ErrorCode.PASSWORD_REGEX_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.PASSWORD_REGEX_ERROR, null, null);
         }
 
-        User user = userMapper.getUserByUserId(userId);
-        Md5Hash md5Hash = new Md5Hash(oldPassword, user.getSalt(), 1024);
-        if (!md5Hash.toHex().equals(user.getPassword())) {
-            return new ServiceVO<>(ErrorCode.PASSWORD_INCORRECT_ERROR, ErrorCode.PASSWORD_INCORRECT_ERROR_MESSAGE);
-        }
+        String encodePassword = BcryptPasswordUtil.encodePassword(newPassword);
 
-        String salt = SaltGenerator.getSalt();
-        md5Hash = new Md5Hash(newPassword, salt, 1024);
-        user.setPassword(md5Hash.toHex());
         try {
-            userMapper.changePassword(userId, user.getPassword(), salt);
+            userMapper.changePassword(userId, encodePassword);
         } catch (Exception e) {
-            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.DATABASE_GENERAL_ERROR, null, null);
         }
 
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
     @Override
-    public ServiceVO<?> emailVerify(String token) {
+    @Transactional(value = "transactionManager", rollbackFor = Exception.class)
+    public ResponseEntity<?> emailVerify(String token) {
         if (Boolean.FALSE.equals(redisTemplate.hasKey(token))) {
-            return new ServiceVO<>(ErrorCode.EMAIL_VERIFY_ERROR, ErrorCode.EMAIL_VERIFY_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_VERIFY_ERROR, null, null);
         }
 
-        User user = null;
+        User user;
         try {
             user = (User) redisTemplate.opsForValue().get(token);
         } catch (Exception e) {
-            return new ServiceVO<>(ErrorCode.REDIS_ERROR, ErrorCode.REDIS_ERROR_MESSAGE);
+            return ResponseUtil.getResponse(ResponseCode.REDIS_ERROR, null, null);
+        }
+
+
+        if (user == null) {
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_VERIFY_ERROR, null, null);
+        }
+
+        User checkedUser = userMapper.getUserByUserId(user.getUserId());
+        if (checkedUser != null) {
+            redisTemplate.delete(token);
+            return ResponseUtil.getResponse(ResponseCode.EMAIL_VERIFY_ERROR, null, null);
         }
 
         try {
             userMapper.saveUser(user);
         } catch (Exception e) {
-            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+            throw new MySqlErrorException();
         }
+
 
         try {
             userMapper.saveUserAccount(user);
         } catch (Exception e) {
-            return new ServiceVO<>(ErrorCode.DATABASE_GENERAL_ERROR, ErrorCode.DATABASE_GENERAL_ERROR_MESSAGE);
+            throw new MySqlErrorException();
         }
 
-        HashMap<String, Object> res = new HashMap<>();
-        res.put("userId", user.getUserId());
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, res);
+        redisTemplate.delete(token);
+
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
 
     }
 
     @Override
-    public ServiceVO<?> testSqlOnly() {
-        int count = userMapper.testSql();
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, count);
+    public ResponseEntity<?> followUser(Follow follow, HttpServletRequest request) {
+        String token = request.getHeader("token");
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        User checkedUser = userMapper.getUserByUserId(userId);
+        if (checkedUser == null) {
+            throw new AuthorizationException();
+        }
+
+        String followId = follow.getFollowId();
+        User checkedFollow = userMapper.getUserByUserId(followId);
+        if (checkedFollow == null) {
+            return ResponseUtil.getResponse(ResponseCode.FOLLOW_USER_NOT_EXIST, null, null);
+        }
+
+        try {
+            userMapper.followUser(userId, followId);
+        } catch (Exception e) {
+            throw new MySqlErrorException();
+        }
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
 
     @Override
-    public ServiceVO<?> testRedisOnly() {
-        ValueOperations<String, Serializable> opsForValue = redisTemplate.opsForValue();
-        opsForValue.set("test", "Minimal trader liver inter performances comprehensive boundaries, float gave bbs arguments donated pad certain, verde dad consolidated leg pierre. ");
-        Boolean isExist = redisTemplate.hasKey("test");
-        HashMap<String, Object> res = new HashMap<>();
-        String text = (String) redisTemplate.opsForValue().get("test");
-        res.put("isExist", isExist);
-        res.put("text", text);
-        return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESSAGE, res);
+    public ResponseEntity<?> unfollowUser(Follow unfollow, HttpServletRequest request) {
+        String token = request.getHeader("token");
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        User checkedUser = userMapper.getUserByUserId(userId);
+        if (checkedUser == null) {
+            throw new AuthorizationException();
+        }
+
+        String followId = unfollow.getFollowId();
+        User checkedFollow = userMapper.getUserByUserId(followId);
+        if (checkedFollow == null) {
+            return ResponseUtil.getResponse(ResponseCode.FOLLOW_USER_NOT_EXIST, null, null);
+        }
+
+        try {
+            userMapper.unfollowUser(userId, followId);
+        } catch (Exception e) {
+            throw new MySqlErrorException();
+        }
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
     }
+
+    @Override
+    public ResponseEntity<?> devRegister(User user) {
+
+        String userId = UUIDGenerator.createUserId();
+        user.setUserId(userId);
+        user.setCreateTime(String.valueOf(System.currentTimeMillis()));
+        user.setPassword(BcryptPasswordUtil.encodePassword(user.getPassword()));
+        try {
+            userMapper.saveUser(user);
+            userMapper.saveUserAccount(user);
+        } catch (Exception e) {
+            throw new MySqlErrorException();
+        }
+
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
+    }
+
+    @Override
+    public ResponseEntity<?> getMyPersonalProfile(HttpServletRequest request, HttpServletResponse response) {
+        String token = request.getHeader("token");
+        if (StringUtils.isEmpty(token)) {
+            throw new AuthorizationException();
+        }
+
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        User user = userMapper.getUserByUserId(userId);
+        if (user == null) {
+            return ResponseUtil.getResponse(ResponseCode.USERID_NOT_FOUND_ERROR, null, null);
+        }
+
+        String profilePhoto = user.getProfilePhoto();
+        if (profilePhoto != null) {
+            String photoUrl = aliyunOSSUtil.getUrl(bucketName, PROFILE_PHOTO_FOLDER, profilePhoto);
+            user.setProfilePhoto(photoUrl);
+        } else {
+            user.setProfilePhoto("");
+        }
+
+        LinkedHashMap<String, Object> body = new LinkedHashMap<>();
+        body.put("userInfo", user);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, body);
+    }
+
+    @Override
+    public ResponseEntity<?> getFollowingList(String search, HttpServletRequest request) {
+        String token = request.getHeader("token");
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        List<User> followingList = userMapper.getFollowing(userId, search);
+        for (User user : followingList) {
+            String photoName = user.getProfilePhoto();
+            String profilePhoto = "";
+            try {
+                profilePhoto = aliyunOSSUtil.getUrl(bucketName, PROFILE_PHOTO_FOLDER, photoName);
+            } catch (Exception ignored) {
+            }
+            user.setProfilePhoto(profilePhoto);
+        }
+        LinkedHashMap<String, Object> body = new LinkedHashMap<>();
+        body.put("following_list", followingList);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, body);
+    }
+
+    @Override
+    public ResponseEntity<?> getFollowerList(String search, HttpServletRequest request) {
+        String token = request.getHeader("token");
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        List<User> followingList = userMapper.getFollower(userId, search);
+        for (User user : followingList) {
+            String photoName = user.getProfilePhoto();
+            String profilePhoto = "";
+            try {
+                profilePhoto = aliyunOSSUtil.getUrl(bucketName, PROFILE_PHOTO_FOLDER, photoName);
+            } catch (Exception ignored) {
+            }
+            user.setProfilePhoto(profilePhoto);
+        }
+        LinkedHashMap<String, Object> body = new LinkedHashMap<>();
+        body.put("following_list", followingList);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, body);
+    }
+
+    @Override
+    public ResponseEntity<?> decodeToken(HttpServletRequest request) {
+        String token = request.getHeader("token");
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        String email = JwtUtil.decodeToken(token).getClaim("email").asString();
+        LinkedHashMap<String, Object> body = new LinkedHashMap<>();
+        body.put("userId", userId);
+        body.put("email", email);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, body);
+    }
+
 }

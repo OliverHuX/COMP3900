@@ -1,78 +1,153 @@
-import React from 'react';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import RestaurantMenuIcon from '@material-ui/icons/RestaurantMenu';
+import React from 'react'
+import { Layout, Menu, Dropdown, Input, Button} from 'antd';
+import {Link} from 'react-router-dom'
+import { DownOutlined, LogoutOutlined } from '@ant-design/icons';
+import FetchFunc from './fetchFunc';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import FastfoodIcon from '@material-ui/icons/Fastfood';
-import { makeStyles } from '@material-ui/core/styles';
+import Avatar from '@material-ui/core/Avatar';
 import logout from './logout';
-import PropTypes from 'prop-types';
-import Link from '@material-ui/core/Link';
+import { useHistory } from 'react-router-dom';
+import { TextPopup } from './TextPopup';
 
-const useStyles = makeStyles((theme) => ({
-  icon: {
-    marginRight: theme.spacing(2),
-  },
-  logout: {
-    position: 'relative',
-    display: 'flex',
-    marginLeft: 'auto',
-    marginRight: 0,
-    cursor: 'pointer'
-  },
-  icons: {
-    position: 'relative',
-    marginLeft: theme.spacing(2),
-    marginRight: 0,
-    cursor: 'pointer'
-  },
-  footer: {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(6),
-  },
-}));
+const { Header} = Layout;
+const { Search } = Input;
 
-const jumpto = () => {
-  window.location.href = '/'
-}
-export function IconButton ({ icon, handleOnClick }) {
-  const classes = useStyles();
-  if (!handleOnClick) handleOnClick = (icon === 'join' ? jumpto : logout)
-  if (icon === 'join') {
-    return (
-      <FastfoodIcon className={classes.icons} align="right" onClick={handleOnClick}>
-      </FastfoodIcon>
-    )
-  }
+
+const StyledHeader = (props) => {
+  const url = window.location.href.split('/')
+  const cur = url[url.length - 1]
+  console.log('xxxxx1321312',cur)
+    const [open, setOpen] = React.useState(false);
+    const GotoDetial = ( )=>{
+      const token= localStorage.getItem('token');
+      if (token=== null){
+          setOpen(true) }
+    }
+    const userId = localStorage.getItem('userId');
+    const menu = (
+        <Menu>
+            <Menu.Item  onClick={()=>GotoDetial()}>
+                <Link to='/home/chinesefood'>Chinese food</Link>
+            </Menu.Item>
+            <Menu.Item onClick={()=>GotoDetial()}>
+          
+                <Link to='/home/janpnesefood'>Japanese food</Link>
+            </Menu.Item >
+            <Menu.Item onClick={()=>GotoDetial()}>
+            <Link to='/home/noodles'>Noodles</Link>
+            </Menu.Item>
+            <Menu.Item onClick={()=>GotoDetial()}>
+              <Link to='/home/cake'>Cake</Link>
+            </Menu.Item>
+        </Menu>
+    );
+    const menu2 = (
+        <Menu>
+            <Menu.Item onClick={()=>GotoDetial()}>
+              <Link to='/home/profile'>Customise Profile</Link>
+                {/* <a>Customise Profile</a> */}
+            </Menu.Item>
+            <Menu.Item onClick={()=>GotoDetial()}>
+              <Link to='/home/password'>Change Password</Link>
+                {/* <a>Customise Profile</a> */}
+            </Menu.Item>
+            <Menu.Item onClick={()=>GotoDetial()}>
+                <Link to={'/home/myrecipe/' + userId}>My Recipe</Link>
+            </Menu.Item>
+            <Menu.Item onClick={()=>GotoDetial()}>
+              
+                <Link to={'/home/mylikes/'}>My Likes</Link>   
+            </Menu.Item>
+            <Menu.Item>
+                <a onClick = {props.showModal}>Upload Recipe</a>
+            </Menu.Item>
+        </Menu>
+    );
+
+
+    const history = useHistory()
+    const onSearch = value => {
+
+          
+          GotoDetial()
+      
+          console.log(value);
+
+          // axios.get('http://localhost:8080/recipe/recipe_list?pageNum=1&pageSize=9&search=${value}').then(
+          //   response =>{console.log('success',response.data);},
+          //   error => {console.log('fail',error);}
+          // )
+    
+      // post the request
+        const result = FetchFunc(`recipe/recipe_list?pageNum=1&pageSize=9&search=${value}`, 'GET', token, null);
+        console.log(result)
+        result.then((data) => {
+          console.log(data);
+          if (data.status === 200) {
+            data.json().then(res => {
+
+              console.log('request success');
+              // history.push('/home/searchresult/' + value)
+              window.location.href = '/home/searchresult/' + value;
+            })
+          }
+        })
+        .catch(err => console.error('Caught error: ', err))
+      
+ 
+    }
+    const token = localStorage.getItem('token')
+    const avatar = localStorage.getItem('avatar')
+    const handleClick = () => {
+      history.push('/home/profile');
+    }
+    const gotoSignin = () => {
+      window.location.href = '/';
+    }
   return (
-    <ExitToAppIcon className={classes.icons} align="right" onClick={handleOnClick}>
-    </ExitToAppIcon>
-  )
-}
-IconButton.propTypes = {
-  icon: PropTypes.string,
-  handleOnClick: PropTypes.func
-};
-export function StyledHeader ({ handleOnClick }) {
-  const classes = useStyles();
-  const token = localStorage.getItem('token');
-  return (
-    <AppBar position="relative">
-      <Toolbar>
-        <RestaurantMenuIcon className={classes.icon} />
-        <Link href="/home" variant="h6" color="inherit" noWrap>
-                    {"MyRecipes"}
-        </Link>
+    
+    <Header style={ { backgroundColor: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'space-between' } } >
+      <TextPopup
+        open={ open }
+        setOpen={ setOpen }
+        title='Sorry'
+        msg={'Your need to login to do this action :) !'}
+        newButton={true}
+        newButtonMsg={'Sign In'}
+        newButtonFun={() => gotoSignin()}
+      />
+      <div style={ { display: 'flex', alignItems: 'center' } }>
+        <div className="logo" > <Link to='/home'>YYDS</Link></div>
+        <Dropdown overlay={ menu }>
+          <span className="dropdown" onClick={ e => e.preventDefault() }>
+            Recipe <DownOutlined />
+          </span>
+        </Dropdown>
+        <Dropdown overlay={ menu2 }>
+          <span className="dropdown" onClick={ e => e.preventDefault() }>
+            My profile <DownOutlined />
+          </span>
+        </Dropdown>
+        <Search style={ { width: 200 } } placeholder="input search text" onSearch={ onSearch } enterButton />
+      </div>
+      <div style={ { display: 'flex', alignItems: 'center' } }> 
+        
+        <div style={ { float: 'right' , cursor: 'pointer', marginRight: '10px' } }>
 
-        <div className={classes.logout} color="inherit">
-          <IconButton handleOnClick={handleOnClick} icon={'join'} />
-          {token && (<IconButton handleOnClick={handleOnClick} icon={'logout'} />)}
+          {
+          cur !==''&&(
+
+          <div>{token===null && <Button type="primary"  onClick={() => gotoSignin()} >Sign In</Button>}</div>
+          )}
+
+
+          {token && <Avatar src={avatar} onClick={() => handleClick()}/>}
         </div>
-      </Toolbar>
-    </AppBar>
+        <div>
+          {token && <ExitToAppIcon style={ { float: 'right' , cursor: 'pointer', marginRight: '0px', top: '50%', bottom: '50%', width: '30px', height: '30px' }} onClick={() => logout(token)}/>}
+        </div>
+      </div>
+    </Header>
   )
 }
-StyledHeader.propTypes = {
-  handleOnClick: PropTypes.func
-};
+export default StyledHeader;

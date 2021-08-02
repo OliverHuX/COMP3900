@@ -23,6 +23,11 @@ public class UtilsTest {
         System.out.println(salt.length());
         System.out.println(Arrays.toString(bytes));
     }
+
+    @Test
+    public void test1() {
+
+    }
 }
 
 // 10 -> 16

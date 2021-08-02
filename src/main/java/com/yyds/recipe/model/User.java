@@ -4,9 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import org.springframework.lang.NonNull;
 
-import javax.validation.constraints.*;
 import java.io.Serializable;
 
 @Data
@@ -25,4 +23,5 @@ public class User implements Serializable {
     private String createTime;
     private String profilePhoto;
     private String salt;
+
 }
