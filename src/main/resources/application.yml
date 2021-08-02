@@ -82,18 +82,19 @@ pagehelper:
   helper-dialect: mysql
   reasonable: true
   support-methods-arguments: true
+  params: count=countSql
 
 # Minio
-minio:
-  endpoint: http://120.77.180.200:9000
-  accessKey: minioadmin
-  secretKey: minioadmin
-  bucket:
-    profile:
-      photo: profile-photo
-    recipe:
-      photo: recipe-photo
-      video: recipe-video
+#minio:
+#  endpoint: http://120.77.180.200:9000
+#  accessKey: minioadmin
+#  secretKey: minioadmin
+#  bucket:
+#    profile:
+#      photo: profile-photo
+#    recipe:
+#      photo: recipe-photo
+#      video: recipe-video
 
 # actuator
 management:
@@ -119,4 +120,4 @@ aliyun:
     bucketName: comp3900-w18a-yyds
     accessKeyId: LTAI5tMGGufMdDKS2SiyQXdJ
     accessKeySecret: B3FaLdpLAQFFZ9gaWqyCFgaNdA6JtR
-    endpoint: oss-cn-shenzhen.aliyuncs.com
+    endpoint: oss-accelerate.aliyuncs.com
