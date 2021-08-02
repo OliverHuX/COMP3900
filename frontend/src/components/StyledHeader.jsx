@@ -1,5 +1,5 @@
 import React from 'react'
-import { Layout, Menu, Dropdown, Input} from 'antd';
+import { Layout, Menu, Dropdown, Input, Button} from 'antd';
 import {Link} from 'react-router-dom'
 import { DownOutlined, LogoutOutlined } from '@ant-design/icons';
 import FetchFunc from './fetchFunc';
@@ -125,6 +125,9 @@ const StyledHeader = (props) => {
     const handleClick = () => {
       history.push('/home/profile');
     }
+    const gotoSignin = () => {
+      history.push('/');
+    }
   return (
     
     <Header style={ { backgroundColor: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'space-between' } } >
@@ -148,8 +151,10 @@ const StyledHeader = (props) => {
         </Dropdown>
         <Search style={ { width: 200 } } placeholder="input search text" onSearch={ onSearch } enterButton />
       </div>
-      <div style={ { display: 'flex', alignItems: 'center' } }>
+      <div style={ { display: 'flex', alignItems: 'center' } }> 
+        
         <div style={ { float: 'right' , cursor: 'pointer', marginRight: '10px' } }>
+          {token===null && <Button type="primary"  onClick={() => gotoSignin()} >Sign In</Button>}
           {token && <Avatar src={avatar} onClick={() => handleClick()}/>}
         </div>
         <div>
