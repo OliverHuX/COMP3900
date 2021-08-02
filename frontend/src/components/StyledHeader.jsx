@@ -1,5 +1,5 @@
 import React from 'react'
-import { Layout, Menu, Dropdown, Input} from 'antd';
+import { Layout, Menu, Dropdown, Input, Button} from 'antd';
 import {Link} from 'react-router-dom'
 import { DownOutlined, LogoutOutlined } from '@ant-design/icons';
 import FetchFunc from './fetchFunc';
@@ -7,7 +7,7 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import Avatar from '@material-ui/core/Avatar';
 import logout from './logout';
 import { useHistory } from 'react-router-dom';
-
+import { TextPopup } from './TextPopup';
 
 const { Header} = Layout;
 const { Search } = Input;
@@ -23,45 +23,60 @@ const { Search } = Input;
 //   })
 // }
 
-const Searchresult = (props) => {
+
+
+const StyledHeader = (props) => {
+    const [open, setOpen] = React.useState(false);
+    const GotoDetial = ( )=>{
+      const token= localStorage.getItem('token');
+      if (token=== null){
+     
+          //   <Alert
+          //   message="Warning Text"
+          //   type="warning"
+          //   action={
+          //     <Space>
+          //       <Button size="small" type="ghost">
+          //         Done
+          //       </Button>
+          //     </Space>
+          //   }
+          //   closable
+          // />
+          setOpen(true) }
+    }
     const userId = localStorage.getItem('userId');
     const menu = (
         <Menu>
-            <Menu.Item>
+            <Menu.Item  onClick={()=>GotoDetial()}>
                 <Link to='/home/chinesefood'>Chinese food</Link>
             </Menu.Item>
-            <Menu.Item>
+            <Menu.Item onClick={()=>GotoDetial()}>
           
                 <Link to='/home/janpnesefood'>Japanese food</Link>
+            </Menu.Item >
+            <Menu.Item onClick={()=>GotoDetial()}>
+            <Link to='/home/noodles'>Noodles</Link>
             </Menu.Item>
-            <Menu.Item>
-                <a>Noodle</a>
-            </Menu.Item>
-            <Menu.Item>
+            <Menu.Item onClick={()=>GotoDetial()}>
               <Link to='/home/cake'>Cake</Link>
-            </Menu.Item>
-            <Menu.Item>
-                <a>Seafood</a>
-            </Menu.Item>
-            <Menu.Item>
-                <a>View All</a>
             </Menu.Item>
         </Menu>
     );
     const menu2 = (
         <Menu>
-            <Menu.Item>
+            <Menu.Item onClick={()=>GotoDetial()}>
               <Link to='/home/profile'>Customise Profile</Link>
                 {/* <a>Customise Profile</a> */}
             </Menu.Item>
-            <Menu.Item>
+            <Menu.Item onClick={()=>GotoDetial()}>
               <Link to='/home/password'>Change Password</Link>
                 {/* <a>Customise Profile</a> */}
             </Menu.Item>
-            <Menu.Item>
+            <Menu.Item onClick={()=>GotoDetial()}>
                 <Link to={'/home/myrecipe/' + userId}>My Recipe</Link>
             </Menu.Item>
-            <Menu.Item>
+            <Menu.Item onClick={()=>GotoDetial()}>
               
                 <Link to={'/home/mylikes/'}>My Likes</Link>   
             </Menu.Item>
@@ -110,8 +125,18 @@ const Searchresult = (props) => {
     const handleClick = () => {
       history.push('/home/profile');
     }
+    const gotoSignin = () => {
+      history.push('/');
+    }
   return (
+    
     <Header style={ { backgroundColor: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'space-between' } } >
+                                  <TextPopup
+                                    open={ open }
+                                    setOpen={ setOpen }
+                                    title='Sorry'
+                                    msg={'Your need to login to do this action :) !'}
+                                    />
       <div style={ { display: 'flex', alignItems: 'center' } }>
         <div className="logo" > <Link to='/home'>YYDS</Link></div>
         <Dropdown overlay={ menu }>
@@ -126,8 +151,10 @@ const Searchresult = (props) => {
         </Dropdown>
         <Search style={ { width: 200 } } placeholder="input search text" onSearch={ onSearch } enterButton />
       </div>
-      <div style={ { display: 'flex', alignItems: 'center' } }>
+      <div style={ { display: 'flex', alignItems: 'center' } }> 
+        
         <div style={ { float: 'right' , cursor: 'pointer', marginRight: '10px' } }>
+          {token===null && <Button type="primary"  onClick={() => gotoSignin()} >Sign In</Button>}
           {token && <Avatar src={avatar} onClick={() => handleClick()}/>}
         </div>
         <div>
@@ -137,4 +164,4 @@ const Searchresult = (props) => {
     </Header>
   )
 }
-export default Searchresult;
+export default StyledHeader;

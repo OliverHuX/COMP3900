@@ -365,8 +365,10 @@ public class UserServiceImpl implements UserService {
 
         String profilePhoto = user.getProfilePhoto();
         if (profilePhoto != null) {
-            String photoUrl = profilePhoto = aliyunOSSUtil.getUrl(bucketName, PROFILE_PHOTO_FOLDER, profilePhoto);
+            String photoUrl = aliyunOSSUtil.getUrl(bucketName, PROFILE_PHOTO_FOLDER, profilePhoto);
             user.setProfilePhoto(photoUrl);
+        } else {
+            user.setProfilePhoto("");
         }
 
         LinkedHashMap<String, Object> body = new LinkedHashMap<>();
@@ -381,7 +383,7 @@ public class UserServiceImpl implements UserService {
         List<User> followingList = userMapper.getFollowing(userId, search);
         for (User user : followingList) {
             String photoName = user.getProfilePhoto();
-            String profilePhoto = null;
+            String profilePhoto = "";
             try {
                 profilePhoto = aliyunOSSUtil.getUrl(bucketName, PROFILE_PHOTO_FOLDER, photoName);
             } catch (Exception ignored) {
@@ -400,7 +402,7 @@ public class UserServiceImpl implements UserService {
         List<User> followingList = userMapper.getFollower(userId, search);
         for (User user : followingList) {
             String photoName = user.getProfilePhoto();
-            String profilePhoto = null;
+            String profilePhoto = "";
             try {
                 profilePhoto = aliyunOSSUtil.getUrl(bucketName, PROFILE_PHOTO_FOLDER, photoName);
             } catch (Exception ignored) {

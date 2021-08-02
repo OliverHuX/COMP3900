@@ -19,6 +19,8 @@ import axios from 'axios';
 import Searchresult from '../../components/Searchresult';
 import Cake from '../../components/Cake';
 import { TextPopup } from '../../components/TextPopup';
+import { useHistory } from 'react-router-dom';
+import Noodle from '../../components/Noodle'
 
 
 const FormData = require('form-data')
@@ -35,7 +37,7 @@ const { Meta } = Card;
 
 export default function Home  ()  {
 
-    
+    const history = useHistory()
     //const tags_res = getTags()
 
  
@@ -54,8 +56,14 @@ export default function Home  ()  {
     const [timeDuration, setTimeDurationInputs] = React.useState('');
 
     const [open, setOpen] = React.useState(false);
+    const [open1, setOpen1] = React.useState(false);
 
     //var imagedata = document.querySelector('input[type ="file"]').files[0];
+    function gotoLogin() {
+
+       
+
+    }
 
     function getTags(setTagsInputs) {
             const result = FetchFunc('tags/tag_list', 'GET', null, null);
@@ -81,8 +89,14 @@ export default function Home  ()  {
     const [form] = Form.useForm();
 
     const showModal = () => {
-        setIsModalVisible(true);
-        getTags(setTags_listInputs)
+        if (token===null) {
+
+            setOpen1(true)
+        }else{
+
+            setIsModalVisible(true);
+            getTags(setTags_listInputs)
+        }
     };
 
     const handleOk = () => {
@@ -179,6 +193,14 @@ export default function Home  ()  {
         
         <StyledHeader showModal={showModal} />
         <div style={ { width: 1200, margin: '0 auto' } }>
+                                 <TextPopup
+                                    open={ open1 }
+                                    setOpen={ setOpen1 }
+                                    title='Sorry'
+                                    msg={'Your need to login to do this action :) !'}
+                                    newButtonMsg={'Go to Sign in'}
+                                    newButtonFun = {gotoLogin()}
+                                    />
             <Content style={ { padding: '0 50px' } }>
                 <Switch>
                     <Route path='/home' exact>
@@ -186,11 +208,11 @@ export default function Home  ()  {
                         <Main />
                     </Route>
                     <Route path='/home/foodlist' exact>
-                        <UpCircleOutlined className='upload' onClick={ showModal } />   
+
                         <FoodList />
                     </Route>
                     <Route path='/home/chinesefood' exact>
-                        <UpCircleOutlined className='upload' onClick={ showModal } />
+
                         <ChineseFood /> 
                     </Route>
                     <Route path='/home/janpnesefood' exact>
@@ -199,12 +221,15 @@ export default function Home  ()  {
                     <Route path='/home/cake' exact>
                         <Cake/>
                     </Route>
+                    <Route path='/home/noodles' exact>
+                        <Noodle/>
+                    </Route>
                     <Route path='/home/searchresult/:cur_recipeId' exact>
                         
                         <Searchresult /> 
                     </Route>
                     <Route path='/home/recipedetail/:cur_recipeId' exact>
-                        <UpCircleOutlined className='upload' onClick={ showModal } />
+
                         <RecipeDetail /> 
                     </Route>
                     <Route path='/home/editrecipe/:recipeId' exact>

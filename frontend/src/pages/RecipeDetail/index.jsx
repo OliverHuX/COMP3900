@@ -172,7 +172,6 @@ const RecipeDetail = () => {
     }
     const sentScore = (token,rate ) => {
         console.log('xxxxxxxxxxxxxxxxxxxxxI click',rate)
-        setisRated(1)
 
         const payload = JSON.stringify({
             rateScore: rate,
@@ -184,14 +183,16 @@ const RecipeDetail = () => {
             result.then((data) => {
             console.log(data);
             if (data.status === 200) {
-                data.json().then(res => {
+               
                 
-                
+                setisRated(1)
+                setmyRateScore(rate)
+        
                 
                 console.log('xxxxxxxxxxxxxxxxxxxxxxxx rate post success');
 
                 // console.log('res.recipe_lists  ',res.recipe_lists)
-                })
+                
             }
         })
 
