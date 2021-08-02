@@ -22,6 +22,12 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         alignItems: 'center',
     },
+    paper3: {
+      display: 'flex',
+      // alignItems: 'center',
+      left: '36%',
+      // right: '50%',
+    },
     form: {
         width: '100%',
         marginTop: theme.spacing(2),

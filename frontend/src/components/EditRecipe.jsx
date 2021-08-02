@@ -118,10 +118,10 @@ export default function EditRecipe () {
             <React.Fragment>
                 <Grid container spacing={4}>
                     <Grid item xs = {12}>
-                        <Carousel autoplay effect="fade" arrows={true}>{
+                        <Carousel autoplay effect="fade" arrows={true} className={classes.paper3}>{
                             photolist.map((i)=>(
                                 <div>       
-                                    <img style={{ maxHeight: '100px', width: '100%', height: '100%', object_fit:'contain' }} src= {i} alt="" />
+                                    <img style={{ maxHeight: '150px', maxWidth: '150px', width: '100%', height: '100%', object_fit:'contain' }} src= {i} alt="" />
                                 </div>
                                 ))
                             }
