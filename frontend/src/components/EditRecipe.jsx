@@ -10,6 +10,7 @@ import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import { Carousel } from 'antd';
 import FetchFunc from './fetchFunc';
 import { useStyles } from './Style';
+import { TextPopup } from './TextPopup';
 import axios from 'axios';
 
 function getRecipe(token, recipeId, setTitle, setTime, setIntro, setIngre, setMethod, setTags, setPhotos) {
@@ -30,7 +31,7 @@ function getRecipe(token, recipeId, setTitle, setTime, setIntro, setIngre, setMe
     })
 }
 
-function updateRecipe(title, introduction, ingredients, method, timeDuration, fileList ,token, recipeId, tags) {
+function updateRecipe(title, introduction, ingredients, method, timeDuration, fileList ,token, recipeId, tags, setMsg, setTitlePop, setOpen) {
 
     var formData = new FormData();
     if(fileList !== undefined){
@@ -62,6 +63,9 @@ function updateRecipe(title, introduction, ingredients, method, timeDuration, fi
     )
     .then(res => {
         console.log(`Success` + res.data);
+        setMsg('Updated Successfully!');
+        setTitlePop('Congratulation!');
+        setOpen(true);
     })
     .catch(err => {
         console.log(err);
@@ -80,9 +84,11 @@ export default function EditRecipe () {
     const [method, setMethod] = React.useState('');
     const [ingre, setIngre] = React.useState('');
     const [tags, setTags] = React.useState([]);
+    const [titlePop, setTitlePop] = React.useState('');
+    const [msg, setMsg] = React.useState('');
     const [fileList, setFileList] = React.useState();
     const [photolist, setPhotos] = React.useState([]);
-    const [open, setOpen] = React.useState(true)
+    const [open, setOpen] = React.useState(false);
 
     const handleTitle = (e) => {
         setTitle(e.target.value)
@@ -212,11 +218,18 @@ export default function EditRecipe () {
                     color="primary"
                     fullWidth
                     className={classes.button}
-                    onClick = {() => updateRecipe(title, intro, ingre, method, time, fileList ,token, recipeId, tags)}
+                    onClick = {() => updateRecipe(title, intro, ingre, method, time, fileList ,token, recipeId, tags, setMsg, setTitlePop, setOpen)}
                     >
                     Save
                 </Button>
             </React.Fragment>
+            <TextPopup
+                open={ open }
+                setOpen={ setOpen }
+                title={titlePop}
+                msg={msg}
+                newButton={false}
+            />
             </React.Fragment>
           </Paper>
         </main>

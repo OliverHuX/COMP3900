@@ -13,19 +13,11 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import FetchFunc from './fetchFunc';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
+import { TextPopup } from './TextPopup';
 import axios from 'axios';
 
-function update(nickName, gender, BOD, imgFile, firstName, lastName, token) {
-    // console.log('nickname is ' + nickName + ' gender is ' + gender + ' BOD is ' + BOD);
-    // const result = FetchFunc();
-    // result.then(data => {
-    //     if(data.status === 200) {
-    //         data.json().then(res => {
+function update(nickName, gender, BOD, imgFile, firstName, lastName, token, setMsg, setTitlePop, setOpen) {
 
-    //         })
-    //     }
-    // })
-    // .catch(err => console.error('Caught error: ', err))
     var formData = new FormData();
     formData.append('profilePhoto', imgFile);
     formData.append('jsonData',new Blob ([JSON.stringify({
@@ -54,6 +46,9 @@ function update(nickName, gender, BOD, imgFile, firstName, lastName, token) {
     )
     .then(res => {
         console.log(`Success` + res.data);
+        setMsg('Updated Successfully!');
+        setTitlePop('Congratulation!');
+        setOpen(true);
     })
     .catch(err => {
         console.log(err);
@@ -94,6 +89,9 @@ export default function Profile () {
     const [gender, setGender] = React.useState(Number(-1));
     const [firstName, setFirst] = React.useState('');
     const [lastName, setLast] = React.useState('');
+    const [open, setOpen] = React.useState(false);
+    const [titlePop, setTitlePop] = React.useState('');
+    const [msg, setMsg] = React.useState('');
     const token = localStorage.getItem('token');
     const classes = useStyles();
     React.useEffect(()=>{ 
@@ -228,12 +226,18 @@ export default function Profile () {
                     variant="contained"
                     color="primary"
                     className={classes.submit}
-                    onClick={() => update(nickName, gender, BOD, imgFile, firstName, lastName, token)}
+                    onClick={() => update(nickName, gender, BOD, imgFile, firstName, lastName, token, setMsg, setTitlePop, setOpen)}
                 >
                 Save
                 </Button>
             </form>
-
+            <TextPopup
+                open={ open }
+                setOpen={ setOpen }
+                title={titlePop}
+                msg={msg}
+                newButton={false}
+            />
         </Container>
     )
 }
