@@ -10,7 +10,7 @@ import { TextPopup } from '../../components/TextPopup';
 const { Meta } = Card;
 
 const cur_recipeId = 'e25b10db18fd41669b3172272b593ea0'
-function getInfo(token,setData,setData1,setData2) {
+function getInfo(token,setData,setData1,setData2,setData3,setbigrecipe_photo) {
 
     // post the request
     console.log('token now is ', token);
@@ -25,9 +25,14 @@ function getInfo(token,setData,setData1,setData2) {
           // console.log('res.top_likes_list.list content', res.top_likes_list.list);
           // console.log('res.top_likes_list content', res.top_likes_list.list.recipeId);
           setData(data => [...data, res.easy_recipe_list.list])
-          console.log('xxxxxxxxxxxxxxxxxxxxx', data);
+          
           setData1(data => [...data, res.top_rates_list.list])
           setData2(data => [...data, res.top_likes_list.list])
+          setData3(res.random_recipe_list.list[0])
+
+          console.log('xxxxxxxxxxxxxxxxxxxxx',  res.random_recipe_list.list[0]);
+          
+          
         
           
           // console.log('res.recipe_lists  ',res.recipe_lists)
@@ -52,12 +57,17 @@ const Main = () => {
     const [data,setData] = useState([])
     const [toprates,setData1] = useState([])
     const [toplikes,setData2] = useState([])
+    const [bigrecipe,setData3] = useState([])
+    const [bigrecipe_photo,setbigrecipe_photo] = useState('/assets/img/recipe1.png')
     const token = localStorage.getItem('token');
     React.useEffect(()=>{ 
-      getInfo(token,setData,setData1,setData2)
+      getInfo(token,setData,setData1,setData2,setData3,setbigrecipe_photo)
     },[])
 
-
+    if ( bigrecipe.recipePhotos !== undefined){
+    console.log('xxxxxxxxxxxxxxxxxxxxx111111111111111111',  bigrecipe.recipePhotos[0]);
+    // setbigrecipe_photo(bigrecipe.recipePhotos[0])
+    }
     //页面跳转
     const GotoDetial = (cur_recipeId,history )=>{
       // console.log('xxxxxxxxxxxxx', token)
@@ -259,6 +269,8 @@ const like2 = (i)=>{
   
   setData2(d)
 
+
+
 }
     return (<div>
         <Row>
@@ -269,12 +281,13 @@ const like2 = (i)=>{
                                     msg={'Your need to login to do this action :) !'}
                                     />
             <Col span={ 13 } className='rec'>
-                <img style={ { width: '100%' } } src='/assets/img/recipe1.png' alt="" />
+                {bigrecipe.recipePhotos!==undefined?<img style={ { width: '500',height: '500px' } }  src={bigrecipe.recipePhotos[0]} alt="" />:<img style={ { width: '500',height: '500px'  } } src={'/assets/img/Wait_p.png'} alt="" />}
+              
                 <div className='deco'>
-                    <h2>Recipe Name</h2>
-                    <p>simple decoration simple decoration</p>
+                    <h2>{bigrecipe.title}</h2>
+                    <p>{bigrecipe.introduction}</p>
                     
-                    <Link to={ '/home/recipedetail/' + cur_recipeId} className='gomore'>Get The Recipe
+                    <Link to={ '/home/recipedetail/' + bigrecipe.recipeId} className='gomore'>Get The Recipe
                     </Link>
                 </div>
             </Col>
