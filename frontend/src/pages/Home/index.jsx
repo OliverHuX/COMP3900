@@ -20,6 +20,7 @@ import Searchresult from '../../components/Searchresult';
 import Cake from '../../components/Cake';
 import { TextPopup } from '../../components/TextPopup';
 import { useHistory } from 'react-router-dom';
+import Noodle from '../../components/Noodle'
 
 
 const FormData = require('form-data')
@@ -219,6 +220,9 @@ export default function Home  ()  {
                     </Route>
                     <Route path='/home/cake' exact>
                         <Cake/>
+                    </Route>
+                    <Route path='/home/noodles' exact>
+                        <Noodle/>
                     </Route>
                     <Route path='/home/searchresult/:cur_recipeId' exact>
                         

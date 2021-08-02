@@ -56,16 +56,10 @@ const StyledHeader = (props) => {
                 <Link to='/home/janpnesefood'>Japanese food</Link>
             </Menu.Item >
             <Menu.Item onClick={()=>GotoDetial()}>
-                <a>Noodle</a>
+            <Link to='/home/noodles'>Noodles</Link>
             </Menu.Item>
             <Menu.Item onClick={()=>GotoDetial()}>
               <Link to='/home/cake'>Cake</Link>
-            </Menu.Item>
-            <Menu.Item onClick={()=>GotoDetial()}>
-                <a>Seafood</a>
-            </Menu.Item>
-            <Menu.Item onClick={()=>GotoDetial()}>
-                <a>View All</a>
             </Menu.Item>
         </Menu>
     );
