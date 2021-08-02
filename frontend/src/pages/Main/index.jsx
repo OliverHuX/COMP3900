@@ -5,13 +5,11 @@ import { FieldTimeOutlined, HeartOutlined, HeartFilled,StarFilled, ImportOutline
 import FoodList from '../../components/FoodList';
 import FetchFunc from '../../components/fetchFunc';
 import { useHistory } from 'react-router-dom';
-import Main_1 from './Main_1';
-import Main_2 from './Main_2';
+
 const { Meta } = Card;
 
 const cur_recipeId = '53702903163a4556b664ef0cd9947662'
 function getInfo(token,setData,setData1,setData2) {
-  
 
     // post the request
     console.log('token now is ', token);
@@ -28,7 +26,7 @@ function getInfo(token,setData,setData1,setData2) {
           setData(data => [...data, res.easy_recipe_list.list])
           console.log('xxxxxxxxxxxxxxxxxxxxx', data);
           setData1(data => [...data, res.top_rates_list.list])
-          setData2(data => [...data, res.random_recipe_list.list])
+          setData2(data => [...data, res.top_likes_list.list])
         
 
           // console.log('res.recipe_lists  ',res.recipe_lists)
@@ -51,7 +49,7 @@ const Main = () => {
     const history = useHistory()
     const [data,setData] = useState([])
     const [toprates,setData1] = useState([])
-    const [randoms,setData2] = useState([])
+    const [toplikes,setData2] = useState([])
     const token = localStorage.getItem('token');
     React.useEffect(()=>{ 
       getInfo(token,setData,setData1,setData2)
@@ -133,6 +131,106 @@ const Main = () => {
               setData(d)
           
       }
+      const like1 = (i)=>{
+        let d = [...toprates];
+        // console.log('xxxxxxxxxxx',d[0][0].likes)
+        
+        var recipeId = d[0][i].recipeId
+        
+        if(d[0][i].isLiked){
+            d[0][i].isLiked = 0;
+            d[0][i].likes--;
+            console.log('recipe ID is :', d[0][i].recipeId)
+            
+            recipeId = d[0][i].recipeId
+    
+            const payload = JSON.stringify({
+              recipeId:recipeId
+            });
+            const result = FetchFunc(`recipe/unlike`, 'POST', token, payload);
+            console.log(result)
+            result.then((data) => {
+              console.log('mypost unlike data is',data);
+              
+              if (data.status === 200) {
+                console.log('post unLike success')
+              }
+            })
+        }else{
+            d[0][i].isLiked = 1;
+            d[0][i].likes++;
+            console.log('recipe ID is :', d[0][i].recipeId)
+            
+            recipeId = d[0][i].recipeId
+    
+            var payload2 = JSON.stringify({
+              recipeId:recipeId
+            });
+            const result = FetchFunc(`recipe/like`, 'POST', token, payload2);
+            console.log(result)
+            result.then((data) => {
+              console.log('mypost data is',data);
+              if (data.status === 200) {
+                console.log('post Like success')
+              }
+            })
+
+    
+        }
+        
+        setData1(d)
+    
+}
+const like2 = (i)=>{
+  let d = [...toplikes];
+  // console.log('xxxxxxxxxxx',d[0][0].likes)
+  
+  var recipeId = d[0][i].recipeId
+  
+  if(d[0][i].isLiked){
+      d[0][i].isLiked = 0;
+      d[0][i].likes--;
+      console.log('recipe ID is :', d[0][i].recipeId)
+      
+      recipeId = d[0][i].recipeId
+
+      const payload = JSON.stringify({
+        recipeId:recipeId
+      });
+      const result = FetchFunc(`recipe/unlike`, 'POST', token, payload);
+      console.log(result)
+      result.then((data) => {
+        console.log('mypost unlike data is',data);
+        
+        if (data.status === 200) {
+          console.log('post unLike success')
+        }
+      })
+  }else{
+      d[0][i].isLiked = 1;
+      d[0][i].likes++;
+      console.log('recipe ID is :', d[0][i].recipeId)
+      
+      recipeId = d[0][i].recipeId
+
+      var payload2 = JSON.stringify({
+        recipeId:recipeId
+      });
+      const result = FetchFunc(`recipe/like`, 'POST', token, payload2);
+      console.log(result)
+      result.then((data) => {
+        console.log('mypost data is',data);
+        if (data.status === 200) {
+          console.log('post Like success')
+        }
+      })
+
+
+  }
+  
+  setData2(d)
+
+}
     return (<div>
         <Row>
             <Col span={ 13 } className='rec'>
@@ -182,8 +280,11 @@ const Main = () => {
                 </div>
             </Col>
         </Row>
-        <Main_1 />
-        <Main_2/>
+        <h2 className='subtitle'>Top rate recipe</h2>
+            <FoodList data={ toprates } like={like1} />
+        
+        <h2 className='subtitle'>Top Likes Recipe</h2>
+            <FoodList data={ toplikes } like={like2} />
     </div>
     )
 }
