@@ -35,10 +35,7 @@ function signin(email, password, history, remember, setOpen, setMsg) {
         localStorage.setItem('token', res.token);
         history.push('./home')
       })
-    } else {
-      if (data.status === 600 || data.status === 666) {
-        setMsg('Input is incorrect!');
-      } else if (data.status === 601) {
+    } else if (data.status === 601) {
         setMsg('Email already exists!');
       } else if (data.status === 602) {
         setMsg('Email is not valid!');
@@ -58,9 +55,10 @@ function signin(email, password, history, remember, setOpen, setMsg) {
         setMsg('Following user does not exist!')
       } else if (data.status === 623) {
         setMsg('User ID is not found!')
+      } else {
+        setMsg('Input is incorrect!');
       }
       setOpen(true)
-    }
   })
   .catch(err => console.error('Caught error: ', err))
 

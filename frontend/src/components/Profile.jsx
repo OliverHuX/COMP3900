@@ -44,10 +44,35 @@ function update(nickName, gender, BOD, imgFile, firstName, lastName, token, setM
             },                    
         }
     )
-    .then(res => {
-        console.log(`Success` + res.data);
-        setMsg('Updated Successfully!');
-        setTitlePop('Congratulation!');
+    .then(data => {
+        console.log(`Success ` + data.status);
+        setTitlePop('Error!');
+        if (data.status === 200) {
+            setMsg('Updated Successfully!');
+            setTitlePop('Congratulation!');
+        } else if (data.status === 601) {
+            setMsg('Email already exists!');
+        } else if (data.status === 602) {
+            setMsg('Email is not valid!');
+        } else if (data.status === 603) {
+            setMsg('Password is not valid!');
+        } else if (data.status === 604) {
+            setMsg('Email or password is incorrect!')
+        } else if (data.status === 605) {
+            setMsg('Please verify your Email!')
+        } else if (data.status === 609) {
+            setMsg('Some error happen!')
+        } else if (data.status === 610) {
+            setMsg('Recipe does not exist!')
+        } else if (data.status === 611) {
+            setMsg('User is not as subscriber!')
+        } else if (data.status === 622) {
+            setMsg('Following user does not exist!')
+        } else if (data.status === 623) {
+            setMsg('User ID is not found!')
+        } else {
+            setMsg('Input is incorrect!');
+        }
         setOpen(true);
     })
     .catch(err => {
