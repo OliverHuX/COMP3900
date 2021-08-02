@@ -20,13 +20,19 @@ public interface UserService {
 
     ResponseEntity<?> editPassword(String oldPassword, String newPassword, HttpServletRequest request, HttpServletResponse response);
 
-    ResponseEntity<?> emailVerify(String token);
+    String emailVerify(String token);
 
-    ResponseEntity<?> followUser(Follow follow);
+    ResponseEntity<?> followUser(Follow follow, HttpServletRequest request);
 
-    ResponseEntity<?> unfollowUser(Follow unfollowReq);
+    ResponseEntity<?> unfollowUser(Follow unfollowReq, HttpServletRequest request);
 
     ResponseEntity<?> devRegister(User user);
 
     ResponseEntity<?> getMyPersonalProfile(HttpServletRequest request, HttpServletResponse response);
+
+    ResponseEntity<?> getFollowingList(String search, HttpServletRequest request);
+
+    ResponseEntity<?> getFollowerList(String search, HttpServletRequest request);
+
+    ResponseEntity<?> decodeToken(HttpServletRequest request);
 }

@@ -65,18 +65,34 @@ public class UserController {
     }
 
     @RequestMapping(value = "/emailVerify/{token}", method = RequestMethod.GET)
-    public ResponseEntity<?> emailVerify(@PathVariable String token) {
+    public String emailVerify(@PathVariable String token) {
         return userService.emailVerify(token);
     }
 
     @RequestMapping(value = "/user/follow", method = RequestMethod.POST)
-    public ResponseEntity<?> followUser(@RequestBody Follow followReq) {
-        return userService.followUser(followReq);
+    public ResponseEntity<?> followUser(@RequestBody Follow follow, HttpServletRequest request) {
+        return userService.followUser(follow, request);
     }
 
     @RequestMapping(value = "user/unfollow", method = RequestMethod.POST)
-    public ResponseEntity<?> unfollowUser(@RequestBody Follow unfollowReq) {
-        return userService.unfollowUser(unfollowReq);
+    public ResponseEntity<?> unfollowUser(@RequestBody Follow unfollow, HttpServletRequest request) {
+        return userService.unfollowUser(unfollow, request);
+    }
+
+    @RequestMapping(value = "user/getFollowing", method = RequestMethod.GET)
+    public ResponseEntity<?> getFollowing(@RequestParam(value = "search", required = false) String search, HttpServletRequest request) {
+        return userService.getFollowingList(search, request);
+    }
+
+    @RequestMapping(value = "user/getFollower", method = RequestMethod.GET)
+    public ResponseEntity<?> getFollower(@RequestParam(value = "search", required = false) String search, HttpServletRequest request) {
+        return userService.getFollowerList(search, request);
+    }
+
+    @RequestMapping(value = "user/decodeToken", method = RequestMethod.GET)
+    public ResponseEntity<?> decodeToken(HttpServletRequest request) {
+        return userService.decodeToken(request);
+
     }
 
 

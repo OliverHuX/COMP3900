@@ -6,13 +6,14 @@ import com.yyds.recipe.exception.AuthorizationException;
 import com.yyds.recipe.exception.MySqlErrorException;
 import com.yyds.recipe.exception.response.ResponseCode;
 import com.yyds.recipe.mapper.RecipeMapper;
+import com.yyds.recipe.mapper.TagMapper;
 import com.yyds.recipe.mapper.UserMapper;
 import com.yyds.recipe.model.Comment;
 import com.yyds.recipe.model.Recipe;
 import com.yyds.recipe.model.User;
 import com.yyds.recipe.service.RecipeService;
+import com.yyds.recipe.utils.AliyunOSSUtil;
 import com.yyds.recipe.utils.JwtUtil;
-import com.yyds.recipe.utils.MinioUtil;
 import com.yyds.recipe.utils.ResponseUtil;
 import com.yyds.recipe.utils.UUIDGenerator;
 import org.apache.commons.lang3.StringUtils;
@@ -27,8 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -45,19 +44,22 @@ public class RecipeServiceImpl implements RecipeService {
     private RecipeMapper recipeMapper;
 
     @Autowired
-    private MinioUtil minioUtil;
+    private TagMapper tagMapper;
+
+    @Autowired
+    private AliyunOSSUtil aliyunOSSUtil;
 
     @Autowired
     private RedisTemplate<String, Serializable> redisTemplate;
 
-    @Value("${minio.bucket.recipe.photo}")
-    private String recipePhotoBucketName;
+    @Value("${aliyun.oss.bucketName}")
+    private String bucketName;
 
-    @Value("${minio.bucket.recipe.video}")
-    private String recipeVideoBucketName;
+    private final static String RECIPE_PHOTO_FOLDER = "recipe-photos/";
 
-    @Value("${minio.bucket.profile.photo}")
-    private String profilePhotoBucketName;
+    private final static String RECIPE_VIDEO_FOLDER = "recipe-videos/";
+
+    private final static String PROFILE_PHOTO_FOLDER = "profile-photos/";
 
 
     @Override
@@ -72,40 +74,42 @@ public class RecipeServiceImpl implements RecipeService {
 
         recipe.setRecipePhotos(new ArrayList<>());
         for (MultipartFile uploadPhoto : uploadPhotos) {
-            String originalFilename = uploadPhoto.getOriginalFilename();
-            if (originalFilename == null) {
-                continue;
-            }
-            String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
-            String contentType = uploadPhoto.getContentType();
-            InputStream inputStream = null;
-            try {
-                inputStream = uploadPhoto.getInputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            String photoName = UUIDGenerator.generateUUID() + suffix;
-            minioUtil.putObject(recipePhotoBucketName, photoName, contentType, inputStream);
+            // String originalFilename = uploadPhoto.getOriginalFilename();
+            // if (originalFilename == null) {
+            //     continue;
+            // }
+            // String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+            // String contentType = uploadPhoto.getContentType();
+            // InputStream inputStream = null;
+            // try {
+            //     inputStream = uploadPhoto.getInputStream();
+            // } catch (IOException e) {
+            //     e.printStackTrace();
+            // }
+            // String photoName = UUIDGenerator.generateUUID() + suffix;
+            // minioUtil.putObject(recipePhotoBucketName, photoName, contentType, inputStream);
+            String photoName = aliyunOSSUtil.uploadObject(uploadPhoto, bucketName, RECIPE_PHOTO_FOLDER);
             recipe.getRecipePhotos().add(photoName);
         }
 
         if (uploadVideos != null) {
             recipe.setRecipeVideos(new ArrayList<>());
             for (MultipartFile uploadVideo : uploadVideos) {
-                String originalFilename = uploadVideo.getOriginalFilename();
-                if (originalFilename == null) {
-                    continue;
-                }
-                String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
-                String contentType = uploadVideo.getContentType();
-                InputStream inputStream = null;
-                try {
-                    inputStream = uploadVideo.getInputStream();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                String videoName = UUIDGenerator.generateUUID() + suffix;
-                minioUtil.putObject(recipeVideoBucketName, videoName, contentType, inputStream);
+                // String originalFilename = uploadVideo.getOriginalFilename();
+                // if (originalFilename == null) {
+                //     continue;
+                // }
+                // String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+                // String contentType = uploadVideo.getContentType();
+                // InputStream inputStream = null;
+                // try {
+                //     inputStream = uploadVideo.getInputStream();
+                // } catch (IOException e) {
+                //     e.printStackTrace();
+                // }
+                // String videoName = UUIDGenerator.generateUUID() + suffix;
+                // minioUtil.putObject(recipeVideoBucketName, videoName, contentType, inputStream);
+                String videoName = aliyunOSSUtil.uploadObject(uploadVideo, bucketName, RECIPE_VIDEO_FOLDER);
                 recipe.getRecipeVideos().add(videoName);
             }
         }
@@ -113,6 +117,17 @@ public class RecipeServiceImpl implements RecipeService {
         // insert into recipe table
         List<String> tagList = recipe.getTags();
         try {
+            List<String> databaseTagsList = tagMapper.getTagsList();
+            List<String> newTagsList = new ArrayList<>();
+            for (String tag : tagList) {
+                if (!databaseTagsList.contains(tag)) {
+                    newTagsList.add(tag);
+                }
+            }
+            if (newTagsList.size() != 0) {
+                tagMapper.addTagsList(newTagsList);
+            }
+
             recipeMapper.saveRecipe(recipe);
             recipeMapper.saveTagRecipe(recipeId, tagList);
         } catch (Exception e) {
@@ -126,10 +141,13 @@ public class RecipeServiceImpl implements RecipeService {
             throw new MySqlErrorException();
         }
 
-        try {
-            recipeMapper.saveVideos(recipeId, recipe.getRecipeVideos());
-        } catch (Exception e) {
-            throw new MySqlErrorException();
+        if (!(recipe.getRecipeVideos() == null || recipe.getRecipeVideos().size() == 0)) {
+
+            try {
+                recipeMapper.saveVideos(recipeId, recipe.getRecipeVideos());
+            } catch (Exception e) {
+                throw new MySqlErrorException();
+            }
         }
 
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
@@ -155,20 +173,21 @@ public class RecipeServiceImpl implements RecipeService {
                 recipeMapper.deletePhotoByRecipeId(recipe);
                 recipe.setRecipePhotos(new ArrayList<>());
                 for (MultipartFile uploadPhoto : uploadPhotos) {
-                    String originalFilename = uploadPhoto.getOriginalFilename();
-                    if (originalFilename == null) {
-                        continue;
-                    }
-                    String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
-                    String contentType = uploadPhoto.getContentType();
-                    InputStream inputStream = null;
-                    try {
-                        inputStream = uploadPhoto.getInputStream();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    String photoName = UUIDGenerator.generateUUID() + suffix;
-                    minioUtil.putObject(recipePhotoBucketName, photoName, contentType, inputStream);
+                    // String originalFilename = uploadPhoto.getOriginalFilename();
+                    // if (originalFilename == null) {
+                    //     continue;
+                    // }
+                    // String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+                    // String contentType = uploadPhoto.getContentType();
+                    // InputStream inputStream = null;
+                    // try {
+                    //     inputStream = uploadPhoto.getInputStream();
+                    // } catch (IOException e) {
+                    //     e.printStackTrace();
+                    // }
+                    // String photoName = UUIDGenerator.generateUUID() + suffix;
+                    // minioUtil.putObject(recipePhotoBucketName, photoName, contentType, inputStream);
+                    String photoName = aliyunOSSUtil.uploadObject(uploadPhoto, bucketName, RECIPE_PHOTO_FOLDER);
                     recipe.getRecipePhotos().add(photoName);
                 }
                 recipeMapper.savePhotos(recipe.getRecipeId(), recipe.getRecipePhotos());
@@ -178,27 +197,32 @@ public class RecipeServiceImpl implements RecipeService {
                 recipeMapper.deleteVideoByRecipeId(recipe);
                 recipe.setRecipeVideos(new ArrayList<>());
                 for (MultipartFile uploadVideo : uploadVideos) {
-                    String originalFilename = uploadVideo.getOriginalFilename();
-                    if (originalFilename == null) {
-                        continue;
-                    }
-                    String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
-                    String contentType = uploadVideo.getContentType();
-                    InputStream inputStream = null;
-                    try {
-                        inputStream = uploadVideo.getInputStream();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    String videoName = UUIDGenerator.generateUUID() + suffix;
-                    minioUtil.putObject(recipeVideoBucketName, videoName, contentType, inputStream);
+                    // String originalFilename = uploadVideo.getOriginalFilename();
+                    // if (originalFilename == null) {
+                    //     continue;
+                    // }
+                    // String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+                    // String contentType = uploadVideo.getContentType();
+                    // InputStream inputStream = null;
+                    // try {
+                    //     inputStream = uploadVideo.getInputStream();
+                    // } catch (IOException e) {
+                    //     e.printStackTrace();
+                    // }
+                    // String videoName = UUIDGenerator.generateUUID() + suffix;
+                    // minioUtil.putObject(recipeVideoBucketName, videoName, contentType, inputStream);
+                    // recipe.getRecipeVideos().add(videoName);
+                    String videoName = aliyunOSSUtil.uploadObject(uploadVideo, bucketName, RECIPE_VIDEO_FOLDER);
                     recipe.getRecipeVideos().add(videoName);
-                    recipeMapper.saveVideos(recipe.getRecipeId(), recipe.getRecipeVideos());
                 }
+                recipeMapper.saveVideos(recipe.getRecipeId(), recipe.getRecipeVideos());
             }
             List<String> tags = recipe.getTags();
-            recipeMapper.deleteTagsByRecipe(recipe);
-            recipeMapper.saveTagRecipe(recipe.getRecipeId(), tags);
+            if (tags != null && tags.size() > 0) {
+                recipeMapper.deleteTagsByRecipe(recipe);
+                recipeMapper.saveTagRecipe(recipe.getRecipeId(), tags);
+            }
+
             recipeMapper.updateRecipe(recipe);
         } catch (Exception e) {
             throw new MySqlErrorException();
@@ -279,6 +303,7 @@ public class RecipeServiceImpl implements RecipeService {
                                                  String creatorId,
                                                  String searchContent,
                                                  String searchTags,
+                                                 Integer isLiked,
                                                  Integer pageNum,
                                                  Integer pageSize,
                                                  HttpServletRequest request) {
@@ -294,21 +319,33 @@ public class RecipeServiceImpl implements RecipeService {
             searchTagList = Arrays.asList(searchTags.split(","));
         }
         String userId = JwtUtil.decodeToken(request.getHeader("token")).getClaim("userId").asString();
-        List<Recipe> recipeList = recipeMapper.getRecipeList(searchTagList, searchContent, creatorId, recipeId, userId);
+        List<Recipe> recipeList = recipeMapper.getRecipeList(searchTagList, searchContent, creatorId, recipeId, userId, isLiked);
         for (Recipe recipe : recipeList) {
             List<String> recipePhotos = new ArrayList<>();
             List<String> fileNameList = recipeMapper.getFileNameListByRecipeId(recipe.getRecipeId());
             for (String fileName : fileNameList) {
-                String fileUrl = minioUtil.presignedGetObject(recipePhotoBucketName, fileName, 7);
+                // String fileUrl = minioUtil.presignedGetObject(recipePhotoBucketName, fileName, 7);
+                String fileUrl = aliyunOSSUtil.getUrl(bucketName, RECIPE_PHOTO_FOLDER, fileName);
                 recipePhotos.add(fileUrl);
             }
             recipe.setRecipePhotos(recipePhotos);
+            List<String> videoList = recipeMapper.getVideoFileList(recipe.getRecipeId());
+            List<String> recipeVideoList = new ArrayList<>();
+            for (String videoName : videoList) {
+                String videoUrl = aliyunOSSUtil.getUrl(bucketName, RECIPE_VIDEO_FOLDER, videoName);
+                recipeVideoList.add(videoUrl);
+            }
+            recipe.setRecipeVideos(recipeVideoList);
             List<String> tags = recipeMapper.getTagListByRecipeId(recipe.getRecipeId());
             recipe.setTags(tags);
 
             List<Comment> comments = recipe.getComments();
             for (Comment comment : comments) {
-                String photoName = minioUtil.presignedGetObject(profilePhotoBucketName, comment.getProfilePhoto(), 7);
+                if (comment.getProfilePhoto() == null) {
+                    continue;
+                }
+                String photoName = aliyunOSSUtil.getUrl(bucketName, PROFILE_PHOTO_FOLDER, comment.getProfilePhoto());
+                // String photoName = minioUtil.presignedGetObject(profilePhotoBucketName, comment.getProfilePhoto(), 7);
                 comment.setProfilePhoto(photoName);
             }
         }
@@ -335,7 +372,7 @@ public class RecipeServiceImpl implements RecipeService {
             List<String> recipePhotos = new ArrayList<>();
             List<String> fileNameList = recipeMapper.getFileNameListByRecipeId(recipe.getRecipeId());
             for (String fileName : fileNameList) {
-                String fileUrl = minioUtil.presignedGetObject(recipePhotoBucketName, fileName, 7);
+                String fileUrl = aliyunOSSUtil.getUrl(bucketName, RECIPE_PHOTO_FOLDER, fileName);
                 recipePhotos.add(fileUrl);
             }
             recipe.setRecipePhotos(recipePhotos);
@@ -466,53 +503,123 @@ public class RecipeServiceImpl implements RecipeService {
                                                   String searchTags,
                                                   Integer pageNum,
                                                   Integer pageSize) {
-        if (Boolean.TRUE.equals(redisTemplate.hasKey("visitorRecipeList"))) {
-            List<Recipe> visitorRecipeList = null;
-            try {
-                visitorRecipeList = (List<Recipe>) redisTemplate.opsForValue().get("visitorRecipeList");
-            } catch (Exception e) {
-                return ResponseUtil.getResponse(ResponseCode.REDIS_ERROR, null, null);
+
+        try {
+            List<Recipe> topLikesList = (List<Recipe>) redisTemplate.opsForValue().get("topLikesList");
+            List<Recipe> topRateList = (List<Recipe>) redisTemplate.opsForValue().get("topRateList");
+            List<Recipe> randomRecipeList = (List<Recipe>) redisTemplate.opsForValue().get("randomRecipeList");
+            List<Recipe> easyRecipeList = (List<Recipe>) redisTemplate.opsForValue().get("easyRecipeList");
+            LinkedHashMap<String, Object> resultMap = new LinkedHashMap<>();
+            if (topLikesList != null && topRateList != null && randomRecipeList != null && easyRecipeList != null) {
+                resultMap.put("top_likes_list", topLikesList);
+                resultMap.put("top_rates_list", topRateList);
+                resultMap.put("random_recipe_list", randomRecipeList);
+                resultMap.put("easy_recipe_list", easyRecipeList);
+
+                LinkedHashMap<String, Object> topLikes = new LinkedHashMap<>();
+                topLikes.put("list", topLikesList);
+                topLikes.put("name", "like");
+                resultMap.put("top_likes_list", topLikes);
+
+                LinkedHashMap<String, Object> topRate = new LinkedHashMap<>();
+                topRate.put("list", topRateList);
+                topRate.put("name", "rate");
+                resultMap.put("top_rates_list", topRate);
+
+                LinkedHashMap<String, Object> randomRecipe = new LinkedHashMap<>();
+                randomRecipe.put("list", randomRecipeList);
+                randomRecipe.put("name", "random");
+                resultMap.put("random_recipe_list", randomRecipe);
+
+                LinkedHashMap<String, Object> easyRecipe = new LinkedHashMap<>();
+                easyRecipe.put("list", easyRecipeList);
+                easyRecipe.put("name", "easy");
+                resultMap.put("easy_recipe_list", easyRecipe);
+                return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, resultMap);
             }
-            HashMap<String, Object> resultMap = new HashMap<>();
-            resultMap.put("recipe_lists", visitorRecipeList);
-            resultMap.put("total", visitorRecipeList.size());
-            return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, resultMap);
+        } catch (Exception ignored) {
+
         }
 
-        if (pageNum == null || pageNum <= 0) {
-            pageNum = 1;
-        }
-        if (pageSize == null || pageSize >= 9) {
-            pageSize = 9;
-        }
-        List<String> searchTagList = null;
-        if (searchTags != null) {
-            searchTagList = Arrays.asList(searchTags.split(","));
-        }
-        PageHelper.startPage(pageNum, pageSize, true);
-        List<Recipe> recipeList = recipeMapper.getVisitorRecipeList(recipeId, creatorId, searchContent, searchTagList, pageNum, pageSize);
+        List<Recipe> recipeList = recipeMapper.getVisitorRecipeList(recipeId, creatorId);
         for (Recipe recipe : recipeList) {
             List<String> recipePhotos = new ArrayList<>();
             List<String> fileNameList = recipeMapper.getFileNameListByRecipeId(recipe.getRecipeId());
             for (String fileName : fileNameList) {
-                String fileUrl = minioUtil.presignedGetObject(recipePhotoBucketName, fileName, 7);
+                String fileUrl = aliyunOSSUtil.getUrl(bucketName, RECIPE_PHOTO_FOLDER, fileName);
                 recipePhotos.add(fileUrl);
             }
             recipe.setRecipePhotos(recipePhotos);
             List<String> tags = recipeMapper.getTagListByRecipeId(recipe.getRecipeId());
             recipe.setTags(tags);
-
         }
-        PageInfo<Recipe> recipePageInfo = new PageInfo<>(recipeList);
-        HashMap<String, Object> resultMap = new HashMap<>();
+
+        int size = 3;
+        int recipeListSize = recipeList.size();
+        if (size > recipeListSize) {
+            size = recipeListSize;
+        }
+
+        recipeList.sort((o1, o2) -> o2.getLikes() - o1.getLikes());
+        List<Recipe> topLikesList = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            topLikesList.add(recipeList.get(i));
+        }
+        recipeList.sort((o1, o2) -> o2.getRateScore().compareTo(o1.getRateScore()));
+        List<Recipe> topRateList = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            topRateList.add(recipeList.get(i));
+        }
+        recipeList.sort((o1, o2) -> o1.getTimeDuration() - o2.getTimeDuration());
+        List<Recipe> easyRecipeList = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            easyRecipeList.add(recipeList.get(i));
+        }
+
+        recipeList.removeAll(topLikesList);
+        recipeList.removeAll(topRateList);
+        recipeList.removeAll(easyRecipeList);
+
+        List<Recipe> randomRecipeList = new ArrayList<>();
+        Random random = new Random();
+
+        for (int i = 0; i < size; i++) {
+            int index = random.nextInt(recipeList.size());
+            Recipe temp = recipeList.get(index);
+            randomRecipeList.add(temp);
+            recipeList.remove(temp);
+        }
         ValueOperations<String, Serializable> opsForValue = redisTemplate.opsForValue();
         try {
-            opsForValue.set("visitorRecipeList", (Serializable) recipeList, 30, TimeUnit.MINUTES);
+            opsForValue.set("topLikesList", (Serializable) topLikesList, 10, TimeUnit.MINUTES);
+            opsForValue.set("topRatesList", (Serializable) topRateList, 10, TimeUnit.MINUTES);
+            opsForValue.set("randomRecipeList", (Serializable) randomRecipeList, 10, TimeUnit.MINUTES);
+            opsForValue.set("easyRecipeList", (Serializable) easyRecipeList, 10, TimeUnit.MINUTES);
         } catch (Exception e) {
             return ResponseUtil.getResponse(ResponseCode.REDIS_ERROR, null, null);
         }
-        resultMap.put("recipe_lists", recipeList);
-        resultMap.put("total", recipePageInfo.getTotal());
+        LinkedHashMap<String, Object> resultMap = new LinkedHashMap<>();
+
+        LinkedHashMap<String, Object> topLikes = new LinkedHashMap<>();
+        topLikes.put("list", topLikesList);
+        topLikes.put("name", "like");
+        resultMap.put("top_likes_list", topLikes);
+
+        LinkedHashMap<String, Object> topRate = new LinkedHashMap<>();
+        topRate.put("list", topRateList);
+        topRate.put("name", "rate");
+        resultMap.put("top_rates_list", topRate);
+
+        LinkedHashMap<String, Object> randomRecipe = new LinkedHashMap<>();
+        randomRecipe.put("list", randomRecipeList);
+        randomRecipe.put("name", "random");
+        resultMap.put("random_recipe_list", randomRecipe);
+
+        LinkedHashMap<String, Object> easyRecipe = new LinkedHashMap<>();
+        easyRecipe.put("list", easyRecipeList);
+        easyRecipe.put("name", "easy");
+        resultMap.put("easy_recipe_list", easyRecipe);
+
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, resultMap);
     }
 }

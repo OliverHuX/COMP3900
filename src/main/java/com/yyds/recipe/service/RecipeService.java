@@ -19,7 +19,7 @@ public interface RecipeService {
 
     ResponseEntity<?> unlikeRecipe(HttpServletRequest request, Recipe recipe);
 
-    ResponseEntity<?> getAllPublicRecipes(String recipeId, String creatorId, String search, String tags, Integer pageNum, Integer pageSize, HttpServletRequest request);
+    ResponseEntity<?> getAllPublicRecipes(String recipeId, String creatorId, String search, String tags, Integer isLiked, Integer pageNum, Integer pageSize, HttpServletRequest request);
 
     ResponseEntity<?> commentRecipe(Comment comment, HttpServletRequest request);
 

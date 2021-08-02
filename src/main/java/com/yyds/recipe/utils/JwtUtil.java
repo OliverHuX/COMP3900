@@ -22,7 +22,7 @@ public class JwtUtil {
         long currentTimeMillis = System.currentTimeMillis();
         builder.withHeader(headerMap)
                 .withIssuedAt(new Date(currentTimeMillis))
-                .withExpiresAt(new Date(currentTimeMillis + 30 * 1000 * 60));
+                .withExpiresAt(new Date(currentTimeMillis + 12 * 60 * 1000 * 60));
 
         payload.forEach(builder::withClaim);
 

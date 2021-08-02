@@ -106,4 +106,44 @@
           and follow_user_id = #{followId}
     </delete>
 
+    <select id="getFollowing" parameterType="java.lang.String" resultMap="UserResultMap">
+        select ru.user_id,
+        ru.email,
+        ru.first_name,
+        ru.last_name,
+        ru.nick_name,
+        ru.birthdate,
+        ru.gender,
+        ru.contact,
+        ru.address,
+        ru.create_time,
+        ru.profile_photo
+        from recipe.follow rf
+        left join recipe.user ru on ru.user_id = rf.follow_user_id
+        where rf.following_user_id = #{userId}
+        <if test="search != null">
+            and ru.nick_name like concat('%', #{search,jdbcType=VARCHAR}, '%')
+        </if>
+    </select>
+
+    <select id="getFollower" parameterType="java.lang.String" resultMap="UserResultMap">
+        select ru.user_id,
+        ru.email,
+        ru.first_name,
+        ru.last_name,
+        ru.nick_name,
+        ru.birthdate,
+        ru.gender,
+        ru.contact,
+        ru.address,
+        ru.create_time,
+        ru.profile_photo
+        from recipe.follow rf
+        left join recipe.user ru on ru.user_id = rf.following_user_id
+        where rf.follow_user_id = #{userId}
+        <if test="search != null">
+            and ru.nick_name like concat('%', #{search,jdbcType=VARCHAR}, '%')
+        </if>
+    </select>
+
 </mapper>

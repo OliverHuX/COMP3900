@@ -31,4 +31,5 @@ public class Recipe implements Serializable {
     private Integer isLiked;
     private Integer isRated;
     private Double myRateScore;
+    private String nickName;
 }

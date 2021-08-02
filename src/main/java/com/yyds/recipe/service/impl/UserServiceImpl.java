@@ -25,12 +25,11 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
@@ -48,13 +47,15 @@ public class UserServiceImpl implements UserService {
     private JavaMailSender mailSender;
 
     @Autowired
-    private MinioUtil minioUtil;
+    private AliyunOSSUtil aliyunOSSUtil;
 
     @Value("${spring.mail.username}")
     private String mailSenderAddress;
 
-    @Value("${minio.bucket.profile.photo}")
-    private String profilePhotoBucketName;
+    @Value("${aliyun.oss.bucketName}")
+    private String bucketName;
+
+    private final static String PROFILE_PHOTO_FOLDER = "profile-photos/";
 
     private static final String PASSWORD_REGEX_PATTERN = "^(?![0-9]+$)(?![a-z]+$)(?![A-Z]+$)(?!([^(0-9a-zA-Z)])+$).{6,20}$";
     private static final int PASSWORD_LENGTH = 6;
@@ -158,6 +159,13 @@ public class UserServiceImpl implements UserService {
         LinkedHashMap<String, Object> body = new LinkedHashMap<>();
         body.put("userId", user.getUserId());
         body.put("token", token);
+        String profilePhoto = user.getProfilePhoto();
+        if (profilePhoto == null) {
+            profilePhoto = "";
+        } else {
+            profilePhoto = aliyunOSSUtil.getUrl(bucketName, PROFILE_PHOTO_FOLDER, profilePhoto);
+        }
+        body.put("profilePhoto", profilePhoto);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("token", token);
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, httpHeaders, body);
@@ -189,17 +197,18 @@ public class UserServiceImpl implements UserService {
         }
 
         if (profilePhoto != null) {
-            String originalFilename = profilePhoto.getOriginalFilename();
-            String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
-            String contentType = profilePhoto.getContentType();
-            InputStream inputStream = null;
-            try {
-                inputStream = profilePhoto.getInputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            String photoName = UUIDGenerator.generateUUID() + suffix;
-            minioUtil.putObject(profilePhotoBucketName, photoName, contentType, inputStream);
+            // String originalFilename = profilePhoto.getOriginalFilename();
+            // String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+            // String contentType = profilePhoto.getContentType();
+            // InputStream inputStream = null;
+            // try {
+            //     inputStream = profilePhoto.getInputStream();
+            // } catch (IOException e) {
+            //     e.printStackTrace();
+            // }
+            // String photoName = UUIDGenerator.generateUUID() + suffix;
+            // minioUtil.putObject(profilePhotoBucketName, photoName, contentType, inputStream);
+            String photoName = aliyunOSSUtil.uploadObject(profilePhoto, bucketName, PROFILE_PHOTO_FOLDER);
             user.setProfilePhoto(photoName);
         }
 
@@ -243,27 +252,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
-    public ResponseEntity<?> emailVerify(String token) {
+    public String emailVerify(String token) {
         if (Boolean.FALSE.equals(redisTemplate.hasKey(token))) {
-            return ResponseUtil.getResponse(ResponseCode.EMAIL_VERIFY_ERROR, null, null);
+            return "Fail";
         }
 
         User user;
         try {
             user = (User) redisTemplate.opsForValue().get(token);
         } catch (Exception e) {
-            return ResponseUtil.getResponse(ResponseCode.REDIS_ERROR, null, null);
+            return "Fail";
         }
 
 
         if (user == null) {
-            return ResponseUtil.getResponse(ResponseCode.EMAIL_VERIFY_ERROR, null, null);
+            return "Fail";
         }
 
         User checkedUser = userMapper.getUserByUserId(user.getUserId());
         if (checkedUser != null) {
             redisTemplate.delete(token);
-            return ResponseUtil.getResponse(ResponseCode.EMAIL_VERIFY_ERROR, null, null);
+            return "Fail";
         }
 
         try {
@@ -281,13 +290,14 @@ public class UserServiceImpl implements UserService {
 
         redisTemplate.delete(token);
 
-        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
+        return "Success";
 
     }
 
     @Override
-    public ResponseEntity<?> followUser(Follow follow) {
-        String userId = follow.getUserId();
+    public ResponseEntity<?> followUser(Follow follow, HttpServletRequest request) {
+        String token = request.getHeader("token");
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
         User checkedUser = userMapper.getUserByUserId(userId);
         if (checkedUser == null) {
             throw new AuthorizationException();
@@ -308,8 +318,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> unfollowUser(Follow unfollow) {
-        String userId = unfollow.getUserId();
+    public ResponseEntity<?> unfollowUser(Follow unfollow, HttpServletRequest request) {
+        String token = request.getHeader("token");
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
         User checkedUser = userMapper.getUserByUserId(userId);
         if (checkedUser == null) {
             throw new AuthorizationException();
@@ -361,12 +372,63 @@ public class UserServiceImpl implements UserService {
 
         String profilePhoto = user.getProfilePhoto();
         if (profilePhoto != null) {
-            String photoUrl = minioUtil.presignedGetObject(profilePhotoBucketName, profilePhoto, 7);
+            String photoUrl = aliyunOSSUtil.getUrl(bucketName, PROFILE_PHOTO_FOLDER, profilePhoto);
             user.setProfilePhoto(photoUrl);
+        } else {
+            user.setProfilePhoto("");
         }
 
         LinkedHashMap<String, Object> body = new LinkedHashMap<>();
         body.put("userInfo", user);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, body);
+    }
+
+    @Override
+    public ResponseEntity<?> getFollowingList(String search, HttpServletRequest request) {
+        String token = request.getHeader("token");
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        List<User> followingList = userMapper.getFollowing(userId, search);
+        for (User user : followingList) {
+            String photoName = user.getProfilePhoto();
+            String profilePhoto = "";
+            try {
+                profilePhoto = aliyunOSSUtil.getUrl(bucketName, PROFILE_PHOTO_FOLDER, photoName);
+            } catch (Exception ignored) {
+            }
+            user.setProfilePhoto(profilePhoto);
+        }
+        LinkedHashMap<String, Object> body = new LinkedHashMap<>();
+        body.put("following_list", followingList);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, body);
+    }
+
+    @Override
+    public ResponseEntity<?> getFollowerList(String search, HttpServletRequest request) {
+        String token = request.getHeader("token");
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        List<User> followingList = userMapper.getFollower(userId, search);
+        for (User user : followingList) {
+            String photoName = user.getProfilePhoto();
+            String profilePhoto = "";
+            try {
+                profilePhoto = aliyunOSSUtil.getUrl(bucketName, PROFILE_PHOTO_FOLDER, photoName);
+            } catch (Exception ignored) {
+            }
+            user.setProfilePhoto(profilePhoto);
+        }
+        LinkedHashMap<String, Object> body = new LinkedHashMap<>();
+        body.put("following_list", followingList);
+        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, body);
+    }
+
+    @Override
+    public ResponseEntity<?> decodeToken(HttpServletRequest request) {
+        String token = request.getHeader("token");
+        String userId = JwtUtil.decodeToken(token).getClaim("userId").asString();
+        String email = JwtUtil.decodeToken(token).getClaim("email").asString();
+        LinkedHashMap<String, Object> body = new LinkedHashMap<>();
+        body.put("userId", userId);
+        body.put("email", email);
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, body);
     }
 

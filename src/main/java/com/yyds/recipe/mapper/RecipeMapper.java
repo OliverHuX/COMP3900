@@ -19,7 +19,7 @@ public interface RecipeMapper {
 
     Recipe getRecipeById(String recipeId);
 
-    List<Recipe> getRecipeList(List<String> tagList, String searchContent, String creatorId, String recipeId, String userId);
+    List<Recipe> getRecipeList(List<String> tagList, String searchContent, String creatorId, String recipeId, String userId, Integer isLiked);
 
     List<Recipe> getMyRecipeList(String userId);
 
@@ -55,5 +55,7 @@ public interface RecipeMapper {
 
     void deleteTagsByRecipe(Recipe recipe);
 
-    List<Recipe> getVisitorRecipeList(String recipeId, String creatorId, String searchContent, List<String> tagList, Integer pageNum, Integer pageSize);
+    List<Recipe> getVisitorRecipeList(String recipeId, String creatorId);
+
+    List<String> getVideoFileList(String recipeId);
 }
