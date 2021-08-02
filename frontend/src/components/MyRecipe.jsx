@@ -8,7 +8,7 @@ import { useStyles } from './Style';
 
 // const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 // pageNum=1&pageSize=9&search=
-function getRecipe(token, userId, setRecipes, recipes) {
+function getRecipe(token, userId, setRecipes) {
     const result = FetchFunc('recipe/recipe_list?userId=' + userId, 'GET', token, null);
     result.then(data => {
         if (data.status === 200) {
@@ -41,7 +41,7 @@ export default function MyRecipe() {
     console.log(recipes.length)
 
     React.useEffect(() => {
-        getRecipe(token, userId, setRecipes, recipes)
+        getRecipe(token, userId, setRecipes)
     }, [])
 
     return (

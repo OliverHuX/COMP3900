@@ -28,7 +28,6 @@ function update(nickName, gender, BOD, imgFile, firstName, lastName, token) {
     // .catch(err => console.error('Caught error: ', err))
     var formData = new FormData();
     formData.append('profilePhoto', imgFile);
-    
     formData.append('jsonData',new Blob ([JSON.stringify({
         firstName: firstName,
         lastName: lastName,
@@ -70,10 +69,12 @@ function getInfo(setNickName, setBOD, setEmail, setAvatar, setGender, setFirst, 
                 console.log(res);
                 setNickName(res.userInfo.nickName);
                 setBOD(res.userInfo.birthdate);
+                console.log(res.userInfo.birthdate)
                 setEmail(res.userInfo.email);
                 if (res.userInfo.profilePhoto !== null) {
-                    var url = URL.createObjectURL(res.userInfo.profilePhoto)
+                    var url = res.userInfo.profilePhoto
                     setAvatar(url)
+                    localStorage.setItem('avatar', url);
                 }
                 setGender(res.userInfo.gender)
                 setFirst(res.userInfo.firstName)
@@ -198,7 +199,7 @@ export default function Profile () {
                         type="date"
                         style={{ marginLeft: 7, marginBottom: 4}}
                         fullWidth
-                        defaultValue={BOD}
+                        value={BOD}
                         InputLabelProps={{
                             shrink: true,
                         }}

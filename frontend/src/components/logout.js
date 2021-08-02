@@ -8,6 +8,7 @@ export default function logout (token) {
         console.log('Logged out!');
         localStorage.removeItem('token');
         localStorage.removeItem('userId');
+        localStorage.removeItem('avatar');
         window.location.href = '/';
       } else {
         data.json().then(result => {

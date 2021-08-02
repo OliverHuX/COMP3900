@@ -4,6 +4,7 @@ import {Link} from 'react-router-dom'
 import { DownOutlined, LogoutOutlined } from '@ant-design/icons';
 import FetchFunc from './fetchFunc';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import Avatar from '@material-ui/core/Avatar';
 import logout from './logout';
 import { useHistory } from 'react-router-dom';
 
@@ -105,6 +106,10 @@ const Searchresult = (props) => {
  
     }
     const token = localStorage.getItem('token')
+    const avatar = localStorage.getItem('avatar')
+    const handleClick = () => {
+      history.push('/home/profile');
+    }
   return (
     <Header style={ { backgroundColor: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'space-between' } } >
       <div style={ { display: 'flex', alignItems: 'center' } }>
@@ -121,7 +126,14 @@ const Searchresult = (props) => {
         </Dropdown>
         <Search style={ { width: 200 } } placeholder="input search text" onSearch={ onSearch } enterButton />
       </div>
-      {token && <ExitToAppIcon style={ { float: 'right' , cursor: 'pointer' } } onClick={() => logout(token)}/>}
+      <div style={ { display: 'flex', alignItems: 'center' } }>
+        <div style={ { float: 'right' , cursor: 'pointer', marginRight: '10px' } }>
+          {token && <Avatar src={avatar} onClick={() => handleClick()}/>}
+        </div>
+        <div>
+          {token && <ExitToAppIcon style={ { float: 'right' , cursor: 'pointer', marginRight: '0px', top: '50%', bottom: '50%', width: '30px', height: '30px' }} onClick={() => logout(token)}/>}
+        </div>
+      </div>
     </Header>
   )
 }

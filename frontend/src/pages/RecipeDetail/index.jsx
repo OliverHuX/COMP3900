@@ -146,6 +146,7 @@ const RecipeDetail = () => {
     const [comments, setComments] = useState([]);
     const [isRated, setisRated] = useState(0);
     const [myRateScore, setmyRateScore] = useState(null);
+    const avatat = localStorage.getItem('avatar');
 
     const token = localStorage.getItem('token');
  
@@ -298,7 +299,7 @@ const RecipeDetail = () => {
                 <Comment
                     avatar={
                         <Avatar
-                        src={<Image src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
+                        src={<Image src={avatat} />}
                         alt="Han Solo"
                         />
                     }

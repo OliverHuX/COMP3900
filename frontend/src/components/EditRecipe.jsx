@@ -11,27 +11,28 @@ import FetchFunc from './fetchFunc';
 import { useStyles } from './Style';
 import axios from 'axios';
 
-function getRecipe(token, recipeId, setTitle, setTime, setIntro, setIngre) {
-    const result = FetchFunc('recipe/recipe_list?pageNum=1&pageSize=9&search=' + recipeId, 'GET', token, null);
+function getRecipe(token, recipeId, setTitle, setTime, setIntro, setIngre, setMethod) {
+    const result = FetchFunc('recipe/recipe_list?recipeId=' + recipeId, 'GET', token, null);
     result.then(data => {
-        if (data === 200) {
+        if (data.status === 200) {
             data.json().then(res => {
                 const recipe = res.recipe_lists[0];
                 setTitle(recipe.title);
                 setTime(recipe.timeDuration);
                 setIntro(recipe.introduction);
                 setIngre(recipe.ingredients);
+                setMethod(recipe.method);
             })
         }
     })
 }
 
-function updateRecipe(title, introduction, ingredients, method, timeDuration, fileList ,token) {
+function updateRecipe(title, introduction, ingredients, method, timeDuration, fileList ,token, recipeId) {
 
     var formData = new FormData();
     if(fileList !== undefined){
         for(let i=0;i<fileList.length;i++){
-            formData.append('uploadPhotos', fileList[i]);
+            formData.append('uploadVideos', fileList[i]);
         }
     }
     
@@ -40,7 +41,8 @@ function updateRecipe(title, introduction, ingredients, method, timeDuration, fi
         introduction: introduction,
         ingredients: ingredients,
         method: method,
-        timeDuration: timeDuration
+        timeDuration: timeDuration,
+        recipeId: recipeId,
         })], {type:"application/json"}));
 
     axios.post(
@@ -96,7 +98,7 @@ export default function EditRecipe () {
     }
 
     React.useEffect(() => {
-        getRecipe(token, recipeId, setTitle, setTime, setIntro, setIngre);
+        getRecipe(token, recipeId, setTitle, setTime, setIntro, setIngre, setMethod);
     }, [])
 
     return (
@@ -105,7 +107,7 @@ export default function EditRecipe () {
         <main className={classes.layout}>
           <Paper className={classes.paper2}>
             <Typography component="h1" variant="h4" align="center">
-              My Recipe
+              Edit Recipe
             </Typography>
             <React.Fragment>
                 <Grid container spacing={4}>
@@ -150,7 +152,7 @@ export default function EditRecipe () {
                         fullWidth
                         multiline
                         value={method}
-                        rows={4}
+                        rows={8}
                         variant="outlined"
                         onChange={(e) => handleMethod(e)}
                     />
@@ -194,7 +196,7 @@ export default function EditRecipe () {
                     color="primary"
                     fullWidth
                     className={classes.button}
-                    onClick = {() => updateRecipe(title, intro, ingre, method, time, fileList ,token)}
+                    onClick = {() => updateRecipe(title, intro, ingre, method, time, fileList ,token, recipeId)}
                     >
                     Save
                 </Button>
