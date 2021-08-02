@@ -26,6 +26,9 @@ const { Search } = Input;
 
 
 const StyledHeader = (props) => {
+  const url = window.location.href.split('/')
+  const cur = url[url.length - 1]
+  console.log('xxxxx1321312',cur)
     const [open, setOpen] = React.useState(false);
     const GotoDetial = ( )=>{
       const token= localStorage.getItem('token');
@@ -93,7 +96,7 @@ const StyledHeader = (props) => {
     const onSearch = value => {
 
           
-          
+          GotoDetial()
       
           console.log(value);
 
@@ -154,7 +157,14 @@ const StyledHeader = (props) => {
       <div style={ { display: 'flex', alignItems: 'center' } }> 
         
         <div style={ { float: 'right' , cursor: 'pointer', marginRight: '10px' } }>
-          {token===null && <Button type="primary"  onClick={() => gotoSignin()} >Sign In</Button>}
+
+          {
+          cur !==''&&(
+
+          <div>{token===null && <Button type="primary"  onClick={() => gotoSignin()} >Sign In</Button>}</div>
+          )}
+
+
           {token && <Avatar src={avatar} onClick={() => handleClick()}/>}
         </div>
         <div>

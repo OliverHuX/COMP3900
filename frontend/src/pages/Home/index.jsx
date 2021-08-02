@@ -21,6 +21,7 @@ import Cake from '../../components/Cake';
 import { TextPopup } from '../../components/TextPopup';
 import { useHistory } from 'react-router-dom';
 import Noodle from '../../components/Noodle'
+import Needhelp from '../../components/Needhelp';
 
 
 const FormData = require('form-data')
@@ -207,9 +208,8 @@ export default function Home  ()  {
                         <UpCircleOutlined className='upload' onClick={ showModal } />
                         <Main />
                     </Route>
-                    <Route path='/home/foodlist' exact>
-
-                        <FoodList />
+                    <Route path='/home/help' exact>
+                        <Needhelp />
                     </Route>
                     <Route path='/home/chinesefood' exact>
 
