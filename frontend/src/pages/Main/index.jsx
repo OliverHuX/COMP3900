@@ -9,7 +9,7 @@ import { TextPopup } from '../../components/TextPopup';
 
 const { Meta } = Card;
 
-const cur_recipeId = '53702903163a4556b664ef0cd9947662'
+const cur_recipeId = 'e25b10db18fd41669b3172272b593ea0'
 function getInfo(token,setData,setData1,setData2) {
 
     // post the request
@@ -29,7 +29,7 @@ function getInfo(token,setData,setData1,setData2) {
           setData1(data => [...data, res.top_rates_list.list])
           setData2(data => [...data, res.top_likes_list.list])
         
-
+          
           // console.log('res.recipe_lists  ',res.recipe_lists)
         })
       }
