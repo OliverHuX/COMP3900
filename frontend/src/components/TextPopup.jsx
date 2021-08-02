@@ -10,7 +10,6 @@ import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 
 export function TextPopup ({ open = false, setOpen, title = 'Notification', msg, newButton, newButtonMsg, newButtonFun }) {
   const handleClose = () => setOpen(false);
-
   return (
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title" fullWidth>
         <DialogTitle id="form-dialog-title">{title}</DialogTitle>

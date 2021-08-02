@@ -30,7 +30,7 @@ function signin(email, password, history, remember, setOpen, setMsg) {
         if (remember) {
           localStorage.setItem('email', email)
         }
-        console.log(res.token);
+        console.log(res);
         localStorage.setItem('userId', res.userId);
         localStorage.setItem('token', res.token);
         localStorage.setItem('avatar', res.profilePhoto);

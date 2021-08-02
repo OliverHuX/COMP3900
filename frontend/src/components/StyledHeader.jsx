@@ -12,18 +12,6 @@ import { TextPopup } from './TextPopup';
 const { Header} = Layout;
 const { Search } = Input;
 
-// function logout(token) {
-//   const result = FetchFunc('logout', 'GET', token, null);
-//   result.then(data => {
-//     if (data === 200) {
-//       alert('log out successfully')
-//       localStorage.clear()
-//       window.location.href = '/'
-//     }
-//   })
-// }
-
-
 
 const StyledHeader = (props) => {
   const url = window.location.href.split('/')
@@ -33,19 +21,6 @@ const StyledHeader = (props) => {
     const GotoDetial = ( )=>{
       const token= localStorage.getItem('token');
       if (token=== null){
-     
-          //   <Alert
-          //   message="Warning Text"
-          //   type="warning"
-          //   action={
-          //     <Space>
-          //       <Button size="small" type="ghost">
-          //         Done
-          //       </Button>
-          //     </Space>
-          //   }
-          //   closable
-          // />
           setOpen(true) }
     }
     const userId = localStorage.getItem('userId');
@@ -90,8 +65,6 @@ const StyledHeader = (props) => {
     );
 
 
-
-    //                search 发送请求
     const history = useHistory()
     const onSearch = value => {
 
@@ -129,17 +102,20 @@ const StyledHeader = (props) => {
       history.push('/home/profile');
     }
     const gotoSignin = () => {
-      history.push('/');
+      window.location.href = '/';
     }
   return (
     
     <Header style={ { backgroundColor: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'space-between' } } >
-                                  <TextPopup
-                                    open={ open }
-                                    setOpen={ setOpen }
-                                    title='Sorry'
-                                    msg={'Your need to login to do this action :) !'}
-                                    />
+      <TextPopup
+        open={ open }
+        setOpen={ setOpen }
+        title='Sorry'
+        msg={'Your need to login to do this action :) !'}
+        newButton={true}
+        newButtonMsg={'Sign In'}
+        newButtonFun={() => gotoSignin()}
+      />
       <div style={ { display: 'flex', alignItems: 'center' } }>
         <div className="logo" > <Link to='/home'>YYDS</Link></div>
         <Dropdown overlay={ menu }>
