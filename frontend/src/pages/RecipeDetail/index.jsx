@@ -21,7 +21,7 @@ const { Option } = Select;
 const { TextArea } = Input;
 const { Meta } = Card;
 
-function addComments(token, recipeId, NewComments, setNewComments) {
+function addComments(token, recipeId, NewComments, setNewComments, setAdded, added) {
     const payload = JSON.stringify({
         recipeId: recipeId,
         content: NewComments
@@ -31,6 +31,8 @@ function addComments(token, recipeId, NewComments, setNewComments) {
         if (data.status === 200) {
             setNewComments('')
             console.log('success')
+            setAdded(!added)
+            // window.location.href = window.location.href;
         }
     })
 } 
@@ -52,7 +54,9 @@ function getDetial(token,cur_recipeId,
                     setnickName,
                     setComments,
                     setmyRateScore,
-                    setisRated
+                    setisRated,
+                    setState,
+                    initialState
                     ) {
 
     const result = FetchFunc(`recipe/recipe_list?recipeId=${cur_recipeId}`, 'GET', token,null);
@@ -77,7 +81,14 @@ function getDetial(token,cur_recipeId,
                 setnickName(res.recipe_lists[0].nickName)
                 console.log('I got the recipe ditails',res.recipe_lists[0].tags)
                 console.log(res.recipe_lists[0].comments)
-                for (var key in res.recipe_lists[0].comments) {
+                // var key = 0; key < res.recipe_lists[0].comments.length; key++
+                // var key in res.recipe_lists[0].comments
+                for (var key = 0; key < res.recipe_lists[0].comments.length; key++) {
+                    if (initialState) {
+                        setState(false);
+                    } else {
+                        key = res.recipe_lists[0].comments.length - 1
+                    }
                     var comment = res.recipe_lists[0].comments[key];
                     var payload = {
                         author: comment.nickName,
@@ -99,18 +110,7 @@ function getDetial(token,cur_recipeId,
                     console.log(payload)
                     setComments(coms => [...coms, payload])
                 }
-
-            
-            // console.log('res content', res);
-// {
-//     (<Avatar
-//     src={<Image src={comment.profilePhoto} />}
-//     alt={comment.nickName}
-//     />)
-// }
-            // console.log('res.recipe_lists  ',res.recipe_lists)
             })
-          
         }
     })
 }
@@ -146,6 +146,8 @@ const RecipeDetail = () => {
     const [comments, setComments] = useState([]);
     const [isRated, setisRated] = useState(0);
     const [myRateScore, setmyRateScore] = useState(null);
+    const [added, setAdded] = useState(true);
+    const [initialState, setState] = useState(true);
     const avatat = localStorage.getItem('avatar');
 
     const token = localStorage.getItem('token');
@@ -160,8 +162,8 @@ const RecipeDetail = () => {
 
 
     React.useEffect(()=>{ 
-        getDetial(token,cur_recipeId,setPhotoList,setTitle,setrateScore,settimeDuration,setintroduction,setingredients,setmethod,settags,setnickName, setComments,setmyRateScore,setisRated)
-      },[newComments])
+        getDetial(token,cur_recipeId,setPhotoList,setTitle,setrateScore,settimeDuration,setintroduction,setingredients,setmethod,settags,setnickName, setComments,setmyRateScore,setisRated, setState, initialState)
+      },[added])
     console.log(comments)
     //   let d = [...photolist];
     //   console.log('sssssssssssssssssssss',photolist)
@@ -295,6 +297,23 @@ const RecipeDetail = () => {
                 </div>
             </div>
             <Comments comments={comments}/>
+            {/* <div>
+            <List
+                header={`${comments.length} replies`}
+                itemLayout="horizontal"
+                dataSource={comments}
+                renderItem={item => (
+                <li>
+                    <Comment
+                        author={item.author}
+                        avatar={item.avatar}
+                        content={item.content}
+                        datetime={item.datetime}
+                    />
+                </li>
+                )}
+            />
+            </div> */}
             <div>
                 {/* {comments.length > 0 && <CommentList comments={comments} />} */}
                 <Comment
@@ -310,7 +329,7 @@ const RecipeDetail = () => {
                                 <TextArea rows={4} onChange={e => handleOnchange(e)} value={newComments} />
                                 </Form.Item>
                                 <Form.Item>
-                                <Button htmlType="submit" onClick={() => addComments(token, cur_recipeId, newComments, setNewComments)} type="primary">
+                                <Button htmlType="submit" onClick={() => addComments(token, cur_recipeId, newComments, setNewComments, setAdded, added)} type="primary">
                                     Add Comment
                                 </Button>
                             </Form.Item>
