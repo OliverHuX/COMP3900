@@ -18,7 +18,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import StyledHeader from '../../components/StyledHeader'
 
-function signup (firstName, lastName, gender, nickName, birthDate, email, password, history) {
+function signup (firstName, lastName, gender, nickName, birthDate, email, password, history, setMsg, setOpen) {
   // console.log('incomplete' + email + password);
   const payload = JSON.stringify({
     firstName: firstName,
@@ -36,7 +36,30 @@ function signup (firstName, lastName, gender, nickName, birthDate, email, passwo
     if (data.status === 200) {
       console.log(data);
       history.push('./wait')
+    } else if (data.status === 600 || data.status === 666) {
+      setMsg('Input is incorrect!');
+    } else if (data.status === 601) {
+      setMsg('Email already exists!');
+    } else if (data.status === 602) {
+      setMsg('Email is not valid!');
+    } else if (data.status === 603) {
+      setMsg('Password is not valid!');
+    } else if (data.status === 604) {
+      setMsg('Email or password is incorrect!')
+    } else if (data.status === 605) {
+      setMsg('Please verify your Email!')
+    } else if (data.status === 609) {
+      setMsg('Some error happen!')
+    } else if (data.status === 610) {
+      setMsg('Recipe does not exist!')
+    } else if (data.status === 611) {
+      setMsg('User is not as subscriber!')
+    } else if (data.status === 622) {
+      setMsg('Following user does not exist!')
+    } else if (data.status === 623) {
+      setMsg('User ID is not found!')
     }
+    setOpen(true)
   })
 }
 
@@ -48,8 +71,8 @@ export default function Register () {
   const [birthDate, setBOD] = React.useState('2000-01-01');
   const [emailInputs, setEmailInputs] = React.useState('');
   const [passWord, setPasswordInputs] = React.useState('');
-  const [errorMsg, setErrorMsg] = React.useState('');
-  const [error, setError] = React.useState(false);
+  const [msg, setMsg] = React.useState('');
+  const [open, setOpen] = React.useState(false);
   const history = useHistory();
   const classes = myStyles();
 
@@ -184,15 +207,17 @@ export default function Register () {
                 variant="contained"
                 color="primary"
                 className={classes.submit}
-                onClick={() => signup(firstName, lastName, gender, nickName, birthDate, emailInputs, passWord, history)}
+                disabled={emailInputs == '' || passWord == '' || firstName == '' || lastName == '' || nickName == ''}
+                onClick={() => signup(firstName, lastName, gender, nickName, birthDate, emailInputs, passWord, history, setMsg, setOpen)}
               >
                 Sign Up
               </Button>
               <TextPopup
-                open={error}
-                setOpen={setError}
-                title={errorMsg}
-                handleOnClick={() => setError(false)}
+                open={ open }
+                setOpen={ setOpen }
+                title='Error'
+                msg={msg}
+                newButton={false}
               />
               <Grid container justify="flex-end">
                 <Grid item className={classes.marginBtm}>

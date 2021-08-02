@@ -5,9 +5,11 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import ErrorIcon from '@material-ui/icons/Error';
 
 export function TextPopup ({ open = false, setOpen, title = 'Notification', msg, newButton, newButtonMsg, newButtonFun }) {
   const handleClose = () => setOpen(false);
+
   return (
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title" fullWidth>
         <DialogTitle id="form-dialog-title">{title}</DialogTitle>
