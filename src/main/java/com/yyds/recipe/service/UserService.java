@@ -20,7 +20,7 @@ public interface UserService {
 
     ResponseEntity<?> editPassword(String oldPassword, String newPassword, HttpServletRequest request, HttpServletResponse response);
 
-    ResponseEntity<?> emailVerify(String token);
+    String emailVerify(String token);
 
     ResponseEntity<?> followUser(Follow follow, HttpServletRequest request);
 

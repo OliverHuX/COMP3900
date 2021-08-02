@@ -159,6 +159,11 @@ public class UserServiceImpl implements UserService {
         LinkedHashMap<String, Object> body = new LinkedHashMap<>();
         body.put("userId", user.getUserId());
         body.put("token", token);
+        String profilePhoto = user.getProfilePhoto();
+        if (profilePhoto == null) {
+            profilePhoto = "";
+        }
+        body.put("profilePhoto", profilePhoto);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("token", token);
         return ResponseUtil.getResponse(ResponseCode.SUCCESS, httpHeaders, body);
@@ -245,27 +250,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(value = "transactionManager", rollbackFor = Exception.class)
-    public ResponseEntity<?> emailVerify(String token) {
+    public String emailVerify(String token) {
         if (Boolean.FALSE.equals(redisTemplate.hasKey(token))) {
-            return ResponseUtil.getResponse(ResponseCode.EMAIL_VERIFY_ERROR, null, null);
+            return "Fail";
         }
 
         User user;
         try {
             user = (User) redisTemplate.opsForValue().get(token);
         } catch (Exception e) {
-            return ResponseUtil.getResponse(ResponseCode.REDIS_ERROR, null, null);
+            return "Fail";
         }
 
 
         if (user == null) {
-            return ResponseUtil.getResponse(ResponseCode.EMAIL_VERIFY_ERROR, null, null);
+            return "Fail";
         }
 
         User checkedUser = userMapper.getUserByUserId(user.getUserId());
         if (checkedUser != null) {
             redisTemplate.delete(token);
-            return ResponseUtil.getResponse(ResponseCode.EMAIL_VERIFY_ERROR, null, null);
+            return "Fail";
         }
 
         try {
@@ -283,7 +288,7 @@ public class UserServiceImpl implements UserService {
 
         redisTemplate.delete(token);
 
-        return ResponseUtil.getResponse(ResponseCode.SUCCESS, null, null);
+        return "Success";
 
     }
 
