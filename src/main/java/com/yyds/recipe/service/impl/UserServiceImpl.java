@@ -162,6 +162,8 @@ public class UserServiceImpl implements UserService {
         String profilePhoto = user.getProfilePhoto();
         if (profilePhoto == null) {
             profilePhoto = "";
+        } else {
+            profilePhoto = aliyunOSSUtil.getUrl(bucketName, PROFILE_PHOTO_FOLDER, profilePhoto);
         }
         body.put("profilePhoto", profilePhoto);
         HttpHeaders httpHeaders = new HttpHeaders();
