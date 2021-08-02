@@ -14,8 +14,7 @@ const Footer = () => {
                 <ul className="list-inline">
                     <li className="list-inline-item"><Link to="/home">Back to Home</Link></li>
                     <li className="list-inline-item"><Link to="/home/help">Need help?</Link></li>
-                    <li className="list-inline-item"><a href="/#">Terms</a></li>
-                    <li className="list-inline-item"><a href="/#">Privacy Policy</a></li>
+
                 </ul>
                 <p className="copyright">China - YYDS © 2021</p>
             </footer>
