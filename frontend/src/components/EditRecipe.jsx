@@ -7,11 +7,12 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
+import { Carousel } from 'antd';
 import FetchFunc from './fetchFunc';
 import { useStyles } from './Style';
 import axios from 'axios';
 
-function getRecipe(token, recipeId, setTitle, setTime, setIntro, setIngre, setMethod) {
+function getRecipe(token, recipeId, setTitle, setTime, setIntro, setIngre, setMethod, setTags, setPhotos) {
     const result = FetchFunc('recipe/recipe_list?recipeId=' + recipeId, 'GET', token, null);
     result.then(data => {
         if (data.status === 200) {
@@ -22,17 +23,19 @@ function getRecipe(token, recipeId, setTitle, setTime, setIntro, setIngre, setMe
                 setIntro(recipe.introduction);
                 setIngre(recipe.ingredients);
                 setMethod(recipe.method);
+                setTags(recipe.tags);
+                setPhotos(recipe.recipePhotos);
             })
         }
     })
 }
 
-function updateRecipe(title, introduction, ingredients, method, timeDuration, fileList ,token, recipeId) {
+function updateRecipe(title, introduction, ingredients, method, timeDuration, fileList ,token, recipeId, tags) {
 
     var formData = new FormData();
     if(fileList !== undefined){
         for(let i=0;i<fileList.length;i++){
-            formData.append('uploadVideos', fileList[i]);
+            formData.append('uploadPhotos', fileList[i]);
         }
     }
     
@@ -43,6 +46,7 @@ function updateRecipe(title, introduction, ingredients, method, timeDuration, fi
         method: method,
         timeDuration: timeDuration,
         recipeId: recipeId,
+        tags: tags,
         })], {type:"application/json"}));
 
     axios.post(
@@ -75,7 +79,9 @@ export default function EditRecipe () {
     const [intro, setIntro] = React.useState('');
     const [method, setMethod] = React.useState('');
     const [ingre, setIngre] = React.useState('');
+    const [tags, setTags] = React.useState([]);
     const [fileList, setFileList] = React.useState();
+    const [photolist, setPhotos] = React.useState([]);
     const [open, setOpen] = React.useState(true)
 
     const handleTitle = (e) => {
@@ -98,7 +104,7 @@ export default function EditRecipe () {
     }
 
     React.useEffect(() => {
-        getRecipe(token, recipeId, setTitle, setTime, setIntro, setIngre, setMethod);
+        getRecipe(token, recipeId, setTitle, setTime, setIntro, setIngre, setMethod, setTags, setPhotos);
     }, [])
 
     return (
@@ -111,6 +117,16 @@ export default function EditRecipe () {
             </Typography>
             <React.Fragment>
                 <Grid container spacing={4}>
+                    <Grid item xs = {12}>
+                        <Carousel autoplay effect="fade" arrows={true}>{
+                            photolist.map((i)=>(
+                                <div>       
+                                    <img style={{ maxHeight: '100px', width: '100%', height: '100%', object_fit:'contain' }} src= {i} alt="" />
+                                </div>
+                                ))
+                            }
+                        </Carousel>
+                    </Grid>
                     <Grid item xs={12} sm={6}>
                     <TextField
                         required
@@ -196,7 +212,7 @@ export default function EditRecipe () {
                     color="primary"
                     fullWidth
                     className={classes.button}
-                    onClick = {() => updateRecipe(title, intro, ingre, method, time, fileList ,token, recipeId)}
+                    onClick = {() => updateRecipe(title, intro, ingre, method, time, fileList ,token, recipeId, tags)}
                     >
                     Save
                 </Button>
