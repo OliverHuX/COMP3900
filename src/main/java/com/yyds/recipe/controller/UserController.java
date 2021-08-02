@@ -65,7 +65,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/emailVerify/{token}", method = RequestMethod.GET)
-    public ResponseEntity<?> emailVerify(@PathVariable String token) {
+    public String emailVerify(@PathVariable String token) {
         return userService.emailVerify(token);
     }
 

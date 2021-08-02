@@ -218,8 +218,11 @@ public class RecipeServiceImpl implements RecipeService {
                 recipeMapper.saveVideos(recipe.getRecipeId(), recipe.getRecipeVideos());
             }
             List<String> tags = recipe.getTags();
-            recipeMapper.deleteTagsByRecipe(recipe);
-            recipeMapper.saveTagRecipe(recipe.getRecipeId(), tags);
+            if (tags != null && tags.size() > 0) {
+                recipeMapper.deleteTagsByRecipe(recipe);
+                recipeMapper.saveTagRecipe(recipe.getRecipeId(), tags);
+            }
+
             recipeMapper.updateRecipe(recipe);
         } catch (Exception e) {
             throw new MySqlErrorException();

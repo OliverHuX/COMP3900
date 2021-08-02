@@ -48,9 +48,9 @@ spring:
 
   # mail
   mail:
-    host: smtp.office365.com
-    username: comp3900-w18a-yyds@outlook.com
-    password: COMP3900
+    host: smtp.163.com
+    username: kkkk2077@163.com
+    password: SEZZOMBFXMJQJSTA
     port: 587
     protocol: smtp
     properties.mail.display.sendmail: Springboot

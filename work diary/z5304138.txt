@@ -18,3 +18,9 @@ Had a meeting with the team to reflect on our past sprint and wrote our Retrospe
 
 Week 7
 I wrote implemetations for features such as like recipe, unlike recipe, and comment recipe; Had a meeting with a team and assigned new tasks; I later wrote more methods for the user stories that I was assigned to
+
+Week 8
+The team held a meeting during the lab session after we have demonstrated our project to our tutor; we held a meeting later that week to disccuss and replect on our last sprint; impmented more features for the user story
+
+Week 9
+Worked on improving our user interface for our project as well as adding new features to the app; wrote the funtionalies and the background pasrt of the project report
