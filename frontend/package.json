@@ -12,7 +12,6 @@
     "@testing-library/user-event": "^12.1.10",
     "ant-design": "^1.0.0",
     "antd": "^4.16.8",
-    "autoprefixer": "^10.3.1",
     "axios": "^0.21.1",
     "css-vendor": "^2.0.8",
     "form-data": "^4.0.0",
@@ -34,16 +33,5 @@
       "react-app/jest"
     ]
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+  "browserslist": []
 }
